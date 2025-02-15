@@ -1,56 +1,56 @@
-// server.js
 
-// 1) Require dependencies
+
+// Dependencies
+require('dotenv').config();
 const express = require('express');
-const axios = require('axios');     // Make sure you have installed axios
-const multer = require('multer');   // Make sure you have installed multer
+const axios = require('axios');
+const multer = require('multer');
 
-// 2) Initialize Express
+
 const app = express();
-
 console.log("Starting the server...");
 
-// Basic test route
-app.get('/', (req, res) => {
-  res.send('Hello from Fruit Identifier!');
-  console.log("A request was received on the root route!");
-});
-
-// 3) Configure Multer to store uploaded files in memory
+// Configure Multer to store uploaded files in memory
 const upload = multer({ storage: multer.memoryStorage() });
 
-// 4) Create the /identify endpoint
+// Plant.id API key
+const PLANT_ID_API_KEY = process.env.API_KEY;
+
+if (!PLANT_ID_API_KEY) {
+  console.error("API key is missing! Make sure you have set it in the .env file.");
+  process.exit(1); 
+}
+
+
+// identify endpoint
 app.post('/identify', upload.single('plantImage'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded.' });
     }
 
-    // Convert the image to Base64
+    // Converting the image to Base64
     const base64Image = req.file.buffer.toString('base64');
 
-    // Build the request body for Plant.id
-    const requestBody = {
+    // API request: Identify the plant
+    const identificationRequestBody = {
       images: [base64Image],
+      similar_images: true 
     };
 
     const plantIdUrl = 'https://api.plant.id/v3/identification';
 
-    // Plant.id API key
-    const PLANT_ID_API_KEY = 'AM0WS9LPsq4eT5Z8KHn85c0uVhHH3BtfHtLH7BYbHGrAJ0Dojd';
-
-    // Make the POST request to Plant.id
-    const response = await axios.post(plantIdUrl, requestBody, {
+    const identificationResponse = await axios.post(plantIdUrl, identificationRequestBody, {
       headers: {
         'Api-Key': PLANT_ID_API_KEY,
         'Content-Type': 'application/json',
       },
     });
 
-    console.log('Response from Plant.id API: ', response.data);
+    console.log('Response from Plant.id API:', identificationResponse.data);
 
-    // Extract the classification suggestions
-    const suggestions = response.data.result?.classification?.suggestions;
+    // Extract classification suggestions
+    const suggestions = identificationResponse.data.result?.classification?.suggestions;
 
     if (!suggestions || suggestions.length === 0) {
       return res.status(200).json({ message: 'No plant suggestions found.' });
@@ -58,23 +58,26 @@ app.post('/identify', upload.single('plantImage'), async (req, res) => {
 
     // Extract the best suggestion
     const bestSuggestion = suggestions[0];
-    console.log('Best suggestion:', bestSuggestion); // Log suggestion for debugging
+    console.log('Best suggestion:', bestSuggestion);
 
     const name = bestSuggestion?.name || 'Unknown plant';
     const probability = bestSuggestion?.probability || 0;
-    const common_names = bestSuggestion?.common_names || [];
-    const description = bestSuggestion?.details?.description || 'No description available';
-    const edible_parts = bestSuggestion?.details?.edible_parts || [];
-    const url = bestSuggestion?.url || 'No reference URL available';
 
-    // Prepare result
+    // Check if 'details' exist in bestSuggestion
+    const details = bestSuggestion.details || {};
+    const description = details.description || "No description available";
+    const edible_parts = details.edible_parts || [];
+    const common_names = details.common_names || [];
+    const referenceURL = details.url || "No reference URL available";
+
+    //  result
     const result = {
       identifiedPlant: name,
       confidence: probability,
       commonNames: common_names,
       description,
       edibleParts: edible_parts,
-      referenceURL: url,
+      referenceURL,
     };
 
     return res.status(200).json(result);
@@ -91,7 +94,7 @@ app.post('/identify', upload.single('plantImage'), async (req, res) => {
   }
 });
 
-// 5) Set the port and start the server
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
