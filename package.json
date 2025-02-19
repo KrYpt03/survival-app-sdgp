@@ -2,7 +2,7 @@
   "name": "sdgpapp",
   "license": "0BSD",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.tsx",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -10,9 +10,12 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.21.0",
     "@react-navigation/native": "^7.0.13",
     "@react-navigation/stack": "^7.0.18",
+    "axios": "^1.7.9",
     "expo": "~52.0.17",
+    "expo-image-picker": "~14.7.1",
     "expo-status-bar": "~2.0.0",
     "react": "18.3.1",
     "react-native": "0.76.3",
@@ -25,6 +28,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "@types/axios": "^0.14.4",
     "@types/react": "~18.3.12",
     "@types/react-native": "^0.73.0",
     "typescript": "^5.3.3"
