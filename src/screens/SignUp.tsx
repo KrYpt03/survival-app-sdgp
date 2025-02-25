@@ -1,414 +1,184 @@
-import React from 'react';
+"use client"
+
+import { useState } from "react"
 import {
   View,
   Text,
   ImageBackground,
   SafeAreaView,
-  ScrollView,
+  TextInput,
   TouchableOpacity,
-} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import { useNavigation } from '@react-navigation/native';
+  StyleSheet,
+  Dimensions,
+  Platform,
+} from "react-native"
+import { useNavigation } from "@react-navigation/native"
 
-export default function App(): React.JSX.Element {
-  const navigation = useNavigation();
+const { width, height } = Dimensions.get("window")
+
+export default function SignupScreen() {
+  const navigation = useNavigation()
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+
+  const handleSignUp = () => {
+    console.log("Sign Up pressed with:", email, password)
+    // Here you would typically call your sign-up API
+    // For now, we'll just log the credentials
+  }
+
+  const handleLogin = () => {
+    navigation.navigate("Loging" as never)// Here you would typically navigate to the main screen
+  }
+
+  const navigateToLogin = () => {
+    navigation.navigate("Loging" as never)
+  }
+
   return (
-    <SafeAreaView>
-      <ScrollView
-        scrollEnabled={true}
-        contentInsetAdjustmentBehavior='automatic'
+    <SafeAreaView style={styles.container}>
+      <ImageBackground
+        source={require("../../assets/882a1e39-7619-4d2d-8934-01ec2145083f.png")}
+        style={styles.backgroundImage}
+        resizeMode="cover"
       >
-        <View
-          style={{
-            width: 390,
-            height: 800,
-            backgroundColor: '#ffffff',
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            borderBottomRightRadius: 30,
-            borderBottomLeftRadius: 30,
-            position: 'relative',
-            overflow: 'hidden',
-            marginTop: 0,
-            marginRight: 'auto',
-            marginBottom: 0,
-            marginLeft: 'auto',
-          }}
-        >
-          <ImageBackground
-            style={{
-              width: 1198,
-              height: 977,
-              position: 'absolute',
-              top: -152,
-              left: -9,
-            }}
-            source={require('../../assets/882a1e39-7619-4d2d-8934-01ec2145083f.png')}
-            resizeMode='cover'
-          />
-          <View
-            style={{
-              width: 375,
-              height: 812,
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              overflow: 'hidden',
-              zIndex: 9,
-            }}
-          >
-            <View
-              style={{
-                width: 345.019,
-                height: 30,
-                position: 'relative',
-                zIndex: 8,
-                marginTop: 23,
-                marginRight: 0,
-                marginBottom: 0,
-                marginLeft: 13,
-              }}
-            >
-              <ImageBackground
-                style={{
-                  width: 29,
-                  height: 30,
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  zIndex: 8,
-                }}
-                source={require('../../assets/3d462754-0e3e-47dd-b69b-705f9825ed43.png')}
-              />
-              <ImageBackground
-                style={{
-                  width: 27.019,
-                  height: 2,
-                  position: 'absolute',
-                  top: 1,
-                  left: 318,
-                  zIndex: 3,
-                }}
-                source={require('../../assets/598abff4-864b-4377-8e2a-cd4e76efea0d.png')}
-                resizeMode='cover'
-              />
-              
-              <Text
-                style={{
-                  display: 'flex',
-                  height: 18,
-                  justifyContent: 'flex-start',
-                  alignItems: 'flex-start',
-                  fontFamily: 'Poppins',
-                  fontSize: 12,
-                  fontWeight: '400',
-                  lineHeight: 18,
-                  color: '#202e5c',
-                  position: 'absolute',
-                  top: 6,
-                  left: 34,
-                  textAlign: 'left',
-                  zIndex: 1,
-                }}
-                numberOfLines={1}
-              >
-                Hike here!
-              </Text>
-              <TouchableOpacity
-              onPress={() => navigation.navigate('Loging' as never)}
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                zIndex: 20,
-              }}
-            >
-              <Text
-                style={{
-                  display: 'flex',
-                  height: 18,
-                  justifyContent: 'flex-start',
-                  alignItems: 'flex-start',
-                  fontFamily: 'Poppins',
-                  fontSize: 12,
-                  fontWeight: '400',
-                  lineHeight: 18,
-                  color: '#345e40',
-                  position: 'absolute',
-                  top: 6,
-                  left: 34,
-                  textAlign: 'left',
-                  zIndex: 6,
-                }}
-                numberOfLines={1}
-              >
-                Hike here!
-              </Text>
-              </TouchableOpacity>
-              <ImageBackground
-                style={{
-                  width: 23,
-                  height: 2,
-                  position: 'absolute',
-                  top: 7,
-                  left: 322,
-                  zIndex: 4,
-                }}
-                source={require('../../assets/66720931-0cfe-47fc-8b62-191ae762edc6.png')}
-                resizeMode='cover'
-              />
-              <ImageBackground
-                style={{
-                  width: 18,
-                  height: 2,
-                  position: 'absolute',
-                  top: 13,
-                  left: 327,
-                  zIndex: 5,
-                }}
-                source={require('../../assets/c64db674-2ded-4d72-a275-ced80266cff2.png')}
-                resizeMode='cover'
-              />
-            </View>
-            <Text
-              style={{
-                display: 'flex',
-                width: 294,
-                height: 64,
-                justifyContent: 'center',
-                alignItems: 'center',
-                fontFamily: 'Mulish',
-                fontSize: 36,
-                fontWeight: '700',
-                lineHeight: 45.18,
-                color: '#000000',
-                position: 'relative',
-                textAlign: 'center',
-                zIndex: 20,
-                marginTop: 108,
-                marginRight: 0,
-                marginBottom: 0,
-                marginLeft: 38,
-              }}
-              numberOfLines={1}
-            >
-              Sign Up
-            </Text>
-            <View
-              style={{
-                width: 319,
-                height: 63,
-                position: 'relative',
-                zIndex: 12,
-                marginTop: 28,
-                marginRight: 0,
-                marginBottom: 0,
-                marginLeft: 28,
-              }}
-            >
-              <Text
-                style={{
-                  display: 'flex',
-                  width: 288,
-                  height: 63,
-                  justifyContent: 'flex-start',
-                  alignItems: 'center',
-                  fontFamily: 'Mulish',
-                  fontSize: 18,
-                  fontWeight: '400',
-                  lineHeight: 22.59,
-                  color: '#241c1c',
-                  position: 'relative',
-                  textAlign: 'left',
-                  zIndex: 12,
-                  marginTop: 20,
-                  marginRight: 0,
-                  marginBottom: 0,
-                  marginLeft: 16,
-                }}
-              >
-                Email
-              </Text>
-              <View
-                style={{
-                  width: 319,
-                  height: 63,
-                  backgroundColor: '#f5f4f2',
-                  borderTopLeftRadius: 31.5,
-                  borderTopRightRadius: 31.5,
-                  borderBottomRightRadius: 31.5,
-                  borderBottomLeftRadius: 31.5,
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  zIndex: 10,
-                }}
-              />
-            </View>
-            <View
-              style={{
-                width: 319,
-                height: 63,
-                position: 'relative',
-                zIndex: 13,
-                marginTop: 22,
-                marginRight: 0,
-                marginBottom: 0,
-                marginLeft: 28,
-              }}
-            >
-              <Text
-                style={{
-                  display: 'flex',
-                  width: 288,
-                  height: 63,
-                  justifyContent: 'flex-start',
-                  alignItems: 'center',
-                  fontFamily: 'Mulish',
-                  fontSize: 18,
-                  fontWeight: '400',
-                  lineHeight: 22.59,
-                  color: '#241c1c',
-                  position: 'relative',
-                  textAlign: 'left',
-                  zIndex: 13,
-                  marginTop: 20,
-                  marginRight: 0,
-                  marginBottom: 0,
-                  marginLeft: 16,
-                }}
-              >
-                Password
-              </Text>
-              <View
-                style={{
-                  width: 319,
-                  height: 63,
-                  backgroundColor: '#f5f4f2',
-                  borderTopLeftRadius: 31.5,
-                  borderTopRightRadius: 31.5,
-                  borderBottomRightRadius: 31.5,
-                  borderBottomLeftRadius: 31.5,
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  zIndex: 11,
-                }}
-              />
-            </View>
-            <View
-              style={{
-                width: 319,
-                height: 63,
-                borderTopLeftRadius: 31.5,
-                borderTopRightRadius: 31.5,
-                borderBottomRightRadius: 31.5,
-                borderBottomLeftRadius: 31.5,
-                position: 'relative',
-                zIndex: 14,
-                marginTop: 22,
-                marginRight: 0,
-                marginBottom: 0,
-                marginLeft: 28,
-              }}
-            >
-              <Text
-                style={{
-                  display: 'flex',
-                  width: 100,
-                  height: 43,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  fontFamily: 'Mulish',
-                  fontSize: 18,
-                  fontWeight: '700',
-                  lineHeight: 22.59,
-                  color: '#f5f4f2',
-                  position: 'relative',
-                  textAlign: 'center',
-                  zIndex: 16,
-                  marginTop: 20,
-                  marginRight: 0,
-                  marginBottom: 0,
-                  marginLeft: 110,
-                }}
-              >
-                SIGN UP
-              </Text>
-              <View
-                style={{
-                  width: 319,
-                  height: 63,
-                  backgroundColor: '#241c1c',
-                  borderTopLeftRadius: 31.5,
-                  borderTopRightRadius: 31.5,
-                  borderBottomRightRadius: 31.5,
-                  borderBottomLeftRadius: 31.5,
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  zIndex: 15,
-                }}
-              />
-            </View>
-            <View
-              style={{
-                width: 319,
-                height: 63,
-                borderTopLeftRadius: 31.5,
-                borderTopRightRadius: 31.5,
-                borderBottomRightRadius: 31.5,
-                borderBottomLeftRadius: 31.5,
-                position: 'relative',
-                zIndex: 17,
-                marginTop: 7,
-                marginRight: 0,
-                marginBottom: 0,
-                marginLeft: 28,
-              }}
-            >
-              <Text
-                style={{
-                  display: 'flex',
-                  width: 234,
-                  height: 43,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  fontFamily: 'Mulish',
-                  fontSize: 18,
-                  fontWeight: '400',
-                  lineHeight: 22.59,
-                  color: '#241c1c',
-                  position: 'relative',
-                  textAlign: 'center',
-                  zIndex: 19,
-                  marginTop: 20,
-                  marginRight: 0,
-                  marginBottom: 0,
-                  marginLeft: 43,
-                }}
-              >
-                Log in
-              </Text>
-              <View
-                style={{
-                  width: 319,
-                  height: 63,
-                  backgroundColor: 'rgba(200, 196, 183, 0.72)',
-                  borderTopLeftRadius: 31.5,
-                  borderTopRightRadius: 31.5,
-                  borderBottomRightRadius: 31.5,
-                  borderBottomLeftRadius: 31.5,
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  zIndex: 18,
-                }}
-              />
-            </View>
-          </View>
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.logoContainer} onPress={navigateToLogin}>
+            <ImageBackground
+              source={require("../../assets/3d462754-0e3e-47dd-b69b-705f9825ed43.png")}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <Text style={styles.logoText}>Hike here!</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.menuButton}>
+            <View style={styles.menuBar} />
+            <View style={styles.menuBar} />
+            <View style={styles.menuBar} />
+          </TouchableOpacity>
         </View>
-      </ScrollView>
+
+        <View style={styles.content}>
+          <Text style={styles.title}>Sign Up</Text>
+
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            placeholderTextColor="#666"
+          />
+
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            placeholderTextColor="#666"
+          />
+
+          <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
+            <Text style={styles.signUpButtonText}>SIGN UP</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+            <Text style={styles.loginButtonText}>Log In</Text>
+          </TouchableOpacity>
+        </View>
+      </ImageBackground>
     </SafeAreaView>
-  );
+  )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  backgroundImage: {
+    flex: 1,
+    width: width,
+    height: height,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingTop: Platform.OS === "ios" ? 20 : 40,
+  },
+  logoContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  logo: {
+    width: 32,
+    height: 32,
+  },
+  logoText: {
+    fontSize: 12,
+    fontWeight: "500",
+    color: "#000000",
+    marginLeft: 8,
+  },
+  menuButton: {
+    padding: 8,
+  },
+  menuBar: {
+    width: 24,
+    height: 2,
+    backgroundColor: "#345e40",
+    marginVertical: 2,
+    borderRadius: 1,
+  },
+  content: {
+    flex: 1,
+    justifyContent: "center",
+    paddingHorizontal: 24,
+    paddingBottom: 100,
+  },
+  title: {
+    fontSize: 42,
+    fontWeight: "600",
+    color: "#000",
+    textAlign: "center",
+    marginBottom: 40,
+  },
+  input: {
+    backgroundColor: "#fff",
+    borderRadius: 30,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    fontSize: 18,
+    marginBottom: 16,
+    color: "#000",
+  },
+  signUpButton: {
+    backgroundColor: "#241c1c",
+    borderRadius: 30,
+    paddingVertical: 16,
+    alignItems: "center",
+    marginTop: 8,
+    marginBottom: 12,
+  },
+  signUpButtonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  loginButton: {
+    backgroundColor: "rgba(255, 255, 255, 0.7)",
+    borderRadius: 30,
+    paddingVertical: 16,
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  loginButtonText: {
+    color: "#241c1c",
+    fontSize: 18,
+    fontWeight: "500",
+  },
+})
+
