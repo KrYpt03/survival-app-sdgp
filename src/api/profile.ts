@@ -15,8 +15,8 @@ export const profileAPI = {
 
     // Mock response
     return {
-      name: "Leonardo",
-      email: "Leonardo@gmail.com",
+      name: "Kevin",
+      email: "kevingomesmathra@gmail.com",
       rewardPoints: 360,
       travelTrips: 238,
       bucketList: 473,
