@@ -47,7 +47,7 @@ export default function LoginScreen() {
               style={styles.logo}
               resizeMode="contain"
             />
-            <Text style={styles.logoText}>Hike here!</Text>
+            <Text style={styles.logoText}>Trail Guard</Text>
           </View>
           <TouchableOpacity style={styles.menuButton}>
             <View style={styles.menuBar} />
