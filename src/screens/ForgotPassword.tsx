@@ -23,7 +23,7 @@ export default function ForgotPasswordScreen() {
 
   const handleResetPassword = () => {
     if (!email) {
-      Alert.alert("Error",  "Please enter your email address")
+      Alert.alert("Error", "Please enter your email address")
       return
     }
     // Here you would typically call your password reset API
