@@ -49,7 +49,7 @@ export default function SignupScreen() {
               style={styles.logo}
               resizeMode="contain"
             />
-            <Text style={styles.logoText}>Hike here!</Text>
+            <Text style={styles.logoText}>Trail Guard</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.menuButton}>
             <View style={styles.menuBar} />
