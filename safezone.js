@@ -19,3 +19,41 @@ const harvesine =(coor1, coor2) => {
     return R * c; //distance in meters
 };
 
+//data storage maps 
+const groupLeaders = new Map();
+const groupSafeZones = new Map();
+
+//setting the group leader and the safe zone
+const setGroupLeader = (groupId, leaderId, radiusMeters) => {
+    groupLeaders.set(groupId,leaderId);
+    groupSafeZones.set(groupId,{radius : radiusMeters});
+};
+
+
+const updateLeaderLocation = (groupId,lattitude,longitude) => {
+    if(!groupLeaders.has(groupId)) return;
+//udate the groups safe zone according to the leaders location
+    groupSafeZones.set(groupId,{center : [longitude,lattitude], radius: groupSafeZones.get(groupId).radius});
+};
+
+//cheeck if the user is in the safe zone
+const checkSafeZone = (groupId, userId, lattitude, longitude) => {
+    if(!groupSafeZones.has(groupId)) return null;
+
+    const leaderId = groupLeaders.get(groupId);
+    const leaderSafeZone = groupSafeZones.get(groupId);
+    if(!leaderSafeZone.center) return null;
+
+    // calling harvestine funcyion to calculate the distance between the user and the leader
+    const distance = harvesine([longitude,lattitude], leaderSafeZone.center); 
+
+    if(distance > leaderSafeZone.radius){
+        return {
+            userId,
+            message :"Warining! you have exited the safe zone"
+        };
+    }
+    return null;
+};
+
+mooduke.exports = {setGroupLeader, updateLeaderLocation, checkSafeZone};
