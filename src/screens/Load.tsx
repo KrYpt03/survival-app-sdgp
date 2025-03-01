@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "500",
     color: "#000000",
-    marginLeft: -250, // Adjust this value to position the text correctly
+    marginLeft: -210, // Adjust this value to position the text correctly
   },
   menuIcon: {
     width: 27,
