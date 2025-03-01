@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: 20,
+    padding: 10,
   },
   headerTitle: {
     fontSize: 18,
@@ -176,8 +176,8 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   notificationIcon: {
-    width: 24,
-    height: 24,
+    width: 30,
+    height: 30,
   },
   profileImage: {
     width: 96,
@@ -244,8 +244,8 @@ const styles = StyleSheet.create({
     borderBottomColor: "#f0f0f0",
   },
   menuIcon: {
-    width: 24,
-    height: 24,
+    width: 30,
+    height: 30,
   },
   menuText: {
     flex: 1,
