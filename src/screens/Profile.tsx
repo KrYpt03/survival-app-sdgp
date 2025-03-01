@@ -10,8 +10,11 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   StyleSheet,
+  Dimensions,
 } from "react-native"
 import { profileAPI, type Profile } from "../api/profile"
+
+const { width, height } = Dimensions.get("window")
 
 export default function ProfileScreen() {
   const [loading, setLoading] = useState(true)
@@ -58,7 +61,7 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentInsetAdjustmentBehavior="automatic">
+      <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
         <View style={styles.header}>
           <ImageBackground
             style={styles.menuIcon}
@@ -117,15 +120,18 @@ export default function ProfileScreen() {
           ))}
         </View>
 
-        {/* Navigation Bar */}
-        <View style={styles.navigationBar}>
-          {navigationItems.map((item, index) => (
-            <TouchableOpacity key={index} onPress={item.onPress}>
-              <ImageBackground source={item.icon} style={styles.navIcon} resizeMode="cover" />
-            </TouchableOpacity>
-          ))}
-        </View>
+        {/* Add extra padding at the bottom to ensure all content is scrollable above the navigation bar */}
+        <View style={styles.bottomPadding} />
       </ScrollView>
+
+      {/* Fixed Navigation Bar */}
+      <View style={styles.navigationBar}>
+        {navigationItems.map((item, index) => (
+          <TouchableOpacity key={index} onPress={item.onPress}>
+            <ImageBackground source={item.icon} style={styles.navIcon} resizeMode="cover" />
+          </TouchableOpacity>
+        ))}
+      </View>
     </SafeAreaView>
   )
 }
@@ -134,6 +140,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#ffffff",
+  },
+  scrollView: {
+    flex: 1,
   },
   loadingContainer: {
     flex: 1,
@@ -258,14 +267,20 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
   },
+  bottomPadding: {
+    height: 80, // Adjust this value based on the height of your navigation bar
+  },
   navigationBar: {
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
     backgroundColor: "#f3edf7",
     borderRadius: 25,
-    margin: 20,
     padding: 16,
+    position: "absolute",
+    bottom: 20,
+    left: 20,
+    right: 20,
   },
   navIcon: {
     width: 24,
