@@ -2,6 +2,7 @@ const express = require('express');
 const socketIo = require('socket.io');
 const http = require('http');
 const cors = require('cors');
+const{setGroupLeader, updateLeaderLocation, checkSafeZone} = require('./safezone');
 
 
 const app = express();
@@ -11,6 +12,13 @@ const io = socketIo(server);
 app.use(cors());
 
 const groups = new Map(); // store activee groups with members
+
+//create a group and set leader
+app.post('/group/create', express.json(), (req, res) => {
+    const {groupId, leaderId, radiusMeters} = req.body;
+    setGroupLeader(groupId, leaderId, radiusMeters);
+    res.json({message: 'Group created successfully'});
+});
 
 //handle socket connection
 io.on('connection', (socket) =>{
@@ -24,8 +32,15 @@ io.on('connection', (socket) =>{
         const members= groups.get(groupId);
         members.push({id:socket.id, username, lattitude,longitude});
         groups.set(groupId, members);
+
         socket.join(groupId);
         io.to(groupId).emit('updateGroup', members);
+    });
+
+    //update loaction for the leader(moving safe zone)
+    socket.on('leaderLocationUpdate',({groupId,lattitude, longitude})=>{
+        updateLeaderLocation(groupId,lattitude,longitude);
+        io.to(groupId).emit('updateGroup', groups.get(groupId));
     });
 
     // Update location
@@ -36,6 +51,12 @@ io.on('connection', (socket) =>{
             members[memberIndex].latitude = latitude;
             members[memberIndex].longitude = longitude;
             io.to(groupId).emit('updateGroup', members);
+
+            //check id the user is in the safe zone
+            const alert = checkSafeZone(groupId, socket.id, latitude, longitude);
+            if (alert) {
+                io.to(socket.id).emit('safeZoneAlert', alert);
+            }
         }
     });
 
