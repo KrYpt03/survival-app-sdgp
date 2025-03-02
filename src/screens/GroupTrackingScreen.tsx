@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Button } from 'react-native';
-import MapView, { Marker, Circle } from 'react-native-maps';
+import MapView, { Circle } from 'react-native-maps';
+
+// Fix for Marker typing issue
+import { Marker as RawMarker } from 'react-native-maps';
+const Marker = RawMarker as unknown as React.FC<any>;
+
 import AlertPopup from '../components/AlertPopup';
 import BottomNavBar from '../components/BottomNavBar';
 
