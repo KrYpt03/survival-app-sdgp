@@ -83,4 +83,32 @@ export default function HomeScreen() {
     }
   }
 
+  const handleSearch = () => {
+    // Implement search functionality
+    console.log("Searching for:", searchQuery)
+  }
+
+  const handleNavigate = (screen: string) => {
+    navigation.navigate(screen as never)
+  }
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    )
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity style={styles.retryButton} onPress={fetchData}>
+          <Text style={styles.retryButtonText}>Retry</Text>
+        </TouchableOpacity>
+      </View>
+    )
+  }
+
 }
