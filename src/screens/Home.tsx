@@ -111,4 +111,24 @@ export default function HomeScreen() {
     )
   }
 
+  <ScrollView style={styles.content}>
+        {/* Current Team Card */}
+        <View style={styles.teamCard}>
+          <Text style={styles.cardTitle}>Current Team</Text>
+          <Text style={styles.dateTime}>{format(new Date(), "EEE, MMM dd h:mm a").toUpperCase()}</Text>
+          <Text style={styles.location}>{locationInfo?.name}, Finland</Text>
+          <View style={styles.teamMembers}>
+            {currentTeam.map((member, index) => (
+              <Image
+                key={member.id}
+                source={{ uri: member.avatar }}
+                style={[styles.memberAvatar, { marginLeft: index > 0 ? -10 : 0 }]}
+              />
+            ))}
+          </View>
+          <TouchableOpacity style={styles.joinButton} onPress={handleJoinTeam}>
+            <Text style={styles.joinButtonText}>JOIN</Text>
+          </TouchableOpacity>
+        </View>
+
 }
