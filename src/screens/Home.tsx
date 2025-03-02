@@ -69,4 +69,18 @@ export default function HomeScreen() {
     } finally {
       setLoading(false)
     }
-  }}
+  }
+
+  const handleJoinTeam = async () => {
+    try {
+      await axios.post(`${API_BASE_URL}/team/join`)
+      // Refresh team data after joining
+      const response = await axios.get(`${API_BASE_URL}/team`)
+      setCurrentTeam(response.data)
+    } catch (err) {
+      console.error("Error joining team:", err)
+      // Handle error (e.g., show an alert to the user)
+    }
+  }
+
+}
