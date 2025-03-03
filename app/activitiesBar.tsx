@@ -84,6 +84,26 @@ const ActivitiesBar = () => {
         </View>
       </View>
     </ScrollView>
+    
+        <View style={styles.buttonSection}>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button}>
+              <Ionicons name="home-outline" size={25} color="black" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button}>
+              <Ionicons name="search-outline" size={25} color="black" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button}>
+              <Ionicons name="compass-outline" size={25} color="black" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button}>
+              <Ionicons name="camera-outline" size={25} color="black" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button}>
+              <Ionicons name="person-outline" size={25} color="black" />
+            </TouchableOpacity>
+          </View>
+        </View> 
     </View>
     
   );
