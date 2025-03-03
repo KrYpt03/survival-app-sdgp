@@ -11,6 +11,9 @@ const Index = () => {
         alignItems: 'center',
       }}
     >
+      <Link href="/welcomeScreen">
+        <Text style={{ color: 'blue', marginTop: 20 }}>Go to Welcome Page</Text>
+      </Link>
     </View>
   );
 }

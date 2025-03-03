@@ -8,6 +8,13 @@ export default function RootLayout() {
         options={{
           headerShown: false
         }}
+      />
+      <Stack.Screen 
+        name="welcomeScreen" 
+        options={{
+          title: "Welcome",
+          headerShown: false
+        }}
       />  
     </Stack>
   );
