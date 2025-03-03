@@ -6,6 +6,7 @@ import { StatusBar } from 'expo-status-bar'
 const qrScanner = () => {
   return (
     <View>
+      <StatusBar style="inverted" />
       <View>
         <Image source={require('../assets/images/QRPageBackground.png')} style={styles.main} />
       </View>
@@ -19,5 +20,27 @@ const qrScanner = () => {
 };
 
 
+const styles = StyleSheet.create({
+  main:{
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+    top: 0,
+    left: 0,
+  },
+  overlay: {
+    position: 'absolute',
+    top: '40%', // Adjust as needed
+    left: '45%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    fontSize: 40,
+    fontWeight: 'bold',
+    color: 'white', // Adjust color as needed
+  },
+  
+});
 
 export default qrScanner
