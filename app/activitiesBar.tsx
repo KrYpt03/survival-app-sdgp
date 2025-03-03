@@ -3,11 +3,13 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'rea
 import { Ionicons, MaterialIcons } from '@expo/vector-icons'; // use MaterialIcons for Hiking ,Travel, Photography
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import AntDesign from '@expo/vector-icons/AntDesign'; // calendor icon
+import { StatusBar } from 'expo-status-bar';
 
 const ActivitiesBar = () => {
   return (
     
     <View style={styles.container}>
+      <StatusBar style="inverted" />
       <ScrollView>
       {/* Location and Date/Members */}
       <View style={styles.header}>
@@ -62,12 +64,15 @@ const ActivitiesBar = () => {
         <View style={styles.servicesGrid}>
           {/* Replace with your image components/images */}
           <View style={styles.serviceItem}>
+            <Image source={require('../assets/images/Equipments.png')} style={styles.serviceImageEquepments} />
             <Text style={styles.serviceLabel}>Equipments</Text>
           </View>
           <View style={styles.serviceItem}>
+            <Image source={require('../assets/images/Tracks.png')} style={styles.serviceImageTracks} />
             <Text style={styles.serviceLabel}>Tracks</Text>
           </View>
           <View style={styles.serviceItem}>
+            <Image source={require('../assets/images/Guide.png')} style={styles.serviceImageGuide} />
             <Text style={styles.serviceLabel}>Guide</Text>
           </View>
           <View style={styles.serviceItem}>
@@ -172,6 +177,21 @@ const styles = StyleSheet.create({
     width: '48%', // Adjust as needed
     marginBottom: 10,
     alignItems: 'center',
+  },
+  serviceImageEquepments: {
+    width: '100%',
+    height: 130, // Adjust as needed
+    borderRadius: 15,
+  },
+  serviceImageTracks: {
+    width: '100%',
+    height: 180, // Adjust as needed
+    borderRadius: 15,
+  },
+  serviceImageGuide: {
+    width: '100%',
+    height: 160, // Adjust as needed
+    borderRadius: 15,
   },
   serviceLabel: {
     marginTop: 4,
