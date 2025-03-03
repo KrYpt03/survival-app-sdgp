@@ -1,5 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons'; // use MaterialIcons for Hiking ,Travel, Photography
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import AntDesign from '@expo/vector-icons/AntDesign'; // calendor icon
 
 const ActivitiesBar = () => {
   return (
@@ -18,9 +21,11 @@ const ActivitiesBar = () => {
       </View>
       <View style={styles.info}>
         <TouchableOpacity style={styles.infoButton}>
+        <AntDesign name="calendar" size={18} color="black" />
           <Text style={styles.infoText}>5 Dec - 9 Dec</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.infoButton}>
+          <MaterialIcons name="people" size={18} color="black" />
           <Text style={styles.infoText}>Members - 10</Text>
         </TouchableOpacity>
       </View>
@@ -32,16 +37,22 @@ const ActivitiesBar = () => {
         <View style={styles.activityIcons}>
           {/* Replace with your icon components/images */}
           <View style={styles.activityIcon}>
+            <MaterialIcons style={styles.activityIconStyle} name="hiking" size={30} color="black" />
             <Text style={styles.activityLabel}>Hike</Text>
           </View>
           <View style={styles.activityIcon}>
             {/* <MaterialIcons name="tent" size={30} color="black" /> */}
+            <MaterialCommunityIcons style={styles.activityIconStyle} name="tent" size={30} color="black" />
             <Text style={styles.activityLabel}>Camping</Text>
           </View>
           <View style={styles.activityIcon}>
+            <MaterialIcons style={styles.activityIconStyle} name="directions-bus" size={30} color="black" />
             <Text style={styles.activityLabel}>Travel</Text>
+          </View>
           <View style={styles.activityIcon}>
+            <MaterialIcons style={styles.activityIconStyle} name="camera-alt" size={30} color="black" />
             <Text style={styles.activityLabel}>Photo</Text>
+          </View>
         </View>
       </View>
 
@@ -138,10 +149,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
   activityIcon: {
+    alignItems: 'center',
+    padding: 10,
+    
   },
   activityIconStyle: {
     // width: 50,
     // height: 50,
+    borderRadius: 20,
+    padding: 15,
+    backgroundColor: 'lightgray',
   },
   activityLabel: {
     marginTop: 4,
