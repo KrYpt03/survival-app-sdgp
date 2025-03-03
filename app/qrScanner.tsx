@@ -12,8 +12,10 @@ const qrScanner = () => {
       </View>
       <View style={styles.overlay}>
           <Text style={styles.text}>Scan Me</Text>
-          
-      </View>      
+      </View> 
+      <View>
+        <Image source={require('../assets/images/QRCode.png')} style={styles.overlay} />
+      </View>     
     </View>
     
   );
