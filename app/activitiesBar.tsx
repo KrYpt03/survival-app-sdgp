@@ -233,6 +233,28 @@ const styles = StyleSheet.create({
     color:'white',
   },
 
+  buttonContainer: {
+    position: "absolute",
+    bottom: 0, // Changed bottom to 0
+    left: 0, // Changed left to 0
+    right: 0, // Changed right to 0
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    backgroundColor: "#F6F0F8",
+    borderRadius: 30,
+    height: 70,
+    elevation: 5, // Android shadow
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    marginTop: 10,
+    
+  },
+  button: {
+    padding: 10,
+  },
 });
 
 export default ActivitiesBar;
