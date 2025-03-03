@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Image, SafeAreaView } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import { useNavigation } from '@react-navigation/native';
 
 const WelcomeScreen: React.FC = () => {
@@ -8,6 +9,7 @@ const WelcomeScreen: React.FC = () => {
   return (
     
     <ScrollView style={styles.container}>
+      <StatusBar style="inverted" />
       
         {/* Hero Section */}
         <View style={styles.hero}>
@@ -47,6 +49,10 @@ const WelcomeScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
 
+        {/* Footer */}
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>© {new Date().getFullYear()} TrailGuard. All rights reserved.</Text>
+        </View>
 
       
     </ScrollView>
@@ -148,6 +154,15 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  footer: {
+    paddingVertical: 20,
+    alignItems: 'center',
+    backgroundColor: '#f8f8f8',
+  },
+  footerText: {
+    fontSize: 14,
+    color: '#888',
   },
 });
 
