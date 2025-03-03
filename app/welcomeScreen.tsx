@@ -7,6 +7,7 @@ const WelcomeScreen: React.FC = () => {
 
   return (
     
+    <ScrollView style={styles.container}>
       
         {/* Hero Section */}
         <View style={styles.hero}>
@@ -41,10 +42,14 @@ const WelcomeScreen: React.FC = () => {
         {/* Call to Action Section */}
         <View style={styles.cta}>
           <Text style={styles.ctaTitle}>Ready to Experience It?</Text>
+          <TouchableOpacity style={styles.ctaButton}>
+            <Text style={styles.ctaButtonText}>Continue → </Text>
+          </TouchableOpacity>
         </View>
 
 
       
+    </ScrollView>
     
   );
 };
@@ -132,6 +137,17 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+  },
+  ctaButton: {
+    backgroundColor: '#28a745',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 5,
+  },
+  ctaButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 
