@@ -13,7 +13,7 @@ const navigationItems = [
     },
     {
         icon: require("../../assets/profile/bd137700-8dc1-48fb-92c2-08643c077010.png"),
-        screen: "Explore",
+        screen: "GroupTrackingScreen",
     },
     {
         icon: require("../../assets/profile/0415227a-9b94-4632-a21b-4c46d2f8432c.png"),

@@ -13,6 +13,7 @@ import {
   Dimensions,
 } from "react-native"
 import { profileAPI, type Profile } from "../api/profile"
+import NavigationBar from "../components/NavigationBar"
 
 const { width, height } = Dimensions.get("window")
 
@@ -123,15 +124,7 @@ export default function ProfileScreen() {
         {/* Add extra padding at the bottom to ensure all content is scrollable above the navigation bar */}
         <View style={styles.bottomPadding} />
       </ScrollView>
-
-      {/* Fixed Navigation Bar */}
-      <View style={styles.navigationBar}>
-        {navigationItems.map((item, index) => (
-          <TouchableOpacity key={index} onPress={item.onPress}>
-            <ImageBackground source={item.icon} style={styles.navIcon} resizeMode="cover" />
-          </TouchableOpacity>
-        ))}
-      </View>
+      <NavigationBar />
     </SafeAreaView>
   )
 }
@@ -316,26 +309,4 @@ const menuItems = [
   },
 ]
 
-const navigationItems = [
-  {
-    icon: require("../../assets/profile/4757d4cc-108a-4570-8e32-ac0514f1c5b2.png"),
-    onPress: () => {},
-  },
-  {
-    icon: require("../../assets/profile/0d19fe1c-1a37-4dc8-a582-9441af5ef8c5.png"),
-    onPress: () => {},
-  },
-  {
-    icon: require("../../assets/profile/bd137700-8dc1-48fb-92c2-08643c077010.png"),
-    onPress: () => {},
-  },
-  {
-    icon: require("../../assets/profile/0415227a-9b94-4632-a21b-4c46d2f8432c.png"),
-    onPress: () => {},
-  },
-  {
-    icon: require("../../assets/profile/46f352d9-70f6-4c9e-886c-768bcf1746b8.png"),
-    onPress: () => {},
-  },
-]
 
