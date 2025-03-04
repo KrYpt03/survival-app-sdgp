@@ -17,7 +17,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 const PLANT_ID_API_KEY = process.env.API_KEY;
 
 if (!PLANT_ID_API_KEY) {
-  console.error("API key is missing! Make sure you have set it in the .env file.");
+  console.error("API key is missing!");
   process.exit(1); 
 }
 
@@ -63,7 +63,7 @@ app.post('/identify', upload.single('plantImage'), async (req, res) => {
     const name = bestSuggestion?.name || 'Unknown plant';
     const probability = bestSuggestion?.probability || 0;
 
-    // Check if 'details' exist in bestSuggestion
+    // Check if details exist in bestSuggestion
     const details = bestSuggestion.details || {};
     const description = details.description || "No description available";
     const edible_parts = details.edible_parts || [];
