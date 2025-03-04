@@ -12,11 +12,11 @@ import {
   ScrollView,
   Dimensions,
   ActivityIndicator,
-  ImageBackground,
 } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import { format } from "date-fns"
-import axios from "axios" // Make sure to install axios: npm install axios
+import axios from "axios"
+import NavigationBar from "../components/NavigationBar"
 
 const { width, height } = Dimensions.get("window")
 
@@ -34,7 +34,7 @@ interface LocationInfo {
   mapImage: string
 }
 
-const API_BASE_URL = "https://your-api-base-url.com" // Replace with your actual API base URL
+const API_BASE_URL = "https://your-api-base-url.com"
 
 export default function HomeScreen() {
   const navigation = useNavigation()
@@ -88,10 +88,6 @@ export default function HomeScreen() {
     console.log("Searching for:", searchQuery)
   }
 
-  const handleNavigate = (screen: string) => {
-    navigation.navigate(screen as never)
-  }
-
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -115,7 +111,10 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => {}}>
-          <Image source={require("../../assets/profile/742ef63e-eb0e-4b6d-ac71-268c589ac9eb.png")} style={styles.menuIcon} />
+          <Image
+            source={require("../../assets/profile/742ef63e-eb0e-4b6d-ac71-268c589ac9eb.png")}
+            style={styles.menuIcon}
+          />
         </TouchableOpacity>
         <View style={styles.searchBar}>
           <TextInput
@@ -126,11 +125,17 @@ export default function HomeScreen() {
             onSubmitEditing={handleSearch}
           />
           <TouchableOpacity onPress={handleSearch}>
-            <Image source={require("../../assets/profile/0d19fe1c-1a37-4dc8-a582-9441af5ef8c5.png")} style={styles.searchIcon} />
+            <Image
+              source={require("../../assets/profile/0d19fe1c-1a37-4dc8-a582-9441af5ef8c5.png")}
+              style={styles.searchIcon}
+            />
           </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={() => handleNavigate("Profile")}>
-          <Image source={require("../../assets/profile/9a893182-d17f-4cd1-92be-e15f7bc7d227.png")} style={styles.profilePic} />
+        <TouchableOpacity onPress={() => navigation.navigate("Profile" as never)}>
+          <Image
+            source={require("../../assets/profile/9a893182-d17f-4cd1-92be-e15f7bc7d227.png")}
+            style={styles.profilePic}
+          />
         </TouchableOpacity>
       </View>
 
@@ -163,7 +168,7 @@ export default function HomeScreen() {
               <Text style={styles.locationDescription}>{locationInfo.description}</Text>
               <View style={styles.temperatureContainer}>
                 <Text style={styles.temperature}>{locationInfo.temperature}°</Text>
-                <Image source={require("../../assets/weather-icon.png")} style={styles.weatherIcon} />
+                <Image source={require("../../assets/profile/bd137700-8dc1-48fb-92c2-08643c077010.png")} style={styles.weatherIcon} />
               </View>
             </View>
             <Image source={{ uri: locationInfo.mapImage }} style={styles.mapImage} />
@@ -181,40 +186,10 @@ export default function HomeScreen() {
         )}
       </ScrollView>
 
-      {/* Fixed Navigation Bar */}
-      <View style={styles.navigationBar}>
-        {navigationItems.map((item, index) => (
-          <TouchableOpacity key={index} onPress={item.onPress}>
-            <ImageBackground source={item.icon} style={styles.navIcon} resizeMode="cover" />
-          </TouchableOpacity>
-        ))}
-      </View>
+      <NavigationBar />
     </SafeAreaView>
   )
 }
-
-const navigationItems = [
-  {
-    icon: require("../../assets/profile/4757d4cc-108a-4570-8e32-ac0514f1c5b2.png"),
-    onPress: () => handleNavigate("Home"),
-  },
-  {
-    icon: require("../../assets/profile/0d19fe1c-1a37-4dc8-a582-9441af5ef8c5.png"),
-    onPress: () => handleNavigate("Search"),
-  },
-  {
-    icon: require("../../assets/profile/bd137700-8dc1-48fb-92c2-08643c077010.png"),
-    onPress: () => handleNavigate("Explore"),
-  },
-  {
-    icon: require("../../assets/profile/0415227a-9b94-4632-a21b-4c46d2f8432c.png"),
-    onPress: () => handleNavigate("Inbox"),
-  },
-  {
-    icon: require("../../assets/profile/46f352d9-70f6-4c9e-886c-768bcf1746b8.png"),
-    onPress: () => handleNavigate("Profile"),
-  },
-]
 
 const styles = StyleSheet.create({
   container: {
@@ -358,23 +333,6 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontWeight: "bold",
   },
-  navigationBar: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    backgroundColor: "#f3edf7",
-    borderRadius: 25,
-    margin: 16,
-    padding: 16,
-    position: "absolute",
-    bottom: 20,
-    left: 20,
-    right: 20,
-  },
-  navIcon: {
-    width: 24,
-    height: 24,
-  },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
@@ -400,8 +358,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 })
-
-function handleNavigate(arg0: string) {
-    throw new Error("Function not implemented.")
-}
 
