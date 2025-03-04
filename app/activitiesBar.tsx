@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons'; // use MaterialIcons for Hiking ,Travel, Photography
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -6,106 +6,121 @@ import AntDesign from '@expo/vector-icons/AntDesign'; // calendor icon
 import { StatusBar } from 'expo-status-bar';
 
 const ActivitiesBar = () => {
+  const [dateRange, setDateRange] = useState('');
+
+  useEffect(() => {
+    const generateDateRange = () => {
+      const startDate = new Date();
+      const endDate = new Date();
+      endDate.setDate(startDate.getDate() + 4); // 5 days range
+
+      const options = { day: 'numeric', month: 'short' };
+      const start = startDate.toLocaleDateString('en-US', options);
+      const end = endDate.toLocaleDateString('en-US', options);
+
+      return `${start} - ${end}`;
+    };
+
+    setDateRange(generateDateRange());
+  }, []);
+
   return (
-    
     <View style={styles.container}>
       <StatusBar style="inverted" />
       <ScrollView>
-      {/* Location and Date/Members */}
-      <View style={styles.header}>
-        <View style={styles.location}>
-          <View style={styles.dot} />
-          <View>
-            <Text style={styles.locationText}> Suomenlinna, </Text>
-            <Text style={styles.locationText}> Finland</Text>
-          </View>
-        </View>
-      </View>
-      <View style={styles.info}>
-        <TouchableOpacity style={styles.infoButton}>
-        <AntDesign name="calendar" size={18} color="black" />
-          <Text style={styles.infoText}>5 Dec - 9 Dec</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.infoButton}>
-          <MaterialIcons name="people" size={18} color="black" />
-          <Text style={styles.infoText}>Members - 10</Text>
-        </TouchableOpacity>
-      </View>
-        
-
-      {/* Activity Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Activity</Text>
-        <View style={styles.activityIcons}>
-          {/* Replace with your icon components/images */}
-          <View style={styles.activityIcon}>
-            <MaterialIcons style={styles.activityIconStyle} name="hiking" size={30} color="black" />
-            <Text style={styles.activityLabel}>Hike</Text>
-          </View>
-          <View style={styles.activityIcon}>
-            {/* <MaterialIcons name="tent" size={30} color="black" /> */}
-            <MaterialCommunityIcons style={styles.activityIconStyle} name="tent" size={30} color="black" />
-            <Text style={styles.activityLabel}>Camping</Text>
-          </View>
-          <View style={styles.activityIcon}>
-            <MaterialIcons style={styles.activityIconStyle} name="directions-bus" size={30} color="black" />
-            <Text style={styles.activityLabel}>Travel</Text>
-          </View>
-          <View style={styles.activityIcon}>
-            <MaterialIcons style={styles.activityIconStyle} name="camera-alt" size={30} color="black" />
-            <Text style={styles.activityLabel}>Photo</Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Services Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Services</Text>
-        <View style={styles.servicesGrid}>
-          {/* Replace with your image components/images */}
-          <View style={styles.serviceItem}>
-            <Image source={require('../assets/images/Equipments.png')} style={styles.serviceImageEquepments} />
-            <Text style={styles.serviceLabel}>Equipments</Text>
-          </View>
-          <View style={styles.serviceItem}>
-            <Image source={require('../assets/images/Tracks.png')} style={styles.serviceImageTracks} />
-            <Text style={styles.serviceLabel}>Tracks</Text>
-          </View>
-          <View style={styles.serviceItem}>
-            <Image source={require('../assets/images/Guide.png')} style={styles.serviceImageGuide} />
-            <Text style={styles.serviceLabel}>Guide</Text>
-          </View>
-          <View style={styles.serviceItem}>
-            <View style={styles.weatherContainer}>
-              <Text style={styles.weatherTemp}>25°</Text>
-              <Text style={styles.weatherLabel}>Weather</Text>
+        {/* Location and Date/Members */}
+        <View style={styles.header}>
+          <View style={styles.location}>
+            <View style={styles.dot} />
+            <View>
+              <Text style={styles.locationText}> Suomenlinna, </Text>
+              <Text style={styles.locationText}> Finland</Text>
             </View>
           </View>
         </View>
-      </View>
-    </ScrollView>
-    
-        <View style={styles.buttonSection}>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button}>
-              <Ionicons name="home-outline" size={25} color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button}>
-              <Ionicons name="search-outline" size={25} color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button}>
-              <Ionicons name="compass-outline" size={25} color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button}>
-              <Ionicons name="camera-outline" size={25} color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button}>
-              <Ionicons name="person-outline" size={25} color="black" />
-            </TouchableOpacity>
+        <View style={styles.info}>
+          <TouchableOpacity style={styles.infoButton}>
+            <AntDesign name="calendar" size={18} color="black" />
+            <Text style={styles.infoText}>{dateRange}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.infoButton}>
+            <MaterialIcons name="people" size={18} color="black" />
+            <Text style={styles.infoText}>Members - 10</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Activity Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Activity</Text>
+          <View style={styles.activityIcons}>
+            {/* Replace with your icon components/images */}
+            <View style={styles.activityIcon}>
+              <MaterialIcons style={styles.activityIconStyle} name="hiking" size={30} color="black" />
+              <Text style={styles.activityLabel}>Hike</Text>
+            </View>
+            <View style={styles.activityIcon}>
+              {/* <MaterialIcons name="tent" size={30} color="black" /> */}
+              <MaterialCommunityIcons style={styles.activityIconStyle} name="tent" size={30} color="black" />
+              <Text style={styles.activityLabel}>Camping</Text>
+            </View>
+            <View style={styles.activityIcon}>
+              <MaterialIcons style={styles.activityIconStyle} name="directions-bus" size={30} color="black" />
+              <Text style={styles.activityLabel}>Travel</Text>
+            </View>
+            <View style={styles.activityIcon}>
+              <MaterialIcons style={styles.activityIconStyle} name="camera-alt" size={30} color="black" />
+              <Text style={styles.activityLabel}>Photo</Text>
+            </View>
           </View>
-        </View> 
+        </View>
+
+        {/* Services Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Services</Text>
+          <View style={styles.servicesGrid}>
+            {/* Replace with your image components/images */}
+            <View style={styles.serviceItem}>
+              <Image source={require('../assets/images/Equipments.png')} style={styles.serviceImageEquepments} />
+              <Text style={styles.serviceLabel}>Equipments</Text>
+            </View>
+            <View style={styles.serviceItem}>
+              <Image source={require('../assets/images/Tracks.png')} style={styles.serviceImageTracks} />
+              <Text style={styles.serviceLabel}>Tracks</Text>
+            </View>
+            <View style={styles.serviceItem}>
+              <Image source={require('../assets/images/Guide.png')} style={styles.serviceImageGuide} />
+              <Text style={styles.serviceLabel}>Guide</Text>
+            </View>
+            <View style={styles.serviceItem}>
+              <View style={styles.weatherContainer}>
+                <Text style={styles.weatherTemp}>25°</Text>
+                <Text style={styles.weatherLabel}>Weather</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
+
+      <View style={styles.buttonSection}>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button}>
+            <Ionicons name="home-outline" size={25} color="black" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button}>
+            <Ionicons name="search-outline" size={25} color="black" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button}>
+            <Ionicons name="compass-outline" size={25} color="black" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button}>
+            <Ionicons name="camera-outline" size={25} color="black" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button}>
+            <Ionicons name="person-outline" size={25} color="black" />
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
-    
   );
 };
 
@@ -176,7 +191,6 @@ const styles = StyleSheet.create({
   activityIcon: {
     alignItems: 'center',
     padding: 10,
-    
   },
   activityIconStyle: {
     // width: 50,
@@ -232,7 +246,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
     color:'white',
   },
-
   buttonContainer: {
     position: "absolute",
     bottom: 0, // Changed bottom to 0
@@ -250,7 +263,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     marginTop: 10,
-    
   },
   button: {
     padding: 10,
