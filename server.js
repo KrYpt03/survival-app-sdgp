@@ -12,3 +12,13 @@ const KINDWISE_URL = "https://plant.id/api/v3/identification";
 
 app.use(cors()); // Enable cross-origin requests
 
+// Configure Multer for image uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+      cb(null, "uploads/"); // Save images to 'uploads' folder
+  },
+  filename: (req, file, cb) => {
+      cb(null, Date.now() + "-" + file.originalname);
+  }
+});
+const upload = multer({ storage });
