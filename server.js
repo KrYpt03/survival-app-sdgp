@@ -22,3 +22,22 @@ const storage = multer.diskStorage({
   }
 });
 const upload = multer({ storage });
+
+//POST Endpoint to Identify a Plant
+app.post("/identify", upload.single("image"), async (req, res) => {
+  try {
+      if (!req.file) return res.status(400).json({ error: "Image file is required" });
+
+      const imageBase64 = fs.readFileSync(req.file.path, { encoding: "base64" });
+
+      // Define API URL
+      const API_URL = "https://plant.id/api/v3/identification";
+
+      // Prepare request payload
+      const requestData = {
+          images: [imageBase64],
+          classification_level: "species",
+          similar_images: true,
+          health: "auto"
+      };
+    }});
