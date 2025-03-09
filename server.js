@@ -54,6 +54,13 @@ if (!response.data.access_token) {
 }
 const accessToken = response.data.access_token;
 
+ //Fetch Complete Details Using `access_token`**
+ const detailsUrl = `https://plant.id/api/v3/identification/${accessToken}?details=common_names,url,description,taxonomy,rank,gbif_id,inaturalist_id,image,synonyms,edible_parts,watering,propagation_methods&language=en`;
+
+ const fullDetailsResponse = await axios.get(detailsUrl, {
+     headers: { "Api-Key": KINDWISE_API_KEY }
+ });
+
 
 } catch (error) {
   console.error("API Error:", error.response ? error.response.data : error.message);
