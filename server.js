@@ -61,6 +61,25 @@ const accessToken = response.data.access_token;
      headers: { "Api-Key": KINDWISE_API_KEY }
  });
 
+ // Extract details from the response
+ let result = { message: "No plant found" };
+ if (fullDetailsResponse.data.result && fullDetailsResponse.data.result.classification) {
+     const bestMatch = fullDetailsResponse.data.result.classification.suggestions[0];
+
+     result = {
+         scientific_name: bestMatch.name || "Unknown",
+         common_names: bestMatch.details?.common_names || ["Not available"],
+         edible_parts: bestMatch.details?.edible_parts || ["Not available"],
+         description: bestMatch.details?.description || "No description available",
+         image_url: bestMatch.details?.image || "No image available",
+         watering: bestMatch.details?.watering || "No watering info",
+         propagation_methods: bestMatch.details?.propagation_methods || "No propagation info",
+         confidence: bestMatch.probability ? (bestMatch.probability * 100).toFixed(2) + "%" : "N/A"
+     };
+ }
+
+ res.json(result);
+
 
 } catch (error) {
   console.error("API Error:", error.response ? error.response.data : error.message);
@@ -71,7 +90,7 @@ const accessToken = response.data.access_token;
 
 
 
-// ✅ Start the Server
+// Start the Server
 app.listen(port, () => {
 console.log(`✅ Server running on port ${port}`);
 });
