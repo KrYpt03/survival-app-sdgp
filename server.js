@@ -40,4 +40,31 @@ app.post("/identify", upload.single("image"), async (req, res) => {
           similar_images: true,
           health: "auto"
       };
-    }});
+
+// Send request to Kindwise API
+const response = await axios.post(API_URL, requestData, {
+  headers: {
+      "Content-Type": "application/json",
+      "Api-Key": KINDWISE_API_KEY
+  }
+});
+
+if (!response.data.access_token) {
+  return res.status(500).json({ error: "No access_token received from API" });
+}
+const accessToken = response.data.access_token;
+
+
+} catch (error) {
+  console.error("API Error:", error.response ? error.response.data : error.message);
+  res.status(500).json({ error: error.response ? error.response.data : "Unknown error" });
+}
+});
+  
+
+
+
+// ✅ Start the Server
+app.listen(port, () => {
+console.log(`✅ Server running on port ${port}`);
+});
