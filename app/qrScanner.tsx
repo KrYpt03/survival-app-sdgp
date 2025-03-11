@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: '40%', // Adjust as needed
     left: '45%',
+    transform: [{ translateX: -50 }, { translateY: -50 }],
     justifyContent: 'center',
     alignItems: 'center',
   },

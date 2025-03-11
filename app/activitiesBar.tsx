@@ -1,28 +1,58 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons'; // use MaterialIcons for Hiking ,Travel, Photography
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import AntDesign from '@expo/vector-icons/AntDesign'; // calendor icon
 import { StatusBar } from 'expo-status-bar';
+import { Link } from 'expo-router';
+import { format } from 'date-fns';
+
+import * as Location from 'expo-location';
 
 const ActivitiesBar = () => {
-  const [dateRange, setDateRange] = useState('');
+
+  const [currentDate, setCurrentDate] = useState<string | null>(null);
+  const [location, setLocation] = useState<{ latitude: number, longitude: number } | null>(null);
+  const [locationText, setLocationText] = useState<string | null>(null); // To store the city and country
+  const [locationError, setLocationError] = useState<string | null>(null); // For error handling
 
   useEffect(() => {
-    const generateDateRange = () => {
-      const startDate = new Date();
-      const endDate = new Date();
-      endDate.setDate(startDate.getDate() + 4); // 5 days range
+    const today = new Date();
+    const formattedDate = format(today, 'eeee dd'); // Format as 'Sunday 09'
+    setCurrentDate(formattedDate);
 
-      const options = { day: 'numeric', month: 'short' };
-      const start = startDate.toLocaleDateString('en-US', options);
-      const end = endDate.toLocaleDateString('en-US', options);
+  // Request location permissions and get the current location
+  const getLocation = async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      setLocationError('Permission to access location was denied');
+      return;
+    }
 
-      return `${start} - ${end}`;
-    };
+    // Get current location
+    const currentLocation = await Location.getCurrentPositionAsync({});
+    setLocation(currentLocation.coords);
 
-    setDateRange(generateDateRange());
-  }, []);
+    // Reverse geocoding to get city and country
+    const locationData = await Location.reverseGeocodeAsync({
+      latitude: currentLocation.coords.latitude,
+      longitude: currentLocation.coords.longitude,
+    });
+
+    if (locationData.length > 0) {
+      const { city, country } = locationData[0];
+      setLocationText(`${city},\n${country}`);
+      
+    } else {
+      setLocationText('Location not found');
+    }
+  };
+
+  getLocation(); // Call the function to get the location
+}, []);
+
+
+
 
   return (
     <View style={styles.container}>
@@ -33,15 +63,19 @@ const ActivitiesBar = () => {
           <View style={styles.location}>
             <View style={styles.dot} />
             <View>
-              <Text style={styles.locationText}> Suomenlinna, </Text>
-              <Text style={styles.locationText}> Finland</Text>
+              {/* Displaying the current location */}
+              {locationText ? (
+                <Text style={styles.locationText}>{locationText}</Text>
+              ) : (
+                <Text style={styles.locationText}>Location: Loading...</Text>
+              )}
             </View>
           </View>
         </View>
         <View style={styles.info}>
           <TouchableOpacity style={styles.infoButton}>
             <AntDesign name="calendar" size={18} color="black" />
-            <Text style={styles.infoText}>{dateRange}</Text>
+            <Text style={styles.infoText}>{currentDate || "Loading..."}</Text> 
           </TouchableOpacity>
           <TouchableOpacity style={styles.infoButton}>
             <MaterialIcons name="people" size={18} color="black" />
@@ -103,18 +137,26 @@ const ActivitiesBar = () => {
 
       <View style={styles.buttonSection}>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button}>
-            <Ionicons name="home-outline" size={25} color="black" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button}>
-            <Ionicons name="search-outline" size={25} color="black" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button}>
-            <Ionicons name="compass-outline" size={25} color="black" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button}>
-            <Ionicons name="camera-outline" size={25} color="black" />
-          </TouchableOpacity>
+          <Link href="/welcomeScreen" asChild>
+            <TouchableOpacity style={styles.button}>
+              <Ionicons name="home-outline" size={25} color="black" />
+            </TouchableOpacity>
+          </Link>
+          <Link href="/activitiesBar" asChild>
+            <TouchableOpacity style={styles.button}>
+              <Ionicons name="search-outline" size={25} color="black" />
+            </TouchableOpacity>
+          </Link>
+          <Link href="/activitiesBar" asChild>
+            <TouchableOpacity style={styles.button}>
+              <Ionicons name="compass-outline" size={25} color="black" />
+            </TouchableOpacity>
+          </Link>
+          <Link href="/imageScanner" asChild>
+            <TouchableOpacity style={styles.button}>
+              <Ionicons name="camera-outline" size={25} color="black" />
+            </TouchableOpacity>
+          </Link>
           <TouchableOpacity style={styles.button}>
             <Ionicons name="person-outline" size={25} color="black" />
           </TouchableOpacity>
@@ -191,6 +233,7 @@ const styles = StyleSheet.create({
   activityIcon: {
     alignItems: 'center',
     padding: 10,
+    
   },
   activityIconStyle: {
     // width: 50,
@@ -246,6 +289,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
     color:'white',
   },
+
   buttonContainer: {
     position: "absolute",
     bottom: 0, // Changed bottom to 0
@@ -263,6 +307,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     marginTop: 10,
+    
   },
   button: {
     padding: 10,
@@ -270,3 +315,4 @@ const styles = StyleSheet.create({
 });
 
 export default ActivitiesBar;
+
