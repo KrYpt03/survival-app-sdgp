@@ -89,5 +89,5 @@ const accessToken = response.data.access_token;
 
 // Start the Server
 app.listen(port, () => {
-console.log(`✅ Server running on port ${port}`);
+console.log(` Server running on port ${port}`);
 });
