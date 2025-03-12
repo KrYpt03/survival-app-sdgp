@@ -7,7 +7,7 @@ const cors = require("cors"); // For enabling Cross Origin Resource Sharing
 
 const app = express();
 const port = process.env.PORT || 5000;
-const KINDWISE_API_KEY ="AM0WS9LPsq4eT5Z8KHn85c0uVhHH3BtfHtLH7BYbHGrAJ0Dojd" ;
+const KINDWISE_API_KEY =process.env.API_KEY; ;
 const KINDWISE_URL = "https://plant.id/api/v3/identification";
 
 app.use(cors()); // Enable cross-origin requests
@@ -71,9 +71,6 @@ const accessToken = response.data.access_token;
          common_names: bestMatch.details?.common_names || ["Not available"],
          edible_parts: bestMatch.details?.edible_parts || ["Not available"],
          description: bestMatch.details?.description || "No description available",
-         image_url: bestMatch.details?.image || "No image available",
-         watering: bestMatch.details?.watering || "No watering info",
-         propagation_methods: bestMatch.details?.propagation_methods || "No propagation info",
          confidence: bestMatch.probability ? (bestMatch.probability * 100).toFixed(2) + "%" : "N/A"
      };
  }
