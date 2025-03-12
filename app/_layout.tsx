@@ -48,6 +48,20 @@ export default function RootLayout() {
           headerShown: false
         }}
       />
+      <Stack.Screen 
+        name="Profile" 
+        options={{
+          title: "Active",
+          headerShown: false
+        }}
+      />
+      <Stack.Screen 
+        name="HomeScreen" 
+        options={{
+          title: "Active",
+          headerShown: false
+        }}
+      />
       
     </Stack>
   );
