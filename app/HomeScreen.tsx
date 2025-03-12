@@ -15,7 +15,6 @@ import {
 } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import { format } from "date-fns"
-import axios from "axios"
 import NavigationBar from "../components/NavigationBar"
 import React from "react"
 
@@ -35,7 +34,33 @@ interface LocationInfo {
   mapImage: string
 }
 
-const API_BASE_URL = "https://your-api-base-url.com"
+// Mock data instead of API calls
+const MOCK_TEAM_DATA: TeamMember[] = [
+  {
+    id: "1",
+    name: "John Doe",
+    avatar: "https://randomuser.me/api/portraits/men/1.jpg",
+  },
+  {
+    id: "2",
+    name: "Jane Smith",
+    avatar: "https://randomuser.me/api/portraits/women/2.jpg",
+  },
+  {
+    id: "3",
+    name: "Mike Johnson",
+    avatar: "https://randomuser.me/api/portraits/men/3.jpg",
+  },
+]
+
+const MOCK_LOCATION_DATA: LocationInfo = {
+  name: "Nuuksio",
+  description: "Beautiful national park with lakes and forests",
+  temperature: 22,
+  image: "https://images.unsplash.com/photo-1552083375-1447ce886485?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+  mapImage:
+    "https://maps.googleapis.com/maps/api/staticmap?center=Nuuksio,Finland&zoom=12&size=400x200&key=YOUR_API_KEY",
+}
 
 export default function HomeScreen() {
   const navigation = useNavigation()
@@ -53,20 +78,15 @@ export default function HomeScreen() {
     setLoading(true)
     setError("")
     try {
-      const [teamResponse, locationResponse] = await Promise.all([
-        axios.get(`${API_BASE_URL}/team`),
-        axios.get(`${API_BASE_URL}/location`),
-      ])
+      // Simulate API delay
+      await new Promise((resolve) => setTimeout(resolve, 1000))
 
-      setCurrentTeam(teamResponse.data)
-      setLocationInfo(locationResponse.data)
+      // Use mock data instead of API calls
+      setCurrentTeam(MOCK_TEAM_DATA)
+      setLocationInfo(MOCK_LOCATION_DATA)
     } catch (err) {
       console.error("Error fetching data:", err)
-      if (axios.isAxiosError(err)) {
-        setError(`Network error: ${err.message}`)
-      } else {
-        setError("An unexpected error occurred")
-      }
+      setError("An unexpected error occurred")
     } finally {
       setLoading(false)
     }
@@ -74,10 +94,17 @@ export default function HomeScreen() {
 
   const handleJoinTeam = async () => {
     try {
-      await axios.post(`${API_BASE_URL}/team/join`)
-      // Refresh team data after joining
-      const response = await axios.get(`${API_BASE_URL}/team`)
-      setCurrentTeam(response.data)
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 500))
+
+      // Add a new team member
+      const newMember = {
+        id: "4",
+        name: "You",
+        avatar: "https://randomuser.me/api/portraits/men/4.jpg",
+      }
+
+      setCurrentTeam([...currentTeam, newMember])
     } catch (err) {
       console.error("Error joining team:", err)
       // Handle error (e.g., show an alert to the user)
@@ -112,10 +139,7 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => {}}>
-          <Image
-            source={require("../assets/images/profile/742ef63e-eb0e-4b6d-ac71-268c589ac9eb.png")}
-            style={styles.menuIcon}
-          />
+          <Image source={require("../assets/arrow-small-left.png")} style={styles.menuIcon} />
         </TouchableOpacity>
         <View style={styles.searchBar}>
           <TextInput
@@ -126,17 +150,11 @@ export default function HomeScreen() {
             onSubmitEditing={handleSearch}
           />
           <TouchableOpacity onPress={handleSearch}>
-            <Image
-              source={require("../assets/images/profile/0d19fe1c-1a37-4dc8-a582-9441af5ef8c5.png")}
-              style={styles.searchIcon}
-            />
+            <Image source={require("../assets/arrow-small-left.png")} style={styles.searchIcon} />
           </TouchableOpacity>
         </View>
         <TouchableOpacity onPress={() => navigation.navigate("Profile" as never)}>
-          <Image
-            source={require("../assets/images/profile/9a893182-d17f-4cd1-92be-e15f7bc7d227.png")}
-            style={styles.profilePic}
-          />
+          <Image source={require("../assets/settings.png")} style={styles.profilePic} />
         </TouchableOpacity>
       </View>
 
@@ -148,11 +166,9 @@ export default function HomeScreen() {
           <Text style={styles.location}>{locationInfo?.name}, Finland</Text>
           <View style={styles.teamMembers}>
             {currentTeam.map((member, index) => (
-              <Image
-                key={member.id}
-                source={{ uri: member.avatar }}
-                style={[styles.memberAvatar, { marginLeft: index > 0 ? -10 : 0 }]}
-              />
+              <View key={member.id} style={[styles.memberAvatarContainer, { marginLeft: index > 0 ? -10 : 0 }]}>
+                <Image source={{ uri: member.avatar }} style={styles.memberAvatar} />
+              </View>
             ))}
           </View>
           <TouchableOpacity style={styles.joinButton} onPress={handleJoinTeam}>
@@ -169,17 +185,18 @@ export default function HomeScreen() {
               <Text style={styles.locationDescription}>{locationInfo.description}</Text>
               <View style={styles.temperatureContainer}>
                 <Text style={styles.temperature}>{locationInfo.temperature}°</Text>
-                <Image source={require("../assets/images/profile/bd137700-8dc1-48fb-92c2-08643c077010.png")} style={styles.weatherIcon} />
+                <Image source={require("../assets/arrow-small-left.png")} style={styles.weatherIcon} />
               </View>
             </View>
             <Image source={{ uri: locationInfo.mapImage }} style={styles.mapImage} />
             <View style={styles.teamIndicator}>
               {currentTeam.slice(0, 3).map((member, index) => (
-                <Image
+                <View
                   key={member.id}
-                  source={{ uri: member.avatar }}
-                  style={[styles.teamIndicatorAvatar, { marginLeft: index > 0 ? -10 : 0 }]}
-                />
+                  style={[styles.teamIndicatorAvatarContainer, { marginLeft: index > 0 ? -10 : 0 }]}
+                >
+                  <Image source={{ uri: member.avatar }} style={styles.teamIndicatorAvatar} />
+                </View>
               ))}
               {currentTeam.length > 3 && <Text style={styles.teamIndicatorCount}>+{currentTeam.length - 3}</Text>}
             </View>
@@ -257,12 +274,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginBottom: 16,
   },
-  memberAvatar: {
+  memberAvatarContainer: {
     width: 30,
     height: 30,
     borderRadius: 15,
     borderWidth: 2,
     borderColor: "#FFFFFF",
+    overflow: "hidden",
+  },
+  memberAvatar: {
+    width: "100%",
+    height: "100%",
   },
   joinButton: {
     backgroundColor: "#4CAF50",
@@ -322,12 +344,17 @@ const styles = StyleSheet.create({
     bottom: 16,
     left: 16,
   },
-  teamIndicatorAvatar: {
+  teamIndicatorAvatarContainer: {
     width: 24,
     height: 24,
     borderRadius: 12,
     borderWidth: 2,
     borderColor: "#FFFFFF",
+    overflow: "hidden",
+  },
+  teamIndicatorAvatar: {
+    width: "100%",
+    height: "100%",
   },
   teamIndicatorCount: {
     marginLeft: 4,
