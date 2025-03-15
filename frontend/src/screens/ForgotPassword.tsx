@@ -15,21 +15,53 @@ import {
 } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 
+import { useSignIn } from "@clerk/clerk-react";
 const { width, height } = Dimensions.get("window")
 
 export default function ForgotPasswordScreen() {
   const navigation = useNavigation()
+  const {signIn, isLoaded} = useSignIn();
   const [email, setEmail] = useState("")
 
-  const handleResetPassword = () => {
+  //clerk reset password function
+  const handleResetPassword = async () => {
+    if (!isLoaded) return;
+  
     if (!email) {
-      Alert.alert("Error", "Please enter your email address")
-      return
+      Alert.alert("Error", "Please enter your email address");
+      return;
     }
-    // Here you would typically call your password reset API
-    console.log("Password reset requested for:", email)
-    Alert.alert("Success", "Password reset instructions have been sent to your email")
-  }
+  
+    try {
+      // Create password reset session
+      const signInAttempt = await signIn.create({ identifier: email });
+  
+      //Extract `emailAddressId`
+      const emailAddressId = signInAttempt.supportedFirstFactors.find(
+        (factor) => factor.strategy === "reset_password_email_code"
+      )?.emailAddressId;
+  
+      if (!emailAddressId) {
+        throw new Error("Could not retrieve email address ID.");
+      }
+  
+      //Send the reset code via email
+      await signIn.prepareFirstFactor({
+        strategy: "reset_password_email_code",
+        emailAddressId: emailAddressId,
+      });
+  
+      Alert.alert("Success", "Check your email for a reset code.");
+    } catch (err: any) {
+      Alert.alert("Error", err.errors ? err.errors[0].message : "Password reset failed");
+    }
+  };
+  
+  
+  
+  
+  
+  
 
   return (
     <SafeAreaView style={styles.container}>
