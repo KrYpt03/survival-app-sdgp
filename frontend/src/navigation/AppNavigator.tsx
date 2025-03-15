@@ -10,6 +10,7 @@ import Profile from '../screens/Profile';
 import GroupTrackingScreen from '../screens/GroupTrackingScreen';
 import Home from '../screens/Home';
 import VerifyEmailScreen from '../screens/VerifyEmail';
+import ResetPasswordScreen from "../screens/ResetPassword";
 
 const Stack = createStackNavigator();
 
@@ -24,6 +25,7 @@ export default function AppNavigator() {
         <Stack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }} />
         <Stack.Screen name="VerifyEmail" component={VerifyEmailScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{ headerShown: false }} />
+        <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} options={{ headerShown: false }} /> 
         </Stack.Navigator>
       </SignedOut>
 

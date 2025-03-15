@@ -52,9 +52,11 @@ export default function ForgotPasswordScreen() {
       });
   
       Alert.alert("Success", "Check your email for a reset code.");
+      navigation.navigate("ResetPassword" as never);
     } catch (err: any) {
       Alert.alert("Error", err.errors ? err.errors[0].message : "Password reset failed");
     }
+    
   };
   
   
