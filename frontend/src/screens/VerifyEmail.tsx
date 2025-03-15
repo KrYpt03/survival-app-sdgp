@@ -12,7 +12,7 @@ import{
 import { useSignUp } from "@clerk/clerk-expo";
 import { useNavigation } from "@react-navigation/native";
 
-
+const { width, height } = Dimensions.get("window");
 
 export default function VerifyEmailScreen(){
     const navigation = useNavigation();
@@ -33,7 +33,11 @@ export default function VerifyEmailScreen(){
     };
 
     return (
-        
+        <ImageBackground
+                source={require("../../assets/882a1e39-7619-4d2d-8934-01ec2145083f.png")}
+                style={styles.backgroundImage}
+                resizeMode="cover"
+              >
         <View style={styles.container}>
           <Text style={styles.title}>Verify Your Email</Text>
           <Text style={styles.instructions}>
@@ -54,7 +58,7 @@ export default function VerifyEmailScreen(){
             <Text style={styles.verifyButtonText}>Verify</Text>
           </TouchableOpacity>
         </View>
-        
+        </ImageBackground>
       );
     }
     
@@ -101,5 +105,9 @@ export default function VerifyEmailScreen(){
         fontSize: 18,
         fontWeight: "600",
       },
-      
+      backgroundImage: {
+        flex: 1,
+        width: width,
+        height: height,
+      },
     });
