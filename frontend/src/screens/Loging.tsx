@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useState } from "react";
 import {
   View,
   Text,
@@ -11,27 +11,46 @@ import {
   StyleSheet,
   Dimensions,
   Platform,
-} from "react-native"
-import { useNavigation } from "@react-navigation/native"
+  Alert,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { useSignIn } from "@clerk/clerk-expo"; // ✅ Import Clerk Sign-In Hook
 
-const { width, height } = Dimensions.get("window")
+const { width, height } = Dimensions.get("window");
 
 export default function LoginScreen() {
-  const navigation = useNavigation()
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const navigation = useNavigation();
+  const { signIn, setActive, isLoaded } = useSignIn(); // ✅ Clerk Sign-In Hook
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    console.log("Login pressed with:", email, password)
-  }
+  // ✅ Clerk Login Function
+  const handleLogin = async () => {
+    if (!isLoaded) return;
+
+    try {
+      const result = await signIn.create({
+        identifier: email,
+        password,
+      });
+
+      await setActive({ session: result.createdSessionId });
+      Alert.alert("Success", "You are logged in!");
+
+      // ✅ Navigate to Home Screen after login
+      navigation.navigate("Home" as never);
+    } catch (err: any) {
+      Alert.alert("Error", err.errors ? err.errors[0].message : "Login failed");
+    }
+  };
 
   const handleSignUp = () => {
-    navigation.navigate("SignUp" as never)
-  }
+    navigation.navigate("SignUp" as never);
+  };
 
   const handleForgotPassword = () => {
-    navigation.navigate("ForgotPassword" as never)
-  }
+    navigation.navigate("ForgotPassword" as never);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -92,7 +111,7 @@ export default function LoginScreen() {
         </View>
       </ImageBackground>
     </SafeAreaView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -139,7 +158,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     paddingHorizontal: 24,
-    paddingBottom: 100, // Add some padding at the bottom
+    paddingBottom: 100,
   },
   title: {
     fontSize: 42,
@@ -190,5 +209,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "400",
   },
-})
-
+});

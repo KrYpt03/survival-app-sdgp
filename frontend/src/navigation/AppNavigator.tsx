@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SignedIn, SignedOut } from '@clerk/clerk-expo';
 import SignUp from '../screens/SignUp';
-import Loging from '../screens/Loging';
+import LoginScreen from '../screens/Loging';
 import ForgotPassword from '../screens/ForgotPassword';
 import Load from '../screens/Load';
 import Profile from '../screens/Profile';
@@ -20,7 +20,7 @@ export default function AppNavigator() {
       <SignedOut>
         <Stack.Navigator initialRouteName='SignUp' id={undefined}>
         <Stack.Screen name="Load" component={Load} options={{ headerShown: false }} />
-        <Stack.Screen name="Loging" component={Loging} options={{ headerShown: false }} />
+        <Stack.Screen name="Loging" component={LoginScreen} options={{ headerShown: false }} />
         <Stack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }} />
         <Stack.Screen name="VerifyEmail" component={VerifyEmailScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{ headerShown: false }} />
@@ -29,7 +29,7 @@ export default function AppNavigator() {
 
 // If signed in users see Home Profile GroupTrackingScreen
       <SignedIn>
-        <Stack.Navigator initialRouteName="Home" id={undefined}>
+        <Stack.Navigator initialRouteName="Profile" id={undefined}>
           <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
           <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
           <Stack.Screen name="GroupTrackingScreen" component={GroupTrackingScreen} options={{ headerShown: false }} />
