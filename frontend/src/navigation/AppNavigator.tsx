@@ -9,6 +9,7 @@ import Load from '../screens/Load';
 import Profile from '../screens/Profile';
 import GroupTrackingScreen from '../screens/GroupTrackingScreen';
 import Home from '../screens/Home';
+import VerifyEmailScreen from '../screens/VerifyEmail';
 
 const Stack = createStackNavigator();
 
@@ -21,6 +22,7 @@ export default function AppNavigator() {
         <Stack.Screen name="Load" component={Load} options={{ headerShown: false }} />
         <Stack.Screen name="Loging" component={Loging} options={{ headerShown: false }} />
         <Stack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }} />
+        <Stack.Screen name="VerifyEmail" component={VerifyEmailScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{ headerShown: false }} />
         </Stack.Navigator>
       </SignedOut>

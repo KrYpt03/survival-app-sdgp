@@ -14,17 +14,17 @@ import {
   Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useSignUp } from "@clerk/clerk-expo"; // ✅ Import Clerk Sign-Up Hook
+import { useSignUp } from "@clerk/clerk-expo"; // Import Clerk Sign-Up Hook
 
 const { width, height } = Dimensions.get("window");
 
 export default function SignupScreen() {
   const navigation = useNavigation();
-  const { signUp, isLoaded } = useSignUp(); // ✅ Clerk Sign-Up Hook
+  const { signUp, isLoaded } = useSignUp(); //  Clerk Sign-Up Hook
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // ✅ Clerk Sign-Up Function
+  //  Clerk Sign-Up Function
   const handleSignUp = async () => {
     if (!isLoaded) return;
 
@@ -37,8 +37,8 @@ export default function SignupScreen() {
       await signUp.prepareEmailAddressVerification();
       Alert.alert("Success", "Check your email for verification.");
 
-      // ✅ Navigate to Login Screen after Sign-Up
-      navigation.navigate("Loging" as never);
+      //  Navigate to Login Screen after Sign-Up
+      navigation.navigate("VerifyEmail" as never);
     } catch (err: any) {
       Alert.alert("Error", err.errors ? err.errors[0].message : "Sign-up failed");
     }
