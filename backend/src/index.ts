@@ -1,32 +1,24 @@
-import "dotenv/config";
-import express from "express";
-import connectDB from "./infrastructure/db";
-
-import hotelsRouter from "./api/hotel";
-import usersRouter from "./api/user";
-import bookingsRouter from "./api/booking";
+import express, { Express, Request, Response, NextFunction } from "express";
 import cors from "cors";
-import globalErrorHandlingMiddleware from "./api/middlewares/global-error-handling-middleware";
+import dotenv from "dotenv";
+import morgan from "morgan";
+import userRoutes from "./api/user";
+import teamRoutes from "./api/team";
+import locationRoutes from "./api/location";
+import alertRoutes from "./api/alert";
 
-// Create an Express instance
-const app = express();
-// Middleware to parse JSON data in the request body
+dotenv.config();
+
+const app: Express = express(); // ✅ Explicitly set app type
+
 app.use(express.json());
 app.use(cors());
+app.use(morgan("combined"));
 
-connectDB();
+app.use("/api/user", userRoutes);
+app.use("/api/team", teamRoutes);
+app.use("/api/location", locationRoutes);
+app.use("/api/alert", alertRoutes);
 
-// app.use((req, res, next) => {
-//   console.log("Hello World");
-//   next();
-// });
-
-app.use("/api/hotels", hotelsRouter);
-app.use("/api/users", usersRouter);
-app.use("/api/bookings", bookingsRouter);
-
-app.use(globalErrorHandlingMiddleware);
-
-// Define the port to run the server
-const PORT = 8000;
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}...`));
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
