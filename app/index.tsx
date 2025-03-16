@@ -35,6 +35,9 @@ const Index = () => {
       <Link href="/Profile">
         <Text style={{ color: 'blue', marginTop: 20 }}>Go to Profile Page</Text>
       </Link>
+      <Link href="/GroupTrackingScreen">
+        <Text style={{ color: 'blue', marginTop: 20 }}>Go to Group Tracking Page</Text>
+      </Link>
     </View>
   );
 }

@@ -62,6 +62,20 @@ export default function RootLayout() {
           headerShown: false
         }}
       />
+      <Stack.Screen 
+        name="QRScannerScreen" 
+        options={{
+          title: "Active",
+          headerShown: false
+        }}
+      />
+      <Stack.Screen
+        name="GroupTrackingScreen"
+        options={{  
+          title: "Group Tracking",
+          headerShown: false
+        }}
+      />
       
     </Stack>
   );
