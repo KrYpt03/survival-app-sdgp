@@ -1,8 +1,9 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import prisma from "../infrastructure/db";
 import { checkGeofencing } from "../application/tracking";
+import NotFoundError from "../domain/errors/not-found-error";
 
-export const updateLocation = async (req: Request, res: Response): Promise<void> => {
+export const updateLocation = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { userID, latitude, longitude, altitude, speed } = req.body;
   
     try {
@@ -13,8 +14,7 @@ export const updateLocation = async (req: Request, res: Response): Promise<void>
       });
   
       if (!user || !user.teamID) {
-        res.status(400).json({ error: "User or team not found" });
-        return; 
+        throw new NotFoundError("User or team not found");
       }
   
       // Save the latest location
@@ -28,11 +28,11 @@ export const updateLocation = async (req: Request, res: Response): Promise<void>
       res.status(200).json({ success: true, isOutOfRange });
     } catch (error) {
       console.error("Location update error:", error);
-      res.status(500).json({ error: "Failed to update location" });
+      next(error);
     }
-  }
+}
 
-export const getLocationForTeam = async (req: Request, res: Response): Promise<void> => {
+export const getLocationForTeam = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { teamID } = req.params;
   
     try {
@@ -53,6 +53,6 @@ export const getLocationForTeam = async (req: Request, res: Response): Promise<v
       res.status(200).json(locations);
     } catch (error) {
       console.error("Error fetching locations:", error);
-      res.status(500).json({ error: "Failed to fetch locations" });
+      next(error);
     }
-  }
+}

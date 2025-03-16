@@ -1,17 +1,19 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import prisma from "../infrastructure/db";
+import NotFoundError from "../domain/errors/not-found-error";
+import ValidationError from "../domain/errors/validation-error";
 
-export const getAllTeams = async (req: Request, res: Response): Promise<void> => {
+export const getAllTeams = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const teams = await prisma.team.findMany();
     res.json(teams);
   } catch (error) {
     console.error("Error fetching teams:", error);
-    res.status(500).json({ error: "Failed to fetch teams" });
+    next(error);
   }
 };
 
-export const getTeamMembers = async (req: Request<{ teamID: string }>, res: Response): Promise<void> => {
+export const getTeamMembers = async (req: Request<{ teamID: string }>, res: Response, next: NextFunction): Promise<void> => {
   const { teamID } = req.params;
   try {
     const team = await prisma.team.findUnique({
@@ -20,24 +22,23 @@ export const getTeamMembers = async (req: Request<{ teamID: string }>, res: Resp
     });
 
     if (!team) {
-      res.status(404).json({ error: "Team not found" });
-      return;
+      throw new NotFoundError("Team not found");
     }
 
     res.json(team.teamMembers);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch team members" });
+    next(error);
   }
 };
 
-export const createTeam = async (req: Request, res: Response): Promise<void> => {
+export const createTeam = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { teamName, leaderID, range } = req.body;
-  if (!teamName || !leaderID || !range || range < 100) {
-    res.status(400).json({ error: "Invalid input: Team name, leader ID, and range (min 100m) required" });
-    return;
-  }
-
+  
   try {
+    if (!teamName || !leaderID || !range || range < 100) {
+      throw new ValidationError("Invalid input: Team name, leader ID, and range (min 100m) required");
+    }
+
     const newTeam = await prisma.team.create({
       data: { teamName, teamCode: Math.random().toString(36).substring(2, 8), range, leaderID },
     });
@@ -45,6 +46,6 @@ export const createTeam = async (req: Request, res: Response): Promise<void> => 
     res.status(201).json(newTeam);
   } catch (error) {
     console.error("Error creating team:", error);
-    res.status(500).json({ error: "Failed to create team" });
+    next(error);
   }
 };

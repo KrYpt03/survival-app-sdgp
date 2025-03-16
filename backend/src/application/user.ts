@@ -1,14 +1,14 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import prisma from "../infrastructure/db";
+import ValidationError from "../domain/errors/validation-error";
 
-export const createUser = async (req: Request, res: Response): Promise<void> => {
+export const createUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { name, email, password, teamCode } = req.body;
   
   try {
     // Validate input
     if (!name || !email || !password) {
-      res.status(400).json({ error: "Name, email, and password are required" });
-      return;
+      throw new ValidationError("Name, email, and password are required");
     }
     
     // Check if user with email already exists
@@ -17,8 +17,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
     });
     
     if (existingUser) {
-      res.status(400).json({ error: "User with this email already exists" });
-      return;
+      throw new ValidationError("User with this email already exists");
     }
     
     // Create user
@@ -37,7 +36,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
     res.status(201).json(userWithoutPassword);
   } catch (error) {
     console.error("Error creating user:", error);
-    res.status(500).json({ error: "Failed to create user" });
+    next(error);
   }
 };
 
