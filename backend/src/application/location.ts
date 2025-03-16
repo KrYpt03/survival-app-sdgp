@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { prisma } from "../db";
-import { checkGeofencing } from "../services/geofencing";
+import prisma from "../infrastructure/db";
+import { checkGeofencing } from "../application/tracking";
 
-export const updateLocation = async (req: Request, res: Response) => {
+export const updateLocation = async (req: Request, res: Response): Promise<void> => {
     const { userID, latitude, longitude, altitude, speed } = req.body;
   
     try {
@@ -15,7 +15,7 @@ export const updateLocation = async (req: Request, res: Response) => {
       if (!user || !user.teamID) {
         res.status(400).json({ error: "User or team not found" });
         return; 
-        }
+      }
   
       // Save the latest location
       await prisma.userLocation.create({
@@ -29,11 +29,10 @@ export const updateLocation = async (req: Request, res: Response) => {
     } catch (error) {
       console.error("Location update error:", error);
       res.status(500).json({ error: "Failed to update location" });
-      return;  
     }
   }
 
-  export  const getLocationForTeam = async (req: Request, res: Response) => {
+export const getLocationForTeam = async (req: Request, res: Response): Promise<void> => {
     const { teamID } = req.params;
   
     try {

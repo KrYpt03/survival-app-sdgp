@@ -1,8 +1,12 @@
 import express from "express";
 import { createUser } from "../application/user";
 
-const usersRouter = express.Router();
+const router = express.Router();
 
-usersRouter.post("/", createUser);
+/**
+ * 📌 Create a new user
+ * POST /api/user
+ */
+router.route("/").post(createUser);
 
-export default usersRouter;
+export default router;
