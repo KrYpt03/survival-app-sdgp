@@ -12,13 +12,24 @@ import {
   ScrollView,
   Dimensions,
   ActivityIndicator,
+  Alert,
+  Platform,
 } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import { format } from "date-fns"
+import * as Location from "expo-location"
 import NavigationBar from "../components/NavigationBar"
+import * as Linking from "expo-linking"
+// Add this import at the top of the file
+import { testLocationPermission } from "../services/locationTest"
 import React from "react"
 
 const { width, height } = Dimensions.get("window")
+
+// OpenWeatherMap API key - replace with your own
+const WEATHER_API_KEY = "YOUR_OPENWEATHERMAP_API_KEY"
+// Google Maps API key - replace with your own
+const MAPS_API_KEY = "YOUR_GOOGLE_MAPS_API_KEY"
 
 interface TeamMember {
   id: string
@@ -32,9 +43,11 @@ interface LocationInfo {
   temperature: number
   image: string
   mapImage: string
+  latitude?: number
+  longitude?: number
 }
 
-// Mock data instead of API calls
+// Mock team data
 const MOCK_TEAM_DATA: TeamMember[] = [
   {
     id: "1",
@@ -53,15 +66,6 @@ const MOCK_TEAM_DATA: TeamMember[] = [
   },
 ]
 
-const MOCK_LOCATION_DATA: LocationInfo = {
-  name: "Nuuksio",
-  description: "Beautiful national park with lakes and forests",
-  temperature: 22,
-  image: "https://images.unsplash.com/photo-1552083375-1447ce886485?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
-  mapImage:
-    "https://maps.googleapis.com/maps/api/staticmap?center=Nuuksio,Finland&zoom=12&size=400x200&key=YOUR_API_KEY",
-}
-
 export default function HomeScreen() {
   const navigation = useNavigation()
   const [searchQuery, setSearchQuery] = useState("")
@@ -69,26 +73,192 @@ export default function HomeScreen() {
   const [locationInfo, setLocationInfo] = useState<LocationInfo | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
+  const [locationPermission, setLocationPermission] = useState(false)
 
   useEffect(() => {
-    fetchData()
+    console.log("HomeScreen mounted, requesting location permission")
+    requestLocationPermission()
+
+    // Add a cleanup function
+    return () => {
+      console.log("HomeScreen unmounted")
+    }
   }, [])
 
-  const fetchData = async () => {
+  const requestLocationPermission = async () => {
+    try {
+      // First check if we already have permissions
+      let { status } = await Location.getForegroundPermissionsAsync()
+
+      // If we don't have permission, request it
+      if (status !== "granted") {
+        console.log("Requesting location permission...")
+        const permissionResponse = await Location.requestForegroundPermissionsAsync()
+        status = permissionResponse.status
+        console.log("Permission response:", status)
+      }
+
+      setLocationPermission(status === "granted")
+
+      if (status === "granted") {
+        // Permission was granted, fetch location data
+        fetchLocationData()
+      } else {
+        // Permission was denied, show alert
+        Alert.alert(
+          "Location Permission Required",
+          "This app needs access to your location to show weather and nearby information. Please enable location services in your device settings.",
+          [
+            { text: "Cancel", style: "cancel" },
+            {
+              text: "Open Settings",
+              onPress: () => {
+                // Open app settings if available
+                if (Platform.OS === "ios") {
+                  Linking.openURL("app-settings:")
+                } else {
+                  Linking.openSettings()
+                }
+              },
+            },
+          ],
+        )
+
+        // Use default data
+        setLoading(true)
+        setCurrentTeam(MOCK_TEAM_DATA)
+        setLocationInfo({
+          name: "Unknown Location",
+          description: "Enable location services to see details about your area",
+          temperature: 0,
+          image:
+            "https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+          mapImage: `https://maps.googleapis.com/maps/api/staticmap?center=0,0&zoom=10&size=400x200&key=${MAPS_API_KEY}`,
+        })
+        setLoading(false)
+      }
+    } catch (err) {
+      console.error("Error requesting location permission:", err)
+      setError("Failed to request location permission")
+      setLoading(false)
+    }
+  }
+
+  const fetchLocationData = async () => {
     setLoading(true)
     setError("")
     try {
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      console.log("Fetching current location...")
+      // Get current location with a timeout
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced,
+        timeInterval: 5000, // 5 seconds
+        mayShowUserSettingsDialog: true, // This will prompt the user to enable location services if they're off
+      })
 
-      // Use mock data instead of API calls
+      console.log("Location received:", location)
+      const { latitude, longitude } = location.coords
+
+      // Get location name from coordinates
+      console.log("Reverse geocoding...")
+      const geocode = await Location.reverseGeocodeAsync({
+        latitude,
+        longitude,
+      })
+
+      console.log("Geocode result:", geocode)
+
+      const locationName = geocode[0]?.city || geocode[0]?.region || geocode[0]?.subregion || "Unknown Location"
+
+      const country = geocode[0]?.country || ""
+
+      // For testing, we'll use mock weather data instead of making an API call
+      // In a real app, you would uncomment the API call below
+      console.log("Setting mock weather data")
+      const weatherData = {
+        main: { temp: 22 },
+        weather: [{ description: "Clear sky" }],
+      }
+
+      /*
+      // Fetch weather data
+      console.log("Fetching weather data...");
+      const weatherResponse = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${WEATHER_API_KEY}`
+      );
+      
+      if (!weatherResponse.ok) {
+        throw new Error("Weather data not available");
+      }
+      
+      const weatherData = await weatherResponse.json();
+      console.log("Weather data received:", weatherData);
+      */
+
+      // Use a static image for now
+      const locationImage =
+        "https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+
+      // Create map image URL
+      const mapImageUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${latitude},${longitude}&zoom=13&size=400x200&markers=color:red%7C${latitude},${longitude}&key=${MAPS_API_KEY}`
+
+      console.log("Setting location info")
+      // Set location info
+      setLocationInfo({
+        name: locationName,
+        description: weatherData.weather[0]?.description || "No weather description available",
+        temperature: Math.round(weatherData.main?.temp) || 0,
+        image: locationImage,
+        mapImage: mapImageUrl,
+        latitude,
+        longitude,
+      })
+
+      // Set team data (mock for now)
       setCurrentTeam(MOCK_TEAM_DATA)
-      setLocationInfo(MOCK_LOCATION_DATA)
     } catch (err) {
-      console.error("Error fetching data:", err)
-      setError("An unexpected error occurred")
+      console.error("Error fetching location data:", err)
+      setError("Failed to fetch location data: " + (err instanceof Error ? err.message : String(err)))
+
+      // Set default data on error
+      setLocationInfo({
+        name: "Unknown Location",
+        description: "Could not fetch location details",
+        temperature: 0,
+        image:
+          "https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+        mapImage: `https://maps.googleapis.com/maps/api/staticmap?center=0,0&zoom=10&size=400x200&key=${MAPS_API_KEY}`,
+      })
+      setCurrentTeam(MOCK_TEAM_DATA)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchLocationImage = async (locationName: string): Promise<string> => {
+    try {
+      // Use Unsplash API to get a relevant image
+      // Note: In a real app, you should use your own Unsplash API key
+      const response = await fetch(
+        `https://api.unsplash.com/search/photos?query=${locationName}&client_id=YOUR_UNSPLASH_API_KEY`,
+      )
+
+      if (!response.ok) {
+        throw new Error("Could not fetch location image")
+      }
+
+      const data = await response.json()
+
+      if (data.results && data.results.length > 0) {
+        return data.results[0].urls.regular
+      }
+
+      // Fallback image
+      return "https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+    } catch (err) {
+      console.error("Error fetching location image:", err)
+      // Fallback image
+      return "https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
     }
   }
 
@@ -107,7 +277,7 @@ export default function HomeScreen() {
       setCurrentTeam([...currentTeam, newMember])
     } catch (err) {
       console.error("Error joining team:", err)
-      // Handle error (e.g., show an alert to the user)
+      Alert.alert("Error", "Failed to join team. Please try again.")
     }
   }
 
@@ -116,10 +286,19 @@ export default function HomeScreen() {
     console.log("Searching for:", searchQuery)
   }
 
+  const handleRefresh = () => {
+    if (locationPermission) {
+      fetchLocationData()
+    } else {
+      requestLocationPermission()
+    }
+  }
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#0000ff" />
+        <Text style={styles.loadingText}>Fetching location data...</Text>
       </View>
     )
   }
@@ -128,7 +307,7 @@ export default function HomeScreen() {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>{error}</Text>
-        <TouchableOpacity style={styles.retryButton} onPress={fetchData}>
+        <TouchableOpacity style={styles.retryButton} onPress={handleRefresh}>
           <Text style={styles.retryButtonText}>Retry</Text>
         </TouchableOpacity>
       </View>
@@ -139,7 +318,7 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => {}}>
-          <Image source={require("../assets/arrow-small-left.png")} style={styles.menuIcon} />
+          <Image source={require("../assets/images/arrow-small-left.png")} style={styles.menuIcon} />
         </TouchableOpacity>
         <View style={styles.searchBar}>
           <TextInput
@@ -150,7 +329,7 @@ export default function HomeScreen() {
             onSubmitEditing={handleSearch}
           />
           <TouchableOpacity onPress={handleSearch}>
-            <Image source={require("../assets/arrow-small-left.png")} style={styles.searchIcon} />
+            <Image source={require("../assets/images/arrow-small-left.png")} style={styles.searchIcon} />
           </TouchableOpacity>
         </View>
         <TouchableOpacity onPress={() => navigation.navigate("Profile" as never)}>
@@ -163,7 +342,11 @@ export default function HomeScreen() {
         <View style={styles.teamCard}>
           <Text style={styles.cardTitle}>Current Team</Text>
           <Text style={styles.dateTime}>{format(new Date(), "EEE, MMM dd h:mm a").toUpperCase()}</Text>
-          <Text style={styles.location}>{locationInfo?.name}, Finland</Text>
+          <Text style={styles.location}>
+            {locationInfo?.name}
+            {locationInfo?.name && ", "}
+            {locationPermission ? "Near You" : "Enable Location"}
+          </Text>
           <View style={styles.teamMembers}>
             {currentTeam.map((member, index) => (
               <View key={member.id} style={[styles.memberAvatarContainer, { marginLeft: index > 0 ? -10 : 0 }]}>
@@ -184,9 +367,20 @@ export default function HomeScreen() {
               <Text style={styles.locationName}>{locationInfo.name}</Text>
               <Text style={styles.locationDescription}>{locationInfo.description}</Text>
               <View style={styles.temperatureContainer}>
-                <Text style={styles.temperature}>{locationInfo.temperature}°</Text>
-                <Image source={require("../assets/arrow-small-left.png")} style={styles.weatherIcon} />
+                <Text style={styles.temperature}>{locationInfo.temperature}°C</Text>
+                <Image source={require("../assets/images/arrow-small-left.png")} style={styles.weatherIcon} />
               </View>
+              {!locationPermission && (
+                <TouchableOpacity
+                  style={[styles.enableLocationButton, { marginTop: 15, paddingVertical: 12 }]}
+                  onPress={() => {
+                    console.log("Enable location button pressed")
+                    requestLocationPermission()
+                  }}
+                >
+                  <Text style={styles.enableLocationText}>Enable Location Services</Text>
+                </TouchableOpacity>
+              )}
             </View>
             <Image source={{ uri: locationInfo.mapImage }} style={styles.mapImage} />
             <View style={styles.teamIndicator}>
@@ -202,6 +396,18 @@ export default function HomeScreen() {
             </View>
           </View>
         )}
+
+        {/* Refresh Button */}
+        <TouchableOpacity style={styles.refreshButton} onPress={handleRefresh}>
+          <Text style={styles.refreshButtonText}>Refresh Location Data</Text>
+        </TouchableOpacity>
+        {/* Add this button right after the "Refresh Location Data" button in the ScrollView */}
+        <TouchableOpacity
+          style={[styles.refreshButton, { backgroundColor: "#FF5722", marginTop: 10 }]}
+          onPress={testLocationPermission}
+        >
+          <Text style={styles.refreshButtonText}>Test Location Permission</Text>
+        </TouchableOpacity>
       </ScrollView>
 
       <NavigationBar />
@@ -366,15 +572,22 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#666666",
+  },
   errorContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    padding: 20,
   },
   errorText: {
     fontSize: 18,
     color: "red",
     marginBottom: 20,
+    textAlign: "center",
   },
   retryButton: {
     backgroundColor: "#4CAF50",
@@ -384,6 +597,35 @@ const styles = StyleSheet.create({
   retryButtonText: {
     color: "white",
     fontSize: 16,
+  },
+  refreshButton: {
+    backgroundColor: "#007BFF",
+    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    marginHorizontal: 16,
+    marginBottom: 20,
+    alignItems: "center",
+  },
+  refreshButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  enableLocationButton: {
+    backgroundColor: "#FF9800",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    marginTop: 15,
+    alignSelf: "center",
+    width: "80%",
+  },
+  enableLocationText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
   },
 })
 
