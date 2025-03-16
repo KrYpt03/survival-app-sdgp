@@ -6,10 +6,12 @@ import userRoutes from "./api/user";
 import teamRoutes from "./api/team";
 import locationRoutes from "./api/location";
 import alertRoutes from "./api/alert";
-
+import { clerkMiddleware } from "@clerk/express";
 dotenv.config();
 
 const app: Express = express(); // ✅ Explicitly set app type
+
+app.use(clerkMiddleware());
 
 app.use(express.json());
 app.use(cors());

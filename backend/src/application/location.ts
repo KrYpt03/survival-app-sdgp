@@ -27,7 +27,6 @@ export const updateLocation = async (req: Request, res: Response, next: NextFunc
   
       res.status(200).json({ success: true, isOutOfRange });
     } catch (error) {
-      console.error("Location update error:", error);
       next(error);
     }
 }
@@ -36,8 +35,6 @@ export const getLocationForTeam = async (req: Request, res: Response, next: Next
     const { teamID } = req.params;
   
     try {
-      res.setHeader("Cache-Control", "public, max-age=10"); // Cache responses for 10s
-  
       const locations = await prisma.userLocation.findMany({
         where: { user: { teamID } },
         select: {
@@ -52,7 +49,6 @@ export const getLocationForTeam = async (req: Request, res: Response, next: Next
   
       res.status(200).json(locations);
     } catch (error) {
-      console.error("Error fetching locations:", error);
       next(error);
     }
 }

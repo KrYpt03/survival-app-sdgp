@@ -8,7 +8,6 @@ export const getAllTeams = async (req: Request, res: Response, next: NextFunctio
     const teams = await prisma.team.findMany();
     res.json(teams);
   } catch (error) {
-    console.error("Error fetching teams:", error);
     next(error);
   }
 };
@@ -45,7 +44,6 @@ export const createTeam = async (req: Request, res: Response, next: NextFunction
 
     res.status(201).json(newTeam);
   } catch (error) {
-    console.error("Error creating team:", error);
     next(error);
   }
 };

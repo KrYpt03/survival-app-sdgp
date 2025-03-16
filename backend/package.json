@@ -2,7 +2,7 @@
   "name": "aidf-4-back-end",
   "version": "1.0.0",
   "scripts": {
-    "dev": "nodemon src/index.ts",
+    "dev": "prisma generate && nodemon src/index.ts",
     "start": "ts-node src/index.ts"
   },
   "author": "",

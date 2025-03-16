@@ -26,3 +26,4 @@ export const checkGeofencing = async (user: any, latitude: number, longitude: nu
 
   return false;
 };
+
