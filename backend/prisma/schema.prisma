@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userID          String           @id @default(cuid())
+  clerkID         String           @unique
+  username        String           @unique
+  email           String           @unique
+  createdAt       DateTime         @default(now())
+  lastLatitude    Float?
+  lastLongitude   Float?
+  teamID          String?
+  alerts          Alert[]
+  emergencyAlerts EmergencyAlert[]
+  leads           Team?            @relation("TeamLeader")
+  team            Team?            @relation("TeamMembers", fields: [teamID], references: [teamID])
+  locations       UserLocation[]
+}
+
+model Team {
+  teamID          String           @id @default(cuid())
+  teamName        String
+  teamCode        String           @unique
+  range           Float
+  active          Boolean          @default(true)
+  leaderID        String           @unique
+  alerts          Alert[]
+  emergencyAlerts EmergencyAlert[]
+  leader          User             @relation("TeamLeader", fields: [leaderID], references: [userID])
+  teamMembers     User[]           @relation("TeamMembers")
+}
+
+model UserLocation {
+  locationID String   @id @default(cuid())
+  userID     String
+  latitude   Float
+  longitude  Float
+  altitude   Float?
+  speed      Float?
+  timestamp  DateTime @default(now())
+  isSynced   Boolean  @default(false)
+  user       User     @relation(fields: [userID], references: [userID])
+}
+
+model Alert {
+  alertID       String    @id @default(cuid())
+  userID        String
+  teamID        String
+  type          AlertType
+  message       String
+  lastLatitude  Float
+  lastLongitude Float
+  timestamp     DateTime  @default(now())
+  resolved      Boolean   @default(false)
+  team          Team      @relation(fields: [teamID], references: [teamID])
+  user          User      @relation(fields: [userID], references: [userID])
+}
+
+model EmergencyAlert {
+  alertID   String   @id @default(cuid())
+  userID    String
+  teamID    String
+  latitude  Float
+  longitude Float
+  message   String?
+  timestamp DateTime @default(now())
+  team      Team     @relation(fields: [teamID], references: [teamID])
+  user      User     @relation(fields: [userID], references: [userID])
+}
+
+enum AlertType {
+  OUT_OF_RANGE
+  HELP_REQUEST
+}
