@@ -30,7 +30,7 @@ export const createUser = async (
         data: {
           email: payload.data.email_addresses[0].email_address,
           clerkID: payload.data.id,
-          username: `${payload.data.first_name} ${payload.data.last_name}`,
+          username: `${payload.data.first_name} ${payload.data.last_name}`,          
         },
       });
     }
