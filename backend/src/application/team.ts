@@ -47,3 +47,26 @@ export const createTeam = async (req: Request, res: Response, next: NextFunction
     next(error);
   }
 };
+
+export const removeTeamMember = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const { teamID, userID } = req.body;
+  try {
+    const team = await prisma.team.findUnique({ where: { teamID } });
+    if (!team) {
+      throw new NotFoundError("Team not found");
+    }
+
+    const user = await prisma.user.findUnique({ where: { userID } });
+    if (!user) {
+      throw new NotFoundError("User not found");
+    }
+
+    await prisma.user.update({ where: { userID }, data: { teamID: null } });
+
+    res.status(200).json({ message: "User removed from team" });
+  } catch (error) {
+    next(error);
+  }
+}
+
+
