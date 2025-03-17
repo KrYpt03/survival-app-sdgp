@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllTeams, getTeamMembers, createTeam } from "../application/team";
+import { getAllTeams, getTeamMembers, createTeam, removeTeamMember, changeTeamLeader, leaveTeam, deactivateTeam, activateTeam } from "../application/team";
 
 const router = express.Router();
 
@@ -20,5 +20,35 @@ router.route("/:teamID/members").get(getTeamMembers);
  * POST /api/team
  */
 router.route("/").post(createTeam);
+
+/**
+ * 📌 Remove a team member
+ * DELETE /api/team/member
+ */
+router.route("/member").delete(removeTeamMember);
+
+/**
+ * 📌 Change team leader
+ * PUT /api/team/leader
+ */
+router.route("/leader").put(changeTeamLeader);
+
+/**
+ * 📌 Leave current team
+ * POST /api/team/leave
+ */
+router.route("/leave").post(leaveTeam);
+
+/**
+ * 📌 Deactivate team
+ * PUT /api/team/deactivate
+ */
+router.route("/deactivate").put(deactivateTeam);
+
+/**
+ * 📌 Activate team
+ * PUT /api/team/activate
+ */
+router.route("/activate").put(activateTeam);
 
 export default router;
