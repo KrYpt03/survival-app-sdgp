@@ -4,7 +4,11 @@ import NotFoundError from "../domain/errors/not-found-error";
 import ValidationError from "../domain/errors/validation-error";
 import { getAuth } from "@clerk/express";
 
-export const getAllTeams = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getAllTeams = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
     const teams = await prisma.team.findMany();
     res.json(teams);
@@ -13,12 +17,20 @@ export const getAllTeams = async (req: Request, res: Response, next: NextFunctio
   }
 };
 
-export const getTeamMembers = async (req: Request<{ teamID: string }>, res: Response, next: NextFunction): Promise<void> => {
+export const getTeamMembers = async (
+  req: Request<{ teamID: string }>,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   const { teamID } = req.params;
   try {
     const team = await prisma.team.findUnique({
       where: { teamID },
-      include: { teamMembers: { include: { locations: { orderBy: { timestamp: "desc" }, take: 1 } } } },
+      include: {
+        teamMembers: {
+          include: { locations: { orderBy: { timestamp: "desc" }, take: 1 } },
+        },
+      },
     });
 
     if (!team) {
@@ -31,16 +43,27 @@ export const getTeamMembers = async (req: Request<{ teamID: string }>, res: Resp
   }
 };
 
-export const createTeam = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const createTeam = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   const { teamName, leaderID, range } = req.body;
-  
+
   try {
     if (!teamName || !leaderID || !range || range < 100) {
-      throw new ValidationError("Invalid input: Team name, leader ID, and range (min 100m) required");
+      throw new ValidationError(
+        "Invalid input: Team name, leader ID, and range (min 100m) required"
+      );
     }
 
     const newTeam = await prisma.team.create({
-      data: { teamName, teamCode: Math.random().toString(36).substring(2, 8), range, leaderID },
+      data: {
+        teamName,
+        teamCode: Math.random().toString(36).substring(2, 8),
+        range,
+        leaderID,
+      },
     });
 
     res.status(201).json(newTeam);
@@ -49,12 +72,32 @@ export const createTeam = async (req: Request, res: Response, next: NextFunction
   }
 };
 
-export const removeTeamMember = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const removeTeamMember = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   const { teamID, userID } = req.body;
+  const { userId: clerkID } = getAuth(req);
+
   try {
+    // Get current user from Clerk ID
+    const currentUser = await prisma.user.findUnique({
+      where: { clerkID },
+    });
+
+    if (!currentUser) {
+      throw new NotFoundError("Current user not found");
+    }
+
     const team = await prisma.team.findUnique({ where: { teamID } });
     if (!team) {
       throw new NotFoundError("Team not found");
+    }
+
+    // Check if current user is the team leader
+    if (team.leaderID !== currentUser.userID) {
+      throw new ValidationError("Only the team leader can remove members");
     }
 
     const user = await prisma.user.findUnique({ where: { userID } });
@@ -68,9 +111,13 @@ export const removeTeamMember = async (req: Request, res: Response, next: NextFu
   } catch (error) {
     next(error);
   }
-}
+};
 
-export const changeTeamLeader = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const changeTeamLeader = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   const { teamID, newLeaderID } = req.body;
   const { userId: clerkID } = getAuth(req);
 
@@ -79,8 +126,8 @@ export const changeTeamLeader = async (req: Request, res: Response, next: NextFu
     const currentUser = await prisma.user.findUnique({
       where: { clerkID },
       include: {
-        leads: true
-      }
+        leads: true,
+      },
     });
 
     if (!currentUser) {
@@ -88,11 +135,11 @@ export const changeTeamLeader = async (req: Request, res: Response, next: NextFu
     }
 
     // Check if current user is the team leader
-    const team = await prisma.team.findUnique({ 
+    const team = await prisma.team.findUnique({
       where: { teamID },
       include: {
-        leader: true
-      }
+        leader: true,
+      },
     });
 
     if (!team) {
@@ -103,15 +150,20 @@ export const changeTeamLeader = async (req: Request, res: Response, next: NextFu
       throw new ValidationError("Only the team leader can change leadership");
     }
 
-    const newLeader = await prisma.user.findUnique({ where: { userID: newLeaderID } });
+    const newLeader = await prisma.user.findUnique({
+      where: { userID: newLeaderID },
+    });
     if (!newLeader) {
       throw new NotFoundError("New leader not found");
     }
 
-    await prisma.team.update({ where: { teamID }, data: { leaderID: newLeaderID } });
+    await prisma.team.update({
+      where: { teamID },
+      data: { leaderID: newLeaderID },
+    });
 
     res.status(200).json({ message: "Team leader changed" });
   } catch (error) {
     next(error);
   }
-}
+};
