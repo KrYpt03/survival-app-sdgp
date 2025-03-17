@@ -167,3 +167,49 @@ export const changeTeamLeader = async (
     next(error);
   }
 };
+
+export const leaveTeam = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const { userId: clerkID } = getAuth(req);
+
+  try {
+    // Get current user with team info
+    const currentUser = await prisma.user.findUnique({
+      where: { clerkID },
+      include: {
+        team: {
+          include: {
+            teamMembers: true,
+            leader: true
+          }
+        }
+      }
+    });
+
+    if (!currentUser) {
+      throw new NotFoundError("User not found");
+    }
+
+    if (!currentUser.team) {
+      throw new ValidationError("User is not in a team");
+    }
+
+    // Check if user is team leader
+    if (currentUser.team.leaderID === currentUser.userID) {
+      throw new ValidationError("Team leader cannot leave without assigning a new leader first");
+    }
+
+    // Remove user from team
+    await prisma.user.update({
+      where: { userID: currentUser.userID },
+      data: { teamID: null }
+    });
+
+    res.status(200).json({ message: "Successfully left team" });
+  } catch (error) {
+    next(error);
+  }
+};
