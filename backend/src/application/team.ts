@@ -213,3 +213,81 @@ export const leaveTeam = async (
     next(error);
   }
 };
+
+export const deactivateTeam = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const { teamID } = req.body;
+  const { userId: clerkID } = getAuth(req);
+
+  try {
+    // Get current user from Clerk ID
+    const currentUser = await prisma.user.findUnique({
+      where: { clerkID },
+      include: {
+        leads: true,
+      },
+    });
+
+    if (!currentUser) {
+      throw new NotFoundError("Current user not found");
+    }
+
+    const team = await prisma.team.findUnique({ where: { teamID } });
+    if (!team) {
+      throw new NotFoundError("Team not found");
+    }
+
+    // Check if current user is the team leader
+    if (team.leaderID !== currentUser.userID) {
+      throw new ValidationError("Only the team leader can deactivate the team");
+    }
+
+    await prisma.team.update({ where: { teamID }, data: { active: false } });
+
+    res.status(200).json({ message: "Team deactivated" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const activateTeam = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const { teamID } = req.body;
+  const { userId: clerkID } = getAuth(req);
+
+  try {
+    // Get current user from Clerk ID
+    const currentUser = await prisma.user.findUnique({
+      where: { clerkID },
+      include: {
+        leads: true,
+      },
+    });
+
+    if (!currentUser) {
+      throw new NotFoundError("Current user not found");
+    }
+
+    const team = await prisma.team.findUnique({ where: { teamID } });
+    if (!team) {
+      throw new NotFoundError("Team not found");
+    }
+
+    // Check if current user is the team leader
+    if (team.leaderID !== currentUser.userID) {
+      throw new ValidationError("Only the team leader can activate the team");
+    }
+
+    await prisma.team.update({ where: { teamID }, data: { active: true } });
+
+    res.status(200).json({ message: "Team activated" });
+  } catch (error) {
+    next(error);
+  }
+};
