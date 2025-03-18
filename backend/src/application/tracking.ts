@@ -1,6 +1,6 @@
 import prisma from "../infrastructure/db";
 
-const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+export const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
   const R = 6371000;
   const toRad = (x: number) => (x * Math.PI) / 180;
 
@@ -20,7 +20,18 @@ export const checkGeofencing = async (user: any, latitude: number, longitude: nu
 
   const distance = calculateDistance(latitude, longitude, leaderLocation.latitude, leaderLocation.longitude);
   if (distance > user.team.range) {
-    await prisma.alert.create({ data: { userID: user.userID, teamID: user.team.teamID, type: "OUT_OF_RANGE", message: `${user.username} is out of range!` } });
+    await prisma.alert.create({ 
+      data: { 
+        userID: user.userID, 
+        teamID: user.team.teamID, 
+        type: "OUT_OF_RANGE", 
+        message: `${user.username} is out of range!`,
+        lastLatitude: latitude,
+        lastLongitude: longitude,
+        user: { connect: { userID: user.userID } },
+        team: { connect: { teamID: user.team.teamID } }
+      } 
+    });
     return true;
   }
 
