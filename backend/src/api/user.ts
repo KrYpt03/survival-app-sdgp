@@ -7,6 +7,6 @@ const router = express.Router();
  * 📌 Create a new user
  * POST /api/user
  */
-router.route("/").post(createUser);
+router.route("/webhook").post(createUser);
 
 export default router;

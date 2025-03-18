@@ -1,41 +1,42 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
+import { isValidClerk } from "../api/middlewares/authentication-middleware";
+import UnauthorizedError from "../domain/errors/unauthorized-error";
 import prisma from "../infrastructure/db";
-import ValidationError from "../domain/errors/validation-error";
 
-export const createUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { name, email, password, teamCode } = req.body;
-  
+export const createUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
-    // Validate input
-    if (!name || !email || !password) {
-      throw new ValidationError("Name, email, and password are required");
+    const CLERK_WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
+    const payload = req.body;
+
+    if (
+      !isValidClerk({
+        payload,
+        headers: req.headers,
+        secret: CLERK_WEBHOOK_SECRET,
+      })
+    ) {
+      throw new UnauthorizedError("Unauthorized");
     }
-    
-    // Check if user with email already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
-    
-    if (existingUser) {
-      throw new ValidationError("User with this email already exists");
+
+    console.log("payload", payload);
+    console.log("type", payload.type);
+    console.log("userId", payload.data.id);
+    if (payload.type === "user.created") {
+      await prisma.user.create({
+        data: {
+          email: payload.data.email_addresses[0].email_address,
+          clerkID: payload.data.id,
+          username: `${payload.data.first_name} ${payload.data.last_name}`,          
+        },
+      });
     }
-    
-    // Create user
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password, // In a real app, you would hash this password
-        teamID: teamCode ? await getTeamIdFromCode(teamCode) : null,
-      },
-    });
-    
-    // Remove password from response
-    const { password: _, ...userWithoutPassword } = user;
-    
-    res.status(201).json(userWithoutPassword);
+
+    res.status(200).json({ message: "User created" });
   } catch (error) {
-    console.error("Error creating user:", error);
     next(error);
   }
 };
@@ -46,6 +47,6 @@ async function getTeamIdFromCode(teamCode: string): Promise<string | null> {
     where: { teamCode },
     select: { teamID: true },
   });
-  
+
   return team?.teamID || null;
 }
