@@ -1,0 +1,71 @@
+name: Backend Tests
+
+on:
+  push:
+    branches: [ development ]
+    paths:
+      - 'backend/**'
+  pull_request:
+    branches: [ development ]
+    paths:
+      - 'backend/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_PASSWORD: admin
+          POSTGRES_USER: postgres
+          POSTGRES_DB: survival_app_test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: 'backend/package-lock.json'
+    
+    - name: Install dependencies
+      working-directory: ./backend
+      run: npm ci
+    
+    - name: Create .env file
+      working-directory: ./backend
+      run: |
+        echo "DATABASE_URL=postgresql://postgres:admin@localhost:5432/survival_app_test_db" > .env
+        echo "CLERK_WEBHOOK_SECRET=test_webhook_secret" >> .env
+        echo "PORT=5000" >> .env
+        echo "NODE_ENV=test" >> .env
+        echo "DEFAULT_GEOFENCE_RANGE=100" >> .env
+    
+    - name: Run Prisma migrations
+      working-directory: ./backend
+      run: npx prisma migrate deploy
+    
+    - name: Run tests
+      working-directory: ./backend
+      run: npm test
+
+# Additional configurations below for reference:
+# 
+# For production deployment, consider using a cloud database:
+# - Supabase (PostgreSQL): https://supabase.com/
+# - Neon (Serverless Postgres): https://neon.tech/
+# - MongoDB Atlas: https://www.mongodb.com/atlas/database
+#
+# Example Supabase connection URL:
+# DATABASE_URL=postgres://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres 
