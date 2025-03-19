@@ -7,10 +7,10 @@ import {
   changeTeamLeader,
   leaveTeam,
   deactivateTeam,
-} from '../team';
-import prisma from '../../infrastructure/db';
-import NotFoundError from '../../domain/errors/not-found-error';
-import ValidationError from '../../domain/errors/validation-error';
+} from '../team.js';
+import prisma from '../../infrastructure/db.js';
+import NotFoundError from '../../domain/errors/not-found-error.js';
+import ValidationError from '../../domain/errors/validation-error.js';
 import { getAuth } from '@clerk/express';
 
 // Mock dependencies

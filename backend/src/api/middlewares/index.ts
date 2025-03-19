@@ -1,10 +1,40 @@
-import express, { Express } from 'express';
+import express, { Express, NextFunction, Request, Response } from 'express';
 import cors from 'cors';
-import { errorHandler } from './errorHandler';
-import { loggerMiddleware, addRequestId } from './logger';
-import { securityHeaders, corsOptions } from './security';
-import { standardLimiter } from './rateLimiter';
-import { performanceMonitoring } from '../../infrastructure/monitoring';
+import { errorHandler } from './errorHandler.js';
+import { loggerMiddleware, addRequestId } from './logger.js';
+import { securityHeaders, corsOptions } from './security.js';
+import { performanceMonitoring } from '../../infrastructure/monitoring.js';
+import NodeCache from 'node-cache';
+
+// Simple rate limiter implementation
+const cache = new NodeCache();
+
+const rateLimit = (req: Request, res: Response, next: NextFunction) => {
+  const key = `${req.ip}:${req.originalUrl}`;
+  const windowMs = 60 * 1000; // 1 minute
+  const maxRequests = 100; // 100 requests per minute
+  
+  let hits = cache.get<number>(key) || 0;
+  
+  if (hits === 0) {
+    cache.set(key, 1, windowMs / 1000);
+  } else {
+    if (hits >= maxRequests) {
+      return res.status(429).json({
+        success: false,
+        message: 'Too many requests, please try again later',
+      });
+    }
+    
+    cache.set(key, hits + 1);
+  }
+  
+  // Set rate limit headers
+  res.setHeader('X-RateLimit-Limit', String(maxRequests));
+  res.setHeader('X-RateLimit-Remaining', String(maxRequests - (hits + 1)));
+  
+  next();
+};
 
 /**
  * Registers all middleware with the Express application
@@ -26,10 +56,17 @@ export const registerMiddleware = (app: Express): void => {
   app.use(express.urlencoded({ extended: true, limit: '1mb' }));
   
   // Rate limiting
-  app.use(standardLimiter);
+  app.use(rateLimit);
   
   // Performance monitoring
   app.use(performanceMonitoring);
+};
+
+/**
+ * Error handler wrapper to avoid type errors
+ */
+const errorHandlerWrapper = (err: any, req: Request, res: Response, next: NextFunction) => {
+  return errorHandler(err, req, res, next);
 };
 
 /**
@@ -39,13 +76,13 @@ export const registerMiddleware = (app: Express): void => {
  */
 export const registerErrorHandlers = (app: Express): void => {
   // Error handler should be registered last
-  app.use(errorHandler);
+  app.use(errorHandlerWrapper);
 };
 
 // Export all middleware for individual use
-export * from './errorHandler';
-export * from './validateRequest';
-export * from './rateLimiter';
-export * from './logger';
-export * from './security';
-export * from './cache'; 
+export * from './errorHandler.js';
+export * from './validateRequest.js';
+export * from './rateLimiter.js';
+export * from './logger.js';
+export * from './security.js';
+export * from './cache.js'; 

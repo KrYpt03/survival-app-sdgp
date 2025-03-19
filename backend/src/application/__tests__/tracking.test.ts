@@ -1,5 +1,5 @@
 import haversine from 'haversine-distance';
-import { calculateDistance } from '../tracking';
+import { calculateDistance } from '../tracking.js';
 
 describe('calculateDistance Function', () => {
   it('should calculate the distance between two points correctly', () => {

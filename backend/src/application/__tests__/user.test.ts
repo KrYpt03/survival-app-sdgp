@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { createUser, getTeamIdFromCode } from '../user';
-import prisma from '../../infrastructure/db';
-import { isValidClerk } from '../../api/middlewares/authentication-middleware';
-import UnauthorizedError from '../../domain/errors/unauthorized-error';
+import { createUser, getTeamIdFromCode } from '../user.js';
+import prisma from '../../infrastructure/db.js';
+import { isValidClerk } from '../../api/middlewares/authentication-middleware.js';
+import UnauthorizedError from '../../domain/errors/unauthorized-error.js';
 
 // Mock the dependencies
 jest.mock('../../infrastructure/db', () => ({

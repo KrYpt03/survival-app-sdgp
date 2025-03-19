@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import ForbiddenError from "./../../domain/errors/forbidden-error";
+import ForbiddenError from "./../../domain/errors/forbidden-error.js";
 import { clerkClient, getAuth } from "@clerk/express";
 
 export const isAdmin = (req: Request, res: Response, next: NextFunction) => {

@@ -1,5 +1,5 @@
 import express from "express";
-import { getTeamAlerts, resolveAlert } from "../application/alert";
+import { getTeamAlerts, resolveAlert } from "../application/alert.js";
 
 const router = express.Router();
 

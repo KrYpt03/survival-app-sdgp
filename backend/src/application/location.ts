@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import prisma from "../infrastructure/db";
-import { checkGeofencing } from "../application/tracking";
-import NotFoundError from "../domain/errors/not-found-error";
+import prisma from "../infrastructure/db.js";
+import { checkGeofencing } from "../application/tracking.js";
+import NotFoundError from "../domain/errors/not-found-error.js";
 
 /**
  * Updates a user's location and checks if they are within their team's geofence

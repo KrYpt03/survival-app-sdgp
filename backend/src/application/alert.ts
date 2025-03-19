@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import prisma from "../infrastructure/db";
-import NotFoundError from "../domain/errors/not-found-error";
+import prisma from "../infrastructure/db.js";
+import NotFoundError from "../domain/errors/not-found-error.js";
 
 export const getTeamAlerts = async (req: Request<{ teamID: string }>, res: Response, next: NextFunction): Promise<void> => {
   const { teamID } = req.params;

@@ -1,8 +1,8 @@
 import request from 'supertest';
 import express from 'express';
-import adminRoutes from '../admin';
-import { ApiError } from '../middlewares/errorHandler';
-import * as performanceModule from '../../application/performance';
+import adminRoutes from '../admin.js';
+import { ApiError } from '../middlewares/errorHandler.js';
+import * as performanceModule from '../../application/performance.js';
 
 // Mock the application logic
 jest.mock('../../application/performance', () => ({

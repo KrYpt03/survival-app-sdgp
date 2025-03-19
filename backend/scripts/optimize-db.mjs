@@ -5,9 +5,15 @@
  * including creating indexes for frequently queried fields.
  */
 
-const { execSync } = require('child_process');
-const path = require('path');
-const fs = require('fs');
+import { execSync } from 'child_process';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+// Get the directory name
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Path to migration file
 const MIGRATION_FILE = path.join(__dirname, '../prisma/migrations/optimize_indexes/migration.sql');

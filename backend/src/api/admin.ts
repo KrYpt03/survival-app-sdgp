@@ -1,14 +1,14 @@
 import express, { Request, Response, NextFunction } from 'express';
 import asyncHandler from 'express-async-handler';
 import { z } from 'zod';
-import { ApiError } from './middlewares/errorHandler';
+import { ApiError } from './middlewares/errorHandler.js';
 import {
   getPerformanceReport,
   clearMetrics,
   clearApiCache,
   getSystemHealth,
   verifyAdminApiKey
-} from '../application/performance';
+} from '../application/performance.js';
 
 const router = express.Router();
 

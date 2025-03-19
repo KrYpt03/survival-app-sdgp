@@ -1,12 +1,13 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
-import userRoutes from "./api/user";
-import teamRoutes from "./api/team";
-import locationRoutes from "./api/location";
-import alertRoutes from "./api/alert";
-import adminRoutes from "./api/admin";
+import userRoutes from "./api/user.js";
+import teamRoutes from "./api/team.js";
+import locationRoutes from "./api/location.js";
+import alertRoutes from "./api/alert.js";
+import adminRoutes from "./api/admin.js";
 import { clerkMiddleware } from "@clerk/express";
-import { registerMiddleware, registerErrorHandlers, ApiError } from "./api/middlewares";
+import { registerMiddleware, registerErrorHandlers } from "./api/middlewares/index.js";
+import { ApiError } from "./api/middlewares/errorHandler.js";
 
 // Load environment variables
 dotenv.config();

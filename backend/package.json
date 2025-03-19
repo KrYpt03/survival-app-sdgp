@@ -7,8 +7,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "optimize-db": "node scripts/optimize-db.js",
-    "db:health": "node scripts/db-health-check.js",
+    "optimize-db": "node scripts/optimize-db.mjs",
+    "db:health": "node scripts/db-health-check.mjs",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix"
   },

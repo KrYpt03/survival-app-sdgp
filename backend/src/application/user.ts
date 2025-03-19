@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { isValidClerk } from "../api/middlewares/authentication-middleware";
-import UnauthorizedError from "../domain/errors/unauthorized-error";
-import prisma from "../infrastructure/db";
+import { isValidClerk } from "../api/middlewares/authentication-middleware.js";
+import UnauthorizedError from "../domain/errors/unauthorized-error.js";
+import prisma from "../infrastructure/db.js";
 
 export const createUser = async (
   req: Request,

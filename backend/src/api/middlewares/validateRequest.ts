@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { AnyZodObject, ZodError } from 'zod';
-import { ApiError } from './errorHandler';
+import { ApiError } from './errorHandler.js';
 
 /**
  * Middleware to validate request data against a Zod schema

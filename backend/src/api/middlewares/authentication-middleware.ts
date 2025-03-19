@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import UnauthorizedError from "../../domain/errors/unauthorized-error";
+import UnauthorizedError from "../../domain/errors/unauthorized-error.js";
 import { getAuth, WebhookEvent } from "@clerk/express";
-import ValidationError from "../../domain/errors/validation-error";
+import ValidationError from "../../domain/errors/validation-error.js";
 import { IncomingHttpHeaders } from "http";
 import { Webhook } from "svix";
 

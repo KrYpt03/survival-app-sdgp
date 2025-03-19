@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
-import prisma from "../infrastructure/db";
-import { checkGeofencing } from "../application/tracking";
-import {updateLocation, getLocationForTeam} from "../application/location";
+import prisma from "../infrastructure/db.js";
+import { checkGeofencing } from "../application/tracking.js";
+import {updateLocation, getLocationForTeam} from "../application/location.js";
 
 const router = express.Router();
 

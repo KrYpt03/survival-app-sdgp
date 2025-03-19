@@ -5,10 +5,19 @@
  * It can be used to identify slow queries and tables that need optimization.
  */
 
-const { PrismaClient } = require('@prisma/client');
-const fs = require('fs');
-const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '../.env') });
+import { PrismaClient } from '@prisma/client';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import dotenv from 'dotenv';
+
+// Get the directory name
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Load environment variables
+dotenv.config({ path: path.join(__dirname, '../.env') });
 
 // Initialize Prisma client with logging
 const prisma = new PrismaClient({

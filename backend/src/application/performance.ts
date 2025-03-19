@@ -1,5 +1,5 @@
-import { getPerformanceReport as getMetrics, resetMetrics } from '../infrastructure/monitoring';
-import { clearCache } from '../api/middlewares/cache';
+import { getPerformanceReport as getMetrics, resetMetrics } from '../infrastructure/monitoring.js';
+import { clearCache } from '../api/middlewares/cache.js';
 
 /**
  * Get performance metrics report

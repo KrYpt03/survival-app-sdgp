@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { getTeamAlerts, resolveAlert } from '../alert';
-import prisma from '../../infrastructure/db';
-import NotFoundError from '../../domain/errors/not-found-error';
+import { getTeamAlerts, resolveAlert } from '../alert.js';
+import prisma from '../../infrastructure/db.js';
+import NotFoundError from '../../domain/errors/not-found-error.js';
 
 // Mock the prisma client
 jest.mock('../../infrastructure/db', () => ({
