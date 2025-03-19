@@ -18,6 +18,7 @@
     "@langchain/openai": "^0.3.14",
     "@prisma/client": "^6.5.0",
     "@types/express-serve-static-core": "^5.0.6",
+    "autocannon": "^8.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
@@ -32,12 +33,13 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@types/autocannon": "^7.12.6",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.12",
     "@types/mongoose": "^5.11.97",
     "@types/morgan": "^1.9.9",
-    "@types/node": "^22.13.1",
+    "@types/node": "^22.13.10",
     "@types/supertest": "^6.0.2",
     "jest": "^29.7.0",
     "nodemon": "^3.1.9",
@@ -45,6 +47,9 @@
     "supertest": "^6.3.4",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.8.2"
+  },
+  "prisma": {
+    "seed": "ts-node ./prisma/seed.ts"
   }
 }

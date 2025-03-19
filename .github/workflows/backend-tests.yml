@@ -18,9 +18,9 @@ jobs:
       postgres:
         image: postgres:14
         env:
-          POSTGRES_PASSWORD: admin
+          POSTGRES_PASSWORD: thisu2003
           POSTGRES_USER: postgres
-          POSTGRES_DB: survival_app_test_db
+          POSTGRES_DB: survival_app
         ports:
           - 5432:5432
         options: >-
@@ -46,7 +46,7 @@ jobs:
     - name: Create .env file
       working-directory: ./backend
       run: |
-        echo "DATABASE_URL=postgresql://postgres:admin@localhost:5432/survival_app_test_db" > .env
+        echo "DATABASE_URL=postgresql://postgres:thisu2003@localhost:5432/survival_app" > .env
         echo "CLERK_WEBHOOK_SECRET=test_webhook_secret" >> .env
         echo "PORT=5000" >> .env
         echo "NODE_ENV=test" >> .env
