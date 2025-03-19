@@ -1,6 +1,6 @@
 import express from "express";
-import { getAllTeams, getTeamMembers, createTeam, removeTeamMember, changeTeamLeader, leaveTeam, deactivateTeam, activateTeam } from "../application/team";
-import { isAuthenticated } from "./middlewares/authentication-middleware";
+import { getAllTeams, getTeamMembers, createTeam, removeTeamMember, changeTeamLeader, leaveTeam, deactivateTeam, activateTeam } from "../application/team.js";
+import { isAuthenticated } from "./middlewares/authentication-middleware.js";
 
 const router = express.Router();
 

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import prisma from "../infrastructure/db";
-import NotFoundError from "../domain/errors/not-found-error";
-import ValidationError from "../domain/errors/validation-error";
+import prisma from "../infrastructure/db.js";
+import NotFoundError from "../domain/errors/not-found-error.js";
+import ValidationError from "../domain/errors/validation-error.js";
 import { getAuth } from "@clerk/express";
 
 export const getAllTeams = async (
