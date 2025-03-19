@@ -15,13 +15,13 @@ interface LocationUpdateRequest {
 }
 
 /**
- * 📌 Update user location (optimized for polling)
+ * Update user location (optimized for polling)
  * POST /api/location/update
  */
 router.route("/update").post(updateLocation);
 
 /**
- * 📌 Get latest locations of team members (optimized for mobile)
+ * Get latest locations of team members (optimized for mobile)
  * GET /api/location/team/:teamID
  */
 router.route("/team/:teamID").get(getLocationForTeam);

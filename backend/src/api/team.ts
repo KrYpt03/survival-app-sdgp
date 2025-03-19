@@ -5,49 +5,49 @@ import { isAuthenticated } from "./middlewares/authentication-middleware";
 const router = express.Router();
 
 /**
- * 📌 Get all teams
+ * Get all teams
  * GET /api/team
  */
 router.route("/").get(isAuthenticated, getAllTeams);
 
 /**
- * 📌 Get team members with latest location
+ * Get team members with latest location
  * GET /api/team/:teamID/members
  */
 router.route("/:teamID/members").get(isAuthenticated, getTeamMembers);
 
 /**
- * 📌 Create a new team
+ * Create a new team
  * POST /api/team
  */
 router.route("/").post(isAuthenticated, createTeam);
 
 /**
- * 📌 Remove a team member
+ * Remove a team member
  * DELETE /api/team/member
  */
 router.route("/member").delete(isAuthenticated, removeTeamMember);
 
 /**
- * 📌 Change team leader
+ * Change team leader
  * PUT /api/team/leader
  */
 router.route("/leader").put(isAuthenticated, changeTeamLeader);
 
 /**
- * 📌 Leave current team
+ *  Leave current team
  * POST /api/team/leave
  */
 router.route("/leave").post(isAuthenticated, leaveTeam);
 
 /**
- * 📌 Deactivate team
+ * Deactivate team
  * PUT /api/team/deactivate
  */
 router.route("/deactivate").put(isAuthenticated, deactivateTeam);
 
 /**
- * 📌 Activate team
+ * Activate team
  * PUT /api/team/activate
  */
 router.route("/activate").put(isAuthenticated, activateTeam);

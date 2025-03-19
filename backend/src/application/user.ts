@@ -42,7 +42,7 @@ export const createUser = async (
 };
 
 // Helper function to get team ID from team code
-async function getTeamIdFromCode(teamCode: string): Promise<string | null> {
+export async function getTeamIdFromCode(teamCode: string): Promise<string | null> {
   const team = await prisma.team.findUnique({
     where: { teamCode },
     select: { teamID: true },
