@@ -1,4 +1,4 @@
-import express, { Express, NextFunction, Request, Response } from 'express';
+import express, { Express, NextFunction, Request, Response, RequestHandler, ErrorRequestHandler } from 'express';
 import cors from 'cors';
 import { errorHandler } from './errorHandler.js';
 import { loggerMiddleware, addRequestId } from './logger.js';
@@ -9,7 +9,7 @@ import NodeCache from 'node-cache';
 // Simple rate limiter implementation
 const cache = new NodeCache();
 
-const rateLimit = (req: Request, res: Response, next: NextFunction) => {
+const rateLimit: RequestHandler = (req: Request, res: Response, next: NextFunction): void => {
   const key = `${req.ip}:${req.originalUrl}`;
   const windowMs = 60 * 1000; // 1 minute
   const maxRequests = 100; // 100 requests per minute
@@ -20,10 +20,11 @@ const rateLimit = (req: Request, res: Response, next: NextFunction) => {
     cache.set(key, 1, windowMs / 1000);
   } else {
     if (hits >= maxRequests) {
-      return res.status(429).json({
+      res.status(429).json({
         success: false,
         message: 'Too many requests, please try again later',
       });
+      return;
     }
     
     cache.set(key, hits + 1);
@@ -65,8 +66,8 @@ export const registerMiddleware = (app: Express): void => {
 /**
  * Error handler wrapper to avoid type errors
  */
-const errorHandlerWrapper = (err: any, req: Request, res: Response, next: NextFunction) => {
-  return errorHandler(err, req, res, next);
+const errorHandlerWrapper: ErrorRequestHandler = (err: any, req: Request, res: Response, next: NextFunction): void => {
+  errorHandler(err, req, res, next);
 };
 
 /**
