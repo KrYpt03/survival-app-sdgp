@@ -33,31 +33,9 @@ jobs:
       working-directory: ./backend
       run: npm install eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-plugin-import --save-dev
       
-    - name: Create ESLint config if not exists
-      working-directory: ./backend
-      run: |
-        if [ ! -f .eslintrc.js ]; then
-          echo "module.exports = {
-            parser: '@typescript-eslint/parser',
-            plugins: ['@typescript-eslint', 'import'],
-            extends: [
-              'eslint:recommended',
-              'plugin:@typescript-eslint/recommended',
-            ],
-            parserOptions: {
-              ecmaVersion: 2021,
-              sourceType: 'module',
-            },
-            rules: {
-              '@typescript-eslint/no-explicit-any': 'warn',
-              '@typescript-eslint/explicit-module-boundary-types': 'off',
-            },
-          };" > .eslintrc.js
-        fi
-    
     - name: Run ESLint
       working-directory: ./backend
-      run: npx eslint . --ext .ts
+      run: npx eslint . --ext .ts --config eslint.config.mjs
   
   test:
     name: Test

@@ -5,12 +5,33 @@ import typescriptParser from '@typescript-eslint/parser';
 export default [
   js.configs.recommended,
   {
-    files: ["**/*.ts"],
+    files: ["**/*.ts", "**/*.js", "**/*.mjs"],
     plugins: {
       "@typescript-eslint": typescript,
     },
     languageOptions: {
       parser: typescriptParser,
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: {
+        // Node.js globals
+        process: 'readonly',
+        console: 'readonly',
+        __dirname: 'readonly',
+        require: 'readonly',
+        module: 'readonly',
+        setTimeout: 'readonly',
+        // Jest globals
+        jest: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+      },
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
@@ -25,6 +46,8 @@ export default [
       // Node/Express specific rules
       "no-console": "off",
       "no-process-exit": "off",
+      "no-undef": "error",
+      "no-unused-vars": "warn",
     },
   },
 ]; 
