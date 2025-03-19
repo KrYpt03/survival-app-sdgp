@@ -8,26 +8,25 @@ A mobile application for tracking team members in survival scenarios, providing 
 - **Geofencing**: Get alerts when team members leave the designated area
 - **Emergency Alerts**: Send emergency notifications to the team with your location
 - **Team Management**: Create and join teams with a unique code
-- **Offline Support**: Location tracking works even with limited connectivity
 - **Secure Authentication**: User authentication powered by Clerk
 
 ## Project Structure
 
 - `backend/`: Node.js Express backend with PostgreSQL database
-- `mobile/`: React Native mobile application
+- `frontend/`: React Native mobile application
 - `docs/`: Project documentation
 
 ## Prerequisites
 
 - Node.js 14+ and npm
-- PostgreSQL 14+ or Neon cloud database
+- PostgreSQL 17 or Neon cloud database
 - React Native development environment
 
 ## Backend Setup
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/survival-app-sdgp.git
+   git clone https://github.com/jithnukaofficial/survival-app-sdgp.git
    cd survival-app-sdgp/backend
    ```
 
@@ -61,7 +60,7 @@ A mobile application for tracking team members in survival scenarios, providing 
 
 1. **Navigate to the mobile directory**
    ```bash
-   cd ../mobile
+   cd ../frontend
    ```
 
 2. **Install dependencies**

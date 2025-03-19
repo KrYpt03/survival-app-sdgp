@@ -1,125 +1,125 @@
 const autocannon = require('autocannon');
-const { exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
-// Ensure results directory exists
-const resultsDir = path.join(__dirname, 'loadtest-results');
-if (!fs.existsSync(resultsDir)){
-  fs.mkdirSync(resultsDir);
+const DURATION = 10; // seconds
+const CONNECTIONS = 10;
+const REPORT_DIR = path.join(__dirname, 'load-test-reports');
+
+// Ensure report directory exists
+if (!fs.existsSync(REPORT_DIR)) {
+  fs.mkdirSync(REPORT_DIR, { recursive: true });
 }
 
-// Timestamp for unique results file
-const timestamp = new Date().toISOString().replace(/:/g, '-').replace(/\..+/, '');
-const resultsFile = path.join(resultsDir, `results-${timestamp}.json`);
-
-console.log('Starting load test...');
-console.log('Make sure your server is running on port 5000');
+console.log(`Starting load test (${DURATION}s duration, ${CONNECTIONS} connections)`);
+console.log('Server must be running on port 5000');
 
 // Define test scenarios
 const scenarios = [
   {
-    title: 'Get team locations',
-    url: 'http://localhost:5000/api/location/team/team-456',
-    method: 'GET',
-    headers: {
-      'Authorization': 'Bearer test_token'
-    },
+    name: 'health-check',
+    url: 'http://localhost:5000/health',
+    method: 'GET'
   },
   {
-    title: 'Update location',
-    url: 'http://localhost:5000/api/location/update',
-    method: 'POST',
+    name: 'user-listing',
+    url: 'http://localhost:5000/api/user',
+    method: 'GET',
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer test_token'
-    },
-    body: JSON.stringify({
-      userID: 'user-123',
-      latitude: 6.9271,
-      longitude: 79.8612,
-      altitude: 10,
-      speed: 5
-    })
+      'Content-Type': 'application/json'
+    }
+  },
+  {
+    name: 'team-listing',
+    url: 'http://localhost:5000/api/team',
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
   }
 ];
 
-// Update test tokens with real test tokens if available
-try {
-  require('dotenv').config();
-  if (process.env.TEST_AUTH_TOKEN) {
-    scenarios.forEach(scenario => {
-      scenario.headers.Authorization = `Bearer ${process.env.TEST_AUTH_TOKEN}`;
-    });
-  }
-} catch (e) {
-  console.log('Note: No test auth token found in .env file, using dummy token');
-}
-
-// Run load tests sequentially
-async function runLoadTests() {
-  const results = [];
-  
-  for (const scenario of scenarios) {
-    console.log(`Running test: ${scenario.title}`);
+// Run tests sequentially
+async function runTests() {
+  try {
+    const results = {};
     
-    const result = await new Promise((resolve) => {
+    for (const scenario of scenarios) {
+      console.log(`Running scenario: ${scenario.name}`);
+      
       const instance = autocannon({
         url: scenario.url,
+        connections: CONNECTIONS,
+        duration: DURATION,
         method: scenario.method,
-        headers: scenario.headers,
-        body: scenario.body,
-        connections: 10,
-        duration: 10,
-        requests: [
-          {
-            method: scenario.method,
-            path: '/',
-            headers: scenario.headers,
-            body: scenario.body
-          }
-        ]
-      }, (err, result) => {
-        if (err) {
-          console.error(err);
-        }
-        resolve({ scenario: scenario.title, result });
+        headers: scenario.headers || {}
       });
       
-      // Log progress to console
-      autocannon.track(instance);
-    });
+      const result = await new Promise((resolve) => {
+        autocannon.track(instance);
+        
+        instance.on('done', resolve);
+      });
+      
+      results[scenario.name] = result;
+      
+      // Delay between tests to let server recover
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
     
-    results.push(result);
+    // Generate report
+    console.log('Generating report...');
     
-    // Wait a bit between tests
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    const reportPath = path.join(REPORT_DIR, `load-test-${new Date().toISOString().replace(/:/g, '-')}.json`);
+    fs.writeFileSync(reportPath, JSON.stringify(results, null, 2));
+    
+    console.log(`Report saved to: ${reportPath}`);
+    
+    // Print summary
+    console.log('\n=== Load Test Summary ===');
+    console.log('Endpoint | Avg Req/s | Avg Latency | Errors');
+    console.log('---------|-----------|-------------|-------');
+    
+    for (const [name, result] of Object.entries(results)) {
+      console.log(`${name.padEnd(9)} | ${result.requests.average.toFixed(2).padEnd(11)} | ${result.latency.average.toFixed(2)}ms`.padEnd(35) + ` | ${result.errors}`);
+    }
+    
+    // Check the performance metrics from admin API
+    console.log('\nChecking server performance metrics...');
+    
+    // If .env exists, try to get the admin API key
+    let adminKey;
+    try {
+      const envFile = fs.readFileSync(path.join(__dirname, '.env'), 'utf8');
+      const match = envFile.match(/ADMIN_API_KEY=["']?([^"'\r\n]+)/);
+      if (match) {
+        adminKey = match[1];
+      }
+    } catch (e) {
+      console.log('Could not read admin API key from .env file');
+    }
+    
+    if (adminKey && adminKey.length >= 32) {
+      try {
+        // Make a curl request to get metrics
+        const command = `curl -s -X GET http://localhost:5000/api/admin/metrics -H "Content-Type: application/json" -d "{\\"adminKey\\":\\"${adminKey}\\"}" | node -e "console.log(JSON.stringify(JSON.parse(require('fs').readFileSync(0, 'utf8')), null, 2))"`;
+        const metrics = execSync(command, { stdio: 'pipe' }).toString();
+        
+        console.log('\nServer Performance Metrics:');
+        console.log(metrics);
+      } catch (e) {
+        console.log('Error fetching metrics:', e.message);
+      }
+    } else {
+      console.log('No admin API key available to fetch metrics');
+    }
+  } catch (error) {
+    console.error('Error during load testing:', error);
   }
-  
-  // Save results to file
-  fs.writeFileSync(resultsFile, JSON.stringify(results, null, 2));
-  console.log(`Results saved to ${resultsFile}`);
-  
-  // Generate summary
-  console.log('\nSummary:');
-  results.forEach(({scenario, result}) => {
-    console.log(`\n${scenario}:`);
-    console.log(`  Requests/sec: ${result.requests.average}`);
-    console.log(`  Latency (avg): ${result.latency.average} ms`);
-    console.log(`  Latency (max): ${result.latency.max} ms`);
-    console.log(`  HTTP errors: ${result.errors}`);
-  });
 }
 
-// Make sure autocannon is installed
-exec('npm list autocannon || npm install --no-save autocannon', (error) => {
-  if (error) {
-    console.error(`Error installing autocannon: ${error}`);
-    return;
-  }
-  
-  runLoadTests().catch(console.error);
-});
+runTests();
 
 // Usage:
 // node loadtest.js 

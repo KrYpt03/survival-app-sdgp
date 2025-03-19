@@ -1,0 +1,3 @@
+# Prisma Migration File
+migration_id = "manual_optimize"
+checksum = "xpg7hmv7j6"

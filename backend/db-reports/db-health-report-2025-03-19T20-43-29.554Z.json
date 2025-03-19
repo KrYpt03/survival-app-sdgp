@@ -1,0 +1,126 @@
+{
+  "timestamp": "2025-03-19T20:43:26.192Z",
+  "databaseUrl": "postgresql://neondb_owner:****@ep-purple-frog-a1rvne9z-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require",
+  "tableSizes": [
+    {
+      "table_name": "_prisma_migrations",
+      "size": "32 kB",
+      "raw_size": "8192"
+    },
+    {
+      "table_name": "Team",
+      "size": "64 kB",
+      "raw_size": "8192"
+    },
+    {
+      "table_name": "User",
+      "size": "80 kB",
+      "raw_size": "8192"
+    },
+    {
+      "table_name": "UserLocation",
+      "size": "32 kB",
+      "raw_size": "8192"
+    },
+    {
+      "table_name": "Alert",
+      "size": "32 kB",
+      "raw_size": "8192"
+    },
+    {
+      "table_name": "EmergencyAlert",
+      "size": "32 kB",
+      "raw_size": "8192"
+    }
+  ],
+  "tableRowCounts": [
+    {
+      "table": "User",
+      "count": 2
+    },
+    {
+      "table": "_prisma_migrations",
+      "count": 1
+    },
+    {
+      "table": "Team",
+      "count": 1
+    },
+    {
+      "table": "UserLocation",
+      "count": 1
+    },
+    {
+      "table": "Alert",
+      "count": 1
+    },
+    {
+      "table": "EmergencyAlert",
+      "count": 1
+    }
+  ],
+  "tablesWithoutIndexes": [],
+  "slowestQueries": [
+    {
+      "query": "\n      SELECT\n        table_name,\n        pg_size_pretty(pg_total_relation_size('\"' || table_schema || '\".\"' || table_name || '\"')) as size,\n        pg_relation_size('\"' || table_schema || '\".\"' || table_name || '\"') as raw_size\n      FROM information_schema.tables\n      WHERE table_schema = 'public'\n      ORDER BY raw_size DESC;\n    ",
+      "params": "[]",
+      "duration": 206,
+      "timestamp": "2025-03-19T20:43:27.046Z"
+    },
+    {
+      "query": "\n      SELECT table_name\n      FROM information_schema.tables\n      WHERE table_schema = 'public' AND table_type = 'BASE TABLE';\n    ",
+      "params": "[]",
+      "duration": 185,
+      "timestamp": "2025-03-19T20:43:27.233Z"
+    },
+    {
+      "query": "SELECT COUNT(*) as count FROM \"_prisma_migrations\"",
+      "params": "[]",
+      "duration": 171,
+      "timestamp": "2025-03-19T20:43:27.406Z"
+    },
+    {
+      "query": "SELECT COUNT(*) as count FROM \"UserLocation\"",
+      "params": "[]",
+      "duration": 167,
+      "timestamp": "2025-03-19T20:43:27.878Z"
+    },
+    {
+      "query": "SELECT \"public\".\"Team\".\"teamID\", \"public\".\"Team\".\"teamName\", \"public\".\"Team\".\"teamCode\", \"public\".\"Team\".\"range\", \"public\".\"Team\".\"active\", \"public\".\"Team\".\"leaderID\" FROM \"public\".\"Team\" WHERE 1=1 ORDER BY \"public\".\"Team\".\"teamID\" ASC LIMIT $1 OFFSET $2",
+      "params": "[10,0]",
+      "duration": 157,
+      "timestamp": "2025-03-19T20:43:28.632Z"
+    },
+    {
+      "query": "SELECT \"public\".\"Team\".\"teamID\", \"public\".\"Team\".\"teamName\", \"public\".\"Team\".\"teamCode\", \"public\".\"Team\".\"range\", \"public\".\"Team\".\"active\", \"public\".\"Team\".\"leaderID\" FROM \"public\".\"Team\" WHERE \"public\".\"Team\".\"teamID\" IN ($1) OFFSET $2",
+      "params": "[\"cm8g8nxev0002t93g8p0hylxz\",0]",
+      "duration": 155,
+      "timestamp": "2025-03-19T20:43:29.399Z"
+    },
+    {
+      "query": "SELECT COUNT(*) as count FROM \"EmergencyAlert\"",
+      "params": "[]",
+      "duration": 154,
+      "timestamp": "2025-03-19T20:43:28.186Z"
+    },
+    {
+      "query": "SELECT \"public\".\"UserLocation\".\"locationID\", \"public\".\"UserLocation\".\"userID\", \"public\".\"UserLocation\".\"latitude\", \"public\".\"UserLocation\".\"longitude\", \"public\".\"UserLocation\".\"altitude\", \"public\".\"UserLocation\".\"speed\", \"public\".\"UserLocation\".\"timestamp\", \"public\".\"UserLocation\".\"isSynced\" FROM \"public\".\"UserLocation\" WHERE 1=1 ORDER BY \"public\".\"UserLocation\".\"locationID\" ASC LIMIT $1 OFFSET $2",
+      "params": "[10,0]",
+      "duration": 154,
+      "timestamp": "2025-03-19T20:43:28.787Z"
+    },
+    {
+      "query": "SELECT \"public\".\"UserLocation\".\"locationID\", \"public\".\"UserLocation\".\"userID\", \"public\".\"UserLocation\".\"latitude\", \"public\".\"UserLocation\".\"longitude\", \"public\".\"UserLocation\".\"altitude\", \"public\".\"UserLocation\".\"speed\", \"public\".\"UserLocation\".\"timestamp\", \"public\".\"UserLocation\".\"isSynced\" FROM \"public\".\"UserLocation\" WHERE \"public\".\"UserLocation\".\"userID\" IN ($1) ORDER BY \"public\".\"UserLocation\".\"timestamp\" DESC LIMIT $2 OFFSET $3",
+      "params": "[\"cm8g8nxwi0004t93gu84eyzxp\",1,0]",
+      "duration": 154,
+      "timestamp": "2025-03-19T20:43:29.553Z"
+    },
+    {
+      "query": "SELECT COUNT(*) as count FROM \"User\"",
+      "params": "[]",
+      "duration": 153,
+      "timestamp": "2025-03-19T20:43:27.710Z"
+    }
+  ],
+  "durationMs": 3362
+}

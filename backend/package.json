@@ -6,7 +6,11 @@
     "start": "ts-node src/index.ts",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "optimize-db": "node scripts/optimize-db.js",
+    "db:health": "node scripts/db-health-check.js",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix"
   },
   "author": "",
   "license": "ISC",
@@ -33,6 +37,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@eslint/js": "^9.22.0",
     "@types/autocannon": "^7.12.6",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
@@ -41,6 +46,9 @@
     "@types/morgan": "^1.9.9",
     "@types/node": "^22.13.10",
     "@types/supertest": "^6.0.2",
+    "@typescript-eslint/eslint-plugin": "^8.26.1",
+    "@typescript-eslint/parser": "^8.26.1",
+    "eslint": "^9.22.0",
     "jest": "^29.7.0",
     "nodemon": "^3.1.9",
     "prisma": "^6.5.0",
