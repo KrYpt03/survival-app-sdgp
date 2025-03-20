@@ -23,6 +23,7 @@ import * as Linking from "expo-linking"
 // Add this import at the top of the file
 import { testLocationPermission } from "../services/locationTest"
 import React from "react"
+import { StatusBar } from "expo-status-bar"
 
 const { width, height } = Dimensions.get("window")
 
@@ -316,6 +317,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar style="inverted" />
       <View style={styles.header}>
         <TouchableOpacity onPress={() => {}}>
           <Image source={require("../assets/images/arrow-small-left.png")} style={styles.menuIcon} />
@@ -419,6 +421,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F8F9FA",
+    marginTop: 10,
   },
   header: {
     flexDirection: "row",
@@ -448,8 +451,8 @@ const styles = StyleSheet.create({
     height: 20,
   },
   profilePic: {
-    width: 40,
-    height: 40,
+    width: 30,
+    height: 30,
     borderRadius: 20,
   },
   content: {
