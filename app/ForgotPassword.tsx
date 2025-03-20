@@ -44,7 +44,7 @@ export default function ForgotPasswordScreen() {
       });
 
       Alert.alert("Success", "Check your email for password reset instructions!");
-      navigation.navigate("Loging" as never);
+      navigation.navigate("ResetPassword" as never);
     } catch (error) {
       console.error("Error requesting password reset:", error);
       Alert.alert("Error", "Failed to request password reset. Please try again.");
@@ -64,7 +64,7 @@ export default function ForgotPasswordScreen() {
           resizeMode="cover"
         >
           <View style={styles.content}>
-            <TouchableOpacity onPress={() => navigation.navigate("Loging" as never)} style={styles.backButton}>
+            <TouchableOpacity onPress={() => navigation.navigate("ResetPassword" as never)} style={styles.backButton}>
               <ImageBackground
                 style={styles.backArrow}
                 source={require("../assets/images/arrow-small-left.png")}
