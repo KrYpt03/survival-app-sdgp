@@ -16,21 +16,40 @@ import {
 import { useNavigation } from "@react-navigation/native"
 import React from "react"
 
+import { useSignIn } from "@clerk/clerk-expo"
+
 const { width, height } = Dimensions.get("window")
 
 export default function ForgotPasswordScreen() {
   const navigation = useNavigation()
+  const { signIn } = useSignIn();
   const [email, setEmail] = useState("")
 
-  const handleResetPassword = () => {
+  const handleResetPassword = async () => {
     if (!email) {
-      Alert.alert("Error", "Please enter your email address")
-      return
+      Alert.alert("Error", "Please enter your email address");
+      return;
     }
-    // Here you would typically call your password reset API
-    console.log("Password reset requested for:", email)
-    Alert.alert("Success", "Password reset instructions have been sent to your email")
-  }
+
+    try {
+      if (!signIn) {
+        console.error("signIn is undefined");
+        return;
+      }
+
+      // Request password reset using Clerk API
+      await signIn.create({
+        identifier: email,
+        strategy: "reset_password_email_code",
+      });
+
+      Alert.alert("Success", "Check your email for password reset instructions!");
+      navigation.navigate("Loging" as never);
+    } catch (error) {
+      console.error("Error requesting password reset:", error);
+      Alert.alert("Error", "Failed to request password reset. Please try again.");
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
