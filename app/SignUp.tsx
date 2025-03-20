@@ -50,12 +50,13 @@ export default function SignupScreen() {
 
       alert("Check your email for a verification code!");
 
-      // Navigate to a verification screen (optional)
-      navigation.navigate("VerifyEmail" as never);
-    } catch (error) {
-      console.error("Error signing up:", error);
-    }
-  };
+       // Navigate to VerifyEmail Screen
+    navigation.navigate("VerifyEmail" as never);
+  } catch (error) {
+    console.error("Error signing up:", error);
+    alert("Signup failed. Please try again.");
+  }
+};
 
   const handleLogin = () => {
     navigation.navigate("Loging" as never)// Here you would typically navigate to the main screen
