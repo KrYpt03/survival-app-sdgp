@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useSignIn } from "@clerk/clerk-expo"; // Import Clerk
+import React from "react";
 
 const { width, height } = Dimensions.get("window");
 

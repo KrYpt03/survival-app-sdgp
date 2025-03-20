@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useSignUp } from "@clerk/clerk-expo"; // Import Clerk Sign-Up Hook
+import React from "react";
 
 const { width, height } = Dimensions.get("window");
 

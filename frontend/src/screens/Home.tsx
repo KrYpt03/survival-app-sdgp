@@ -17,6 +17,7 @@ import { useNavigation } from "@react-navigation/native"
 import { format } from "date-fns"
 import axios from "axios"
 import NavigationBar from "../components/NavigationBar"
+import React from "react"
 
 const { width, height } = Dimensions.get("window")
 

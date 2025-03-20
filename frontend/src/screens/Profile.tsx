@@ -14,6 +14,7 @@ import {
 } from "react-native"
 import { profileAPI, type Profile } from "../api/profile"
 import NavigationBar from "../components/NavigationBar"
+import React from "react"
 
 const { width, height } = Dimensions.get("window")
 

@@ -3,6 +3,7 @@
 import { useEffect } from "react"
 import { View, Text, ImageBackground, SafeAreaView, StyleSheet, Dimensions } from "react-native"
 import { useNavigation } from "@react-navigation/native"
+import React from "react"
 
 const { width, height } = Dimensions.get("window")
 

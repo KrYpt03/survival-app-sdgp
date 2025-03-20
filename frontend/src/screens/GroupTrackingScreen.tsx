@@ -1,4 +1,4 @@
-import type React from "react"
+import React from "react"
 import { useState } from "react"
 import { View, StyleSheet, Button } from "react-native"
 import MapView, { Circle } from "react-native-maps"
