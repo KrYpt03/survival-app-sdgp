@@ -15,6 +15,9 @@ import {
 import { useNavigation } from "@react-navigation/native"
 import React from "react"
 
+//import clerk authentication hooks
+import { useSignUp, useAuth } from "@clerk/clerk-expo";
+
 const { width, height } = Dimensions.get("window")
 
 export default function SignupScreen() {
@@ -22,11 +25,37 @@ export default function SignupScreen() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
-  const handleSignUp = () => {
-    console.log("Sign Up pressed with:", email, password)
-    // Here you would typically call your sign-up API
-    // For now, we'll just log the credentials
-  }
+  // Clerk Authentication Hooks
+  const { signUp } = useSignUp(); // Get signUp object
+  const { isLoaded } = useAuth(); // Get auth state
+
+  // Handle Sign-Up with Clerk Authentication
+  const handleSignUp = async () => {
+    if (!isLoaded) return;
+
+    try {
+      if (!signUp) {
+        console.error("signUp is undefined");
+        return;
+      }
+
+      // Create a new user with email & password
+      await signUp.create({
+        emailAddress: email,
+        password,
+      });
+
+      // Send email verification
+      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+
+      alert("Check your email for a verification code!");
+
+      // Navigate to a verification screen (optional)
+      navigation.navigate("VerifyEmail" as never);
+    } catch (error) {
+      console.error("Error signing up:", error);
+    }
+  };
 
   const handleLogin = () => {
     navigation.navigate("Loging" as never)// Here you would typically navigate to the main screen
