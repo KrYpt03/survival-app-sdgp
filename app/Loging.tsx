@@ -15,6 +15,9 @@ import {
 import { useNavigation } from "@react-navigation/native"
 import React from "react"
 
+//import clerk authentication hooks
+import {useSignIn, useAuth} from "@clerk/clerk-expo";
+
 const { width, height } = Dimensions.get("window")
 
 export default function LoginScreen() {
@@ -22,9 +25,36 @@ export default function LoginScreen() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
-  const handleLogin = () => {
-    console.log("Login pressed with:", email, password)
-  }
+  // Clerk Authentication Hooks
+  const { signIn, setActive } = useSignIn();
+  const { isLoaded } = useAuth();
+
+  // Handle Login with Clerk Authentication
+  const handleLogin = async () => {
+    if (!isLoaded) return;
+
+    try {
+      if (!signIn) {
+        console.error("signIn is undefined");
+        return;
+      }
+      const result = await signIn.create({
+        identifier: email, // Email or username
+        password,
+      });
+
+      if (result.status === "complete") {
+        // Set the active session and navigate to HomeScreen
+        await setActive({ session: result.createdSessionId });
+        navigation.navigate("HomeScreen" as never);
+      } else {
+        console.log("Login incomplete", result);
+      }
+    } catch (error) {
+      console.error("Error logging in:", error);
+    }
+  };
+
 
   const handleSignUp = () => {
     navigation.navigate("SignUp" as never)
