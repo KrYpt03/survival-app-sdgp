@@ -229,13 +229,13 @@ export default function ProfileScreen() {
     {
       title: "Settings",
       icon: require("../assets/images/profile/4cb993d5-dda5-4e63-9f6d-075c8b4a71d4.png"),
-      //onPress: () => router.push("/settings"), // Navigate to settings screen (lowercase)
+      onPress: () => router.push("/settings"), // Navigate to settings screen (lowercase)
     },
-    {
-      title: "Version",
-      icon: require("../assets/images/profile/82255941-f9f9-4824-9d2b-8065fd791f18.png"),
-      onPress: () => {},
-    },
+    // {
+    //   title: "Version",
+    //   icon: require("../assets/images/profile/82255941-f9f9-4824-9d2b-8065fd791f18.png"),
+    //   onPress: () => {},
+    // },
   ]
 
   if (!isAuthLoaded || !isUserLoaded || loading) {

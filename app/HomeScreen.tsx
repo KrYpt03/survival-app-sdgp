@@ -359,12 +359,15 @@ export default function HomeScreen() {
               </View>
             ))}
           </View>
+
           <View style={styles.joinCreateButtons}>
-            <TouchableOpacity style={styles.joinButton} onPress={handleJoinTeam}>
-              <Text style={styles.joinButtonText}>JOIN</Text>
-            </TouchableOpacity>
+            <Link href="/enterTeamCode" asChild>
+              <TouchableOpacity style={styles.joinButton}>
+                <Text style={styles.joinButtonText}>JOIN</Text>
+              </TouchableOpacity>
+            </Link>
             <Link href="/createTeam" asChild>
-              <TouchableOpacity style={styles.createButton} >
+              <TouchableOpacity style={styles.createButton}>
                 <Text style={styles.createButtonText}>Create</Text>
               </TouchableOpacity>
             </Link>

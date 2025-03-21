@@ -97,7 +97,12 @@ export default function RootLayout() {
           name="settings"
           options={{ title: "Settings" }}
         />
+        <Stack.Screen
+          name="enterTeamCode"
+          options={{ title: "Enter Team Code" }}
+        />
       </Stack>
     </ClerkProvider>
+    
   );
 }
