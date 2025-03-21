@@ -1,6 +1,6 @@
 "use client"
 
-import type React from "react"
+import React from "react"
 import { useEffect } from "react"
 import { View, Text, StyleSheet, ImageBackground, Dimensions, StatusBar } from "react-native"
 import { useNavigation } from "@react-navigation/native"
