@@ -101,6 +101,10 @@ export default function RootLayout() {
           name="enterTeamCode"
           options={{ title: "Enter Team Code" }}
         />
+        <Stack.Screen
+          name="kicked-screen"
+          options={{ title: "Kicked Member" }}
+        />
       </Stack>
     </ClerkProvider>
     

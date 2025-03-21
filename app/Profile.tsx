@@ -80,8 +80,8 @@ export default function ProfileScreen() {
         name: `${user.firstName || ""} ${user.lastName || ""}`.trim() || "User",
         email: user.primaryEmailAddress?.emailAddress || "",
         bio: (user.unsafeMetadata?.bio as string) || "Adventure enthusiast and nature lover",
-        phone: user.phoneNumbers[0]?.phoneNumber || "+1 234 567 8900",
-        location: (user.unsafeMetadata?.location as string) || "New York, USA",
+        phone: user.phoneNumbers[0]?.phoneNumber || "+94 XXX XXX XXX",
+        location: (user.unsafeMetadata?.location as string) || "Your Location",
         profileImage: user.imageUrl || "https://images.unsplash.com/photo-1633332755192-727a05c4013d",
         // Default values for app-specific data
         rewardPoints: 1250,
@@ -211,11 +211,11 @@ export default function ProfileScreen() {
 
   // Define menu items inside the component to access router
   const menuItems = [
-    {
-      title: "Profile",
-      icon: require("../assets/images/profile/c18763fe-fd51-4541-ab35-e6b3f3a20705.png"),
-      onPress: () => {},
-    },
+    // {
+    //   title: "Profile",
+    //   icon: require("../assets/images/profile/c18763fe-fd51-4541-ab35-e6b3f3a20705.png"),
+    //   onPress: () => {},
+    // },
     {
       title: "Bookmarked",
       icon: require("../assets/images/profile/742ef63e-eb0e-4b6d-ac71-268c589ac9eb.png"),

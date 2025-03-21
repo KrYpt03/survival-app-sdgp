@@ -50,6 +50,9 @@ const Index = () => {
       <Link href="/enterTeamCode">
         <Text style={{ color: 'blue', marginTop: 20 }}>Go to Enter Team Code</Text>
       </Link>
+      <Link href="/kicked-screen">
+        <Text style={{ color: 'blue', marginTop: 20 }}>Go to Kicked member</Text>
+      </Link>
     </View>
   );
 }

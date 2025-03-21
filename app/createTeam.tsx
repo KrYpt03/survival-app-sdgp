@@ -32,7 +32,6 @@ const CreateTeam = () => {
           <StatusBar style="inverted" />
           <Text style={styles.heading}>Create Team</Text>
           <View style={styles.innerContainer}>
-            <StatusBar style="inverted" />
             <View style={styles.textContainer}>
               <Text style={styles.title}>Enter group name</Text>
               <TextInput

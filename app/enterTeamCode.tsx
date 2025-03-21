@@ -24,7 +24,6 @@ const enterTeamCode = () => {
           <StatusBar style="inverted" />
           <Text style={styles.heading}>Join Team</Text>
           <View style={styles.innerContainer}>
-            <StatusBar style="inverted" />
             <View style={styles.textContainer}>
               <Text style={styles.title}>Enter Team Code</Text>
               <TextInput

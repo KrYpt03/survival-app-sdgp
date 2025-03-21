@@ -2,8 +2,9 @@
 
 import React from "react"
 import { useEffect } from "react"
-import { View, Text, StyleSheet, ImageBackground, Dimensions, StatusBar } from "react-native"
+import { View, Text, StyleSheet, ImageBackground, Dimensions } from "react-native"
 import { useNavigation } from "@react-navigation/native"
+import { StatusBar } from 'expo-status-bar';
 
 const { width, height } = Dimensions.get("window")
 
@@ -21,14 +22,14 @@ const KickedScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar style="inverted" />
       <ImageBackground
         source={require("../assets/images/882a1e39-7619-4d2d-8934-01ec2145083f.png")}
         style={styles.backgroundImage}
         resizeMode="cover"
       >
         <View style={styles.contentContainer}>
-          <Text style={styles.oopsText}>oops...</Text>
+          <Text style={styles.oopsText}>Oops...</Text>
           <Text style={styles.messageText}>You have been removed from the group</Text>
         </View>
       </ImageBackground>
@@ -47,12 +48,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   contentContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 20,
+    width: 320,
+    padding: 20,
+    backgroundColor: '#ece6f0',
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+    
   },
   oopsText: {
-    fontSize: 32,
+    fontSize: 42,
     fontWeight: "bold",
     color: "#333",
     marginBottom: 10,
