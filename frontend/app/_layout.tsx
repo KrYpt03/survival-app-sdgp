@@ -4,8 +4,12 @@ import { StatusBar } from 'expo-status-bar';
 import React from "react";
 import * as SecureStore from "expo-secure-store";
 import { TokenCache } from "@clerk/clerk-expo";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const CLERK_PUBLISHABLE_KEY = "pk_test_cmVuZXdlZC1ncm91c2UtNTAuY2xlcmsuYWNjb3VudHMuZGV2JA";
+
+// React Query client instance
+const queryClient = new QueryClient();
 
 // Create a secure token cache for Clerk (optional but recommended)
 const tokenCache: TokenCache = {
@@ -28,6 +32,7 @@ const tokenCache: TokenCache = {
 export default function RootLayout() {
   return (
     <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY} tokenCache={tokenCache}>
+      <QueryClientProvider client={queryClient}>
       <Stack
         screenOptions={{ 
           headerShown: false,
@@ -110,6 +115,7 @@ export default function RootLayout() {
           options={{ title: "Reset Password" }}
         />
       </Stack>
+      </QueryClientProvider>
     </ClerkProvider>
     
   );

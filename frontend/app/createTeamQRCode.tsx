@@ -1,26 +1,56 @@
-import { View, Text, ImageBackground, StyleSheet, TouchableOpacity } from 'react-native';
-import React from 'react';
+import { View, Text, ImageBackground, StyleSheet, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import React, { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import QRCode from 'react-native-qrcode-svg';
 import { useLocalSearchParams } from 'expo-router';
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
 import Feather from '@expo/vector-icons/Feather';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-
-// Function to generate a 9-digit code
-const generate9DigitCode = () => {
-  return Math.floor(100000000 + Math.random() * 900000000).toString();
-};
+// import * as Clipboard from 'expo-clipboard'; // Uncomment this if you're using clipboard functionality
 
 const QRCodeScreen = () => {
   const { groupName } = useLocalSearchParams<{ groupName?: string }>();
 
-  // Generate 9-digit code
-  const generatedCode = generate9DigitCode();
-  
-  // Create combined value for QR code - JSON format for structured data
+  const leaderID = 'user_123'; // Get this from auth context or Clerk
+  const range = 150; // Assume range in meters, should be passed or selected earlier
+
+  const createTeamMutation = useMutation({
+    mutationFn: async () => {
+      const response = await axios.post('https://trail-guard.onrender.com/api/teamr', {
+        teamName: groupName,
+        leaderID,
+        range,
+      });
+      return response.data;
+    },
+    onError: (error: any) => {
+      console.error(error);
+      Alert.alert('Error', error.response?.data?.message || 'Failed to create team');
+    },
+  });
+
+  useEffect(() => {
+    if (groupName) {
+      createTeamMutation.mutate();
+    }
+  }, [groupName]);
+
+  if (createTeamMutation.isPending) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#fff" />
+        <Text style={{ color: 'white', marginTop: 10 }}>Creating Team...</Text>
+      </View>
+    );
+  }
+
+  const teamData = createTeamMutation.data;
+  const teamCode = teamData?.teamCode;
+
   const qrCodeValue = JSON.stringify({
     groupName,
-    code: generatedCode
+    code: teamCode,
   });
 
   return (
@@ -30,42 +60,31 @@ const QRCodeScreen = () => {
     >
       <StatusBar style="inverted" />
       <View style={styles.container}>
-
         <View style={styles.header}>
-          {/* Display Group Name */}
-          {groupName && <Text style={styles.groupName}>Group {groupName} </Text>}
-          <MaterialIcons name="drive-file-rename-outline" size={35}/>
+          {groupName && <Text style={styles.groupName}>Group {groupName}</Text>}
+          <MaterialIcons name="drive-file-rename-outline" size={35} />
         </View>
-        
 
-        {/* Display QR Code with both group name and code */}
-        {groupName && (
+        {teamCode && (
           <View style={styles.qrContainer}>
             <QRCode value={qrCodeValue} size={200} />
           </View>
         )}
         <Text style={styles.qrtitle}>Group Code</Text>
 
-        {/* Display the 9-digit code with icon */}
         <View style={styles.codeContainer}>
-          <Text style={styles.codeText}>{generatedCode}</Text>
+          <Text style={styles.codeText}>{teamCode}</Text>
           <TouchableOpacity onPress={() => {
-            // Add clipboard functionality
-            if (generatedCode) {
-              // Note: You'll need to import Clipboard from expo-clipboard
-              // and implement the actual copy functionality
-              console.log('Copying code:', generatedCode);
-            }
+            console.log('Copying code:', teamCode);
+            // Clipboard.setStringAsync(teamCode); // Uncomment if using Clipboard
           }}>
             <Feather style={styles.copyIconStyle} name="copy" size={24} />
           </TouchableOpacity>
         </View>
 
-        
         <TouchableOpacity style={styles.startButton}>
-          <Text style={styles.buttonText} >Start</Text>
+          <Text style={styles.buttonText}>Start</Text>
         </TouchableOpacity>
-        
       </View>
     </ImageBackground>
   );
@@ -99,7 +118,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 20,
-    
   },
   codeText: {
     fontSize: 25,
@@ -123,10 +141,15 @@ const styles = StyleSheet.create({
   },
   copyIconStyle: {
     color: 'white',
-
   },
   header: {
-    flexDirection: 'row', 
+    flexDirection: 'row',
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: '#000',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
