@@ -147,6 +147,22 @@ COPY package*.json ./
 RUN npm ci --only=production
 ```
 
+### Build Output Note
+
+When built with TypeScript, the compiled JavaScript files are output to the `dist/src` directory, not directly in `dist`. Make sure your start command points to the correct location:
+
+```json
+"scripts": {
+  "start": "node dist/src/index.js"
+}
+```
+
+And if using a Dockerfile, set the CMD to:
+
+```dockerfile
+CMD ["node", "dist/src/index.js"]
+```
+
 ## License
 
 This project is licensed under the ISC License.

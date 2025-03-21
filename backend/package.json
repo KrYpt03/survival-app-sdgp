@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "prisma generate && nodemon --exec node --loader ts-node/esm src/index.ts",
-    "start": "node dist/index.js",
+    "start": "node dist/src/index.js",
     "test": "cross-env NODE_ENV=test jest",
     "test:watch": "cross-env NODE_ENV=test jest --watch",
     "test:coverage": "cross-env NODE_ENV=test jest --coverage",
