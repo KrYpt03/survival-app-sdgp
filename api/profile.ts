@@ -1,26 +1,54 @@
-// Define profile types
 export interface Profile {
-  name: string
-  email: string
-  rewardPoints: number
-  travelTrips: number
-  bucketList: number
+  id: string;
+  name: string;
+  email: string;
+  bio: string;
+  phone: string;
+  location: string;
+  profileImage: string;
+  rewardPoints: number;
+  travelTrips: number;
+  bucketList: number;
 }
 
-// Mock API function to get profile data
+export interface EditableProfile {
+  name?: string;
+  bio?: string;
+  phone?: string;
+  location?: string;
+  profileImage?: string;
+}
+
 export const profileAPI = {
   getProfile: async (token: string): Promise<Profile> => {
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    // Mock response
+    // Mock API call - replace with actual API call
     return {
-      name: "Kevin",
-      email: "kevingomesmathra@gmail.com",
-      rewardPoints: 360,
-      travelTrips: 238,
-      bucketList: 473,
-    }
+      id: '1',
+      name: 'John Doe',
+      email: 'john@example.com',
+      bio: 'Adventure enthusiast and nature lover',
+      phone: '+1 234 567 8900',
+      location: 'New York, USA',
+      profileImage: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d',
+      rewardPoints: 1250,
+      travelTrips: 15,
+      bucketList: 8,
+    };
   },
-}
 
+  updateProfile: async (token: string, data: EditableProfile): Promise<Profile> => {
+    // Mock API call - replace with actual API call
+    return {
+      id: '1',
+      name: data.name || 'John Doe',
+      email: 'john@example.com',
+      bio: data.bio || 'Adventure enthusiast and nature lover',
+      phone: data.phone || '+1 234 567 8900',
+      location: data.location || 'New York, USA',
+      profileImage: data.profileImage || 'https://images.unsplash.com/photo-1633332755192-727a05c4013d',
+      rewardPoints: 1250,
+      travelTrips: 15,
+      bucketList: 8,
+    };
+  },
+};
