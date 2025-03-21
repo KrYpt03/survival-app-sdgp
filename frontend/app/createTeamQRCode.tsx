@@ -17,7 +17,7 @@ const QRCodeScreen = () => {
 
   const createTeamMutation = useMutation({
     mutationFn: async () => {
-      const response = await axios.post('https://trail-guard.onrender.com/api/teamr', {
+      const response = await axios.post('https://trail-guard.onrender.com/api/team', {
         teamName: groupName,
         leaderID,
         range,
