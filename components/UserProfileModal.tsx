@@ -1,5 +1,5 @@
 import type React from "react"
-import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native"
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native"
 import { X } from "lucide-react-native"
 
 interface UserProfileModalProps {
@@ -8,6 +8,7 @@ interface UserProfileModalProps {
   onKick: () => void
   onAppointLeader: () => void
   showLeaderOption: boolean
+  children?: React.ReactNode
 }
 
 const UserProfileModal: React.FC<UserProfileModalProps> = ({
@@ -16,6 +17,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({
   onKick,
   onAppointLeader,
   showLeaderOption,
+  children,
 }) => {
   return (
     <View style={styles.container}>
@@ -28,7 +30,11 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({
         </View>
 
         <View style={styles.profileImageContainer}>
-          <Image source={require("../public/images/member-avatar.png")} style={styles.profileImage} />
+          {children || (
+            <View style={styles.profileImagePlaceholder}>
+              <Text style={styles.profileImagePlaceholderText}>{username.charAt(0)}</Text>
+            </View>
+          )}
         </View>
 
         <View style={styles.actions}>
@@ -78,11 +84,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 20,
   },
-  profileImage: {
+  profileImagePlaceholder: {
     width: 80,
     height: 80,
     borderRadius: 40,
     backgroundColor: "#ffdddd",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  profileImagePlaceholderText: {
+    fontSize: 32,
+    fontWeight: "bold",
+    color: "#ff4d4f",
   },
   actions: {
     gap: 10,
