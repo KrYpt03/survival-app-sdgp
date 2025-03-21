@@ -1,5 +1,4 @@
 import { View, Text } from 'react-native';
-import React from 'react';
 import { Link } from 'expo-router';
 
 const Index = () => {
@@ -14,6 +13,7 @@ const Index = () => {
       <Link href="/welcomeScreen">
         <Text style={{ color: 'blue', marginTop: 20 }}>Go to Welcome Page</Text>
       </Link>
+      
       <Link href="/activitiesBar">
         <Text style={{ color: 'blue', marginTop: 20 }}>Go to Active Bar Page</Text>
       </Link>
@@ -22,6 +22,9 @@ const Index = () => {
       </Link>
       <Link href="/createTeam">
         <Text style={{ color: 'blue', marginTop: 20 }}>Go to Create team Page</Text>
+      </Link>
+      <Link href={"/settings"}>
+        <Text style={{ color: 'blue', marginTop: 20 }}>Go to Settings Page</Text>
       </Link>
     </View>
   );
