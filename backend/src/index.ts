@@ -28,6 +28,16 @@ app.get("/health", (req: Request, res: Response) => {
   });
 });
 
+// Root route handler to prevent 404 errors for root path
+app.get("/", (req: Request, res: Response) => {
+  res.status(200).json({
+    message: "Survival App API",
+    version: "1.0.0",
+    documentation: "/api/docs",
+    health: "/health"
+  });
+});
+
 // Register API routes
 app.use("/api/user", userRoutes);
 app.use("/api/team", teamRoutes);

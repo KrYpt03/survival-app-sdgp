@@ -89,9 +89,14 @@ export const performanceMonitoring = (req: Request, res: Response, next: NextFun
     // Store updated metrics
     metricsCache.set(route, updatedMetrics);
     
-    // Set performance headers for debugging
-    if (process.env.NODE_ENV === 'development') {
-      res.setHeader('X-Response-Time', `${responseTime}ms`);
+    // Set performance headers for debugging, only if headers haven't been sent yet
+    if (process.env.NODE_ENV === 'development' && !res.headersSent) {
+      try {
+        res.setHeader('X-Response-Time', `${responseTime}ms`);
+      } catch (err) {
+        // Ignore errors when trying to set headers after they are sent
+        console.log('Could not set performance headers, response already sent');
+      }
     }
   });
   
