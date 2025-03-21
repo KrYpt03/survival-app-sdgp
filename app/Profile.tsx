@@ -14,6 +14,7 @@ import {
 } from "react-native"
 import { profileAPI, type Profile } from "../api/profile"
 import NavigationBar from "../components/NavigationBar"
+import { useRouter } from "expo-router" // Import useRouter from expo-router
 import React from "react"
 
 const { width, height } = Dimensions.get("window")
@@ -22,6 +23,7 @@ export default function ProfileScreen() {
   const [loading, setLoading] = useState(true)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const router = useRouter() // Initialize the router
 
   useEffect(() => {
     loadProfile()
@@ -41,6 +43,35 @@ export default function ProfileScreen() {
       setLoading(false)
     }
   }
+
+  // Define menu items inside the component to access router
+  const menuItems = [
+    {
+      title: "Profile",
+      icon: require("../assets/images/profile/c18763fe-fd51-4541-ab35-e6b3f3a20705.png"),
+      onPress: () => {},
+    },
+    {
+      title: "Bookmarked",
+      icon: require("../assets/images/profile/742ef63e-eb0e-4b6d-ac71-268c589ac9eb.png"),
+      onPress: () => {},
+    },
+    {
+      title: "Previous Trips",
+      icon: require("../assets/images/profile/880b7236-e0bd-4040-a4ec-156e305815ab.png"),
+      onPress: () => router.push("/PreviousTrips"), // Navigate to PreviousTrips screen
+    },
+    {
+      title: "Settings",
+      icon: require("../assets/images/profile/4cb993d5-dda5-4e63-9f6d-075c8b4a71d4.png"),
+      onPress: () => {},
+    },
+    {
+      title: "Version",
+      icon: require("../assets/images/profile/82255941-f9f9-4824-9d2b-8065fd791f18.png"),
+      onPress: () => {},
+    },
+  ]
 
   if (loading) {
     return (
@@ -281,33 +312,4 @@ const styles = StyleSheet.create({
     height: 24,
   },
 })
-
-const menuItems = [
-  {
-    title: "Profile",
-    icon: require("../assets/images/profile/c18763fe-fd51-4541-ab35-e6b3f3a20705.png"),
-    onPress: () => {},
-  },
-  {
-    title: "Bookmarked",
-    icon: require("../assets/images/profile/742ef63e-eb0e-4b6d-ac71-268c589ac9eb.png"),
-    onPress: () => {},
-  },
-  {
-    title: "Previous Trips",
-    icon: require("../assets/images/profile/880b7236-e0bd-4040-a4ec-156e305815ab.png"),
-    onPress: () => {},
-  },
-  {
-    title: "Settings",
-    icon: require("../assets/images/profile/4cb993d5-dda5-4e63-9f6d-075c8b4a71d4.png"),
-    onPress: () => {},
-  },
-  {
-    title: "Version",
-    icon: require("../assets/images/profile/82255941-f9f9-4824-9d2b-8065fd791f18.png"),
-    onPress: () => {},
-  },
-]
-
 

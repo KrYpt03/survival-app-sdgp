@@ -5,11 +5,11 @@ import { useNavigation } from "@react-navigation/native"
 const navigationItems = [
     {
         icon: require("../assets/images/profile/4757d4cc-108a-4570-8e32-ac0514f1c5b2.png"),
-        screen: "Home",
+        screen: "HomeScreen",
     },
     {
         icon: require("../assets/images/profile/0d19fe1c-1a37-4dc8-a582-9441af5ef8c5.png"),
-        screen: "Search",
+        screen: "activitiesBar",
     },
     {
         icon: require("../assets/images/profile/bd137700-8dc1-48fb-92c2-08643c077010.png"),

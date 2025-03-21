@@ -14,7 +14,7 @@ const ActivitiesBar = () => {
       const endDate = new Date();
       endDate.setDate(startDate.getDate() + 4); // 5 days range
 
-      const options = { day: 'numeric', month: 'short' };
+      const options = { day: 'numeric' as const, month: 'short' as const };
       const start = startDate.toLocaleDateString('en-US', options);
       const end = endDate.toLocaleDateString('en-US', options);
 

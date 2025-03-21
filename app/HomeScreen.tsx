@@ -331,11 +331,11 @@ export default function HomeScreen() {
             onSubmitEditing={handleSearch}
           />
           <TouchableOpacity onPress={handleSearch}>
-            <Image source={require("../assets/images/arrow-small-left.png")} style={styles.searchIcon} />
+            <Image source={require("../assets/images/profile/0d19fe1c-1a37-4dc8-a582-9441af5ef8c5.png")} style={styles.searchIcon} />
           </TouchableOpacity>
         </View>
         <TouchableOpacity onPress={() => navigation.navigate("Profile" as never)}>
-          <Image source={require("../assets/settings.png")} style={styles.profilePic} />
+          <Image source={require("../assets/images/profile/9a893182-d17f-4cd1-92be-e15f7bc7d227.png")} style={styles.profilePic} />
         </TouchableOpacity>
       </View>
 

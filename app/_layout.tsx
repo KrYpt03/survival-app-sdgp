@@ -20,8 +20,12 @@ export default function RootLayout() {
           options={{ title: "Welcome", headerShown: false }}
         />
         <Stack.Screen 
-          name="logging" 
-          options={{ title: "Login", headerTitleStyle: { color: '#7928CA' }}}
+          name="Loging" 
+          options={{ title: "Loging", headerShown: false }}
+        />
+        <Stack.Screen
+          name="ForgotPassword"
+          options={{ title: "Forgot Password", headerShown: false }}
         />
         <Stack.Screen 
           name="activitiesBar" 
@@ -50,6 +54,14 @@ export default function RootLayout() {
         <Stack.Screen
           name="GroupTrackingScreen"
           options={{ title: "Group Tracking", headerShown: false }}
+        />
+        <Stack.Screen
+          name="PreviousTrips"
+          options={{ title: "Previous Trips", headerShown: false }}
+        />
+        <Stack.Screen
+          name="ResetPassword"
+          options={{ title: "Reset Password", headerShown: false }}
         />
       </Stack>
     </ClerkProvider>

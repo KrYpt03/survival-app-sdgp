@@ -38,6 +38,12 @@ const Index = () => {
       <Link href="/GroupTrackingScreen">
         <Text style={{ color: 'blue', marginTop: 20 }}>Go to Group Tracking Page</Text>
       </Link>
+      <Link href="/PreviousTrips">
+        <Text style={{ color: 'blue', marginTop: 20 }}>Go to Previous Trips Page</Text>
+      </Link>
+      <Link href="/ResetPassword">
+        <Text style={{ color: 'blue', marginTop: 20 }}>Go to Reset Password Page</Text>
+      </Link>
     </View>
   );
 }
