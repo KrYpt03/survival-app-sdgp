@@ -7,10 +7,29 @@ import { TokenCache } from "@clerk/clerk-expo";
 
 const CLERK_PUBLISHABLE_KEY = "pk_test_cmVuZXdlZC1ncm91c2UtNTAuY2xlcmsuYWNjb3VudHMuZGV2JA";
 
+// Create a secure token cache for Clerk (optional but recommended)
+const tokenCache: TokenCache = {
+  async getToken(key: string) {
+    try {
+      return SecureStore.getItemAsync(key);
+    } catch (err) {
+      return null;
+    }
+  },
+  async saveToken(key: string, value: string) {
+    try {
+      return SecureStore.setItemAsync(key, value);
+    } catch (err) {
+      return;
+    }
+  },
+};
+
 export default function RootLayout() {
   return (
-    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY} tokenCache={undefined}>
+    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY} tokenCache={tokenCache}>
       <Stack>
+        <StatusBar style="inverted" />
         <Stack.Screen 
           name="index" 
           options={{ headerShown: false }}
@@ -22,6 +41,10 @@ export default function RootLayout() {
         <Stack.Screen 
           name="Loging" 
           options={{ title: "Loging", headerShown: false }}
+        />
+        <Stack.Screen
+          name="SignUp"
+          options={{ title: "Sign Up", headerShown: false }}
         />
         <Stack.Screen
           name="ForgotPassword"
@@ -62,6 +85,10 @@ export default function RootLayout() {
         <Stack.Screen
           name="ResetPassword"
           options={{ title: "Reset Password", headerShown: false }}
+        />
+        <Stack.Screen
+          name="settings"
+          options={{ title: "Settings", headerShown: false }}
         />
       </Stack>
     </ClerkProvider>
