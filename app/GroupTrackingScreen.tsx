@@ -36,7 +36,7 @@ const GroupTrackingScreen: React.FC = () => {
   const [demoState, setDemoState] = useState<string>("normal") // normal, warning, kicked, leader
 
   const [groupMembers, setGroupMembers] = useState<GroupMember[]>([
-    { id: 1, name: "Thisara", latitude: 6.799, longitude: 80.798 },
+    { id: 1, name: "Thisula", latitude: 6.799, longitude: 80.798 },
     { id: 2, name: "Kevin", latitude: 6.798, longitude: 80.808 },
     { id: 3, name: "Akindu", latitude: 6.797, longitude: 80.815 },
   ])
