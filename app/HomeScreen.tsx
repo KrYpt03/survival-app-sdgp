@@ -404,17 +404,7 @@ export default function HomeScreen() {
           </View>
         )}
 
-        {/* Refresh Button */}
-        <TouchableOpacity style={styles.refreshButton} onPress={handleRefresh}>
-          <Text style={styles.refreshButtonText}>Refresh Location Data</Text>
-        </TouchableOpacity>
-        {/* Add this button right after the "Refresh Location Data" button in the ScrollView */}
-        <TouchableOpacity
-          style={[styles.refreshButton, { backgroundColor: "#FF5722", marginTop: 10 }]}
-          onPress={testLocationPermission}
-        >
-          <Text style={styles.refreshButtonText}>Test Location Permission</Text>
-        </TouchableOpacity>
+        
       </ScrollView>
 
       <NavigationBar />
