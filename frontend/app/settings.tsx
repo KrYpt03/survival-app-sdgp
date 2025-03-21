@@ -4,6 +4,8 @@ import React, { useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import { Link } from 'expo-router'
 import NavigationBar from '../components/NavigationBar';
+import { SignOutButton } from './SignOutButton'
+
 
 const settings = () => {
   // Set default state to true for both notifications and dark mode
@@ -36,7 +38,7 @@ const settings = () => {
           <View style={styles.settingRow}>
             <Ionicons name="notifications-outline" size={24} color={darkModeEnabled ? "white" : "black"} />
             <Text numberOfLines={1} style={[styles.settingText, darkModeEnabled && styles.darkText]}>Notifications</Text>
-            <Switch 
+            <Switch
               value={notificationsEnabled}
               onValueChange={() => setNotificationsEnabled(previousState => !previousState)}
             />
@@ -50,8 +52,8 @@ const settings = () => {
           <View style={styles.settingRow}>
             <Ionicons name="moon-outline" size={24} color={darkModeEnabled ? "white" : "black"} />
             <Text numberOfLines={1} style={[styles.settingText, darkModeEnabled && styles.darkText]}>Dark mode</Text>
-            <Switch 
-              value={darkModeEnabled} 
+            <Switch
+              value={darkModeEnabled}
               onValueChange={() => setDarkModeEnabled(previousState => !previousState)}
             />
           </View>
@@ -99,12 +101,8 @@ const settings = () => {
               <Text style={[styles.settingText, darkModeEnabled && styles.darkText]}>Changelog</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity>
-            <View style={styles.logout}>
-              <Ionicons name="exit-outline" size={24} color={darkModeEnabled ? "white" : "black"} />
-              <Text style={[styles.settingText, darkModeEnabled && styles.darkText]}>Logout</Text>
-            </View>
-          </TouchableOpacity>
+          <SignOutButton />
+
         </View>
       </ScrollView>
       <NavigationBar />
@@ -198,8 +196,8 @@ const styles = StyleSheet.create({
   backButton: {
     padding: 5,
     left: 0,
-    top: 0, 
-    marginLeft: 5, 
+    top: 0,
+    marginLeft: 5,
     marginTop: 20,
   },
   sectionHeader: {

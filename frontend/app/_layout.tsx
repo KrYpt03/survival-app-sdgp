@@ -1,35 +1,14 @@
 import { ClerkProvider } from "@clerk/clerk-expo";
+import { tokenCache } from "@clerk/clerk-expo/token-cache";
 import { Stack } from "expo-router";
 import { StatusBar } from 'expo-status-bar';
 import React from "react";
-import * as SecureStore from "expo-secure-store";
-import { TokenCache } from "@clerk/clerk-expo";
-
-const CLERK_PUBLISHABLE_KEY = "pk_test_cmVuZXdlZC1ncm91c2UtNTAuY2xlcmsuYWNjb3VudHMuZGV2JA";
-
-// Create a secure token cache for Clerk (optional but recommended)
-const tokenCache: TokenCache = {
-  async getToken(key: string) {
-    try {
-      return SecureStore.getItemAsync(key);
-    } catch (err) {
-      return null;
-    }
-  },
-  async saveToken(key: string, value: string) {
-    try {
-      return SecureStore.setItemAsync(key, value);
-    } catch (err) {
-      return;
-    }
-  },
-};
 
 export default function RootLayout() {
   return (
-    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY} tokenCache={tokenCache}>
+    <ClerkProvider tokenCache={tokenCache}>
       <Stack
-        screenOptions={{ 
+        screenOptions={{
           headerShown: false,
           animation: 'slide_from_right',
           animationDuration: 200,
@@ -37,48 +16,48 @@ export default function RootLayout() {
         }}
       >
         <StatusBar style="inverted" />
-        <Stack.Screen 
-          name="index" 
-          options={{ }}
+        <Stack.Screen
+          name="index"
+          options={{}}
         />
-        <Stack.Screen 
-          name="welcomeScreen" 
-          options={{ title: "Welcome"}}
+        <Stack.Screen
+          name="welcomeScreen"
+          options={{ title: "Welcome" }}
         />
-        <Stack.Screen 
-          name="Loging" 
-          options={{ title: "Loging"}}
+        <Stack.Screen
+          name="Loging"
+          options={{ title: "Loging" }}
         />
         <Stack.Screen
           name="SignUp"
-          options={{ title: "Sign Up"}}
+          options={{ title: "Sign Up" }}
         />
         <Stack.Screen
           name="ForgotPassword"
-          options={{ title: "Forgot Password"}}
+          options={{ title: "Forgot Password" }}
         />
-        <Stack.Screen 
-          name="activitiesBar" 
-          options={{ title: "Active"}}
-        />
-        <Stack.Screen 
-          name="imageScanner" 
-          options={{ title: "Active"}}
-        />
-        <Stack.Screen 
-          name="createTeam" 
+        <Stack.Screen
+          name="activitiesBar"
           options={{ title: "Active" }}
         />
-        <Stack.Screen 
-          name="Profile" 
+        <Stack.Screen
+          name="imageScanner"
           options={{ title: "Active" }}
         />
-        <Stack.Screen 
-          name="HomeScreen" 
+        <Stack.Screen
+          name="createTeam"
           options={{ title: "Active" }}
         />
-        <Stack.Screen 
-          name="QRScannerScreen" 
+        <Stack.Screen
+          name="Profile"
+          options={{ title: "Active" }}
+        />
+        <Stack.Screen
+          name="HomeScreen"
+          options={{ title: "Active" }}
+        />
+        <Stack.Screen
+          name="QRScannerScreen"
           options={{ title: "Active" }}
         />
         <Stack.Screen
@@ -111,6 +90,6 @@ export default function RootLayout() {
         />
       </Stack>
     </ClerkProvider>
-    
+
   );
 }
