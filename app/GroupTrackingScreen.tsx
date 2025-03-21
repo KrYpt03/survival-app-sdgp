@@ -1,6 +1,6 @@
 "use client"
 
-import type React from "react"
+import React from "react"
 import { useState, useEffect } from "react"
 import { View, Text, StyleSheet, TouchableOpacity, Modal, StatusBar } from "react-native"
 import MapView, { Circle } from "react-native-maps"
