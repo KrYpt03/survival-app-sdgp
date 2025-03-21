@@ -11,8 +11,8 @@
     "db:health": "node scripts/db-health-check.mjs",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
-    "build": "tsc",
-    "postinstall": "prisma generate || echo 'Prisma generate failed, but continuing build'"
+    "build": "npm install && tsc",
+    "postinstall": "prisma generate"
   },
   "author": "",
   "license": "ISC",
