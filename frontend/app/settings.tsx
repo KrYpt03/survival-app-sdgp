@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { Link } from 'expo-router'
 import NavigationBar from '../components/NavigationBar';
 import { SignOutButton } from './SignOutButton'
+import { SignedIn } from '@clerk/clerk-expo'
 
 
 const settings = () => {
@@ -101,7 +102,9 @@ const settings = () => {
               <Text style={[styles.settingText, darkModeEnabled && styles.darkText]}>Changelog</Text>
             </View>
           </TouchableOpacity>
-          <SignOutButton />
+          <SignedIn>
+            <SignOutButton />
+          </SignedIn>
 
         </View>
       </ScrollView>
