@@ -1,8 +1,9 @@
 import axios from "axios"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import * as Linking from "expo-linking"
+import { env } from '../config/env'
 
-const API_BASE_URL = "https://your-api-base-url.com/api"
+const API_BASE_URL = env.qrApiBaseUrl
 
 const api = axios.create({
   baseURL: API_BASE_URL,

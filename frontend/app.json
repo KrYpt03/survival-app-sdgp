@@ -8,6 +8,18 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "extra": {
+      "apiBaseUrl": "https://trail-guard.onrender.com/api",
+      "qrApiBaseUrl": "https://your-api-base-url.com/api",
+      "tripApiBaseUrl": "https://your-backend-api.com/api",
+      "clerkPublishableKey": "pk_test_your_clerk_publishable_key",
+      "googleMapsApiKey": "your_google_maps_api_key",
+      "appEnv": "development",
+      "debug": true,
+      "eas": {
+        "projectId": "your-eas-project-id"
+      }
+    },
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
