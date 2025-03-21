@@ -1,6 +1,7 @@
 import type React from "react"
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native"
 import { X } from "lucide-react-native"
+import { useNavigation } from "@react-navigation/native"
 
 interface UserProfileModalProps {
   username: string
@@ -19,6 +20,16 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({
   showLeaderOption,
   children,
 }) => {
+  const navigation = useNavigation()
+
+  const handleKick = () => {
+    onClose()
+    onKick()
+
+    // If this is the current user being kicked (in a real app, you'd check this)
+    // navigation.navigate("KickedScreen" as never)
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.content}>
@@ -44,9 +55,11 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({
             </TouchableOpacity>
           )}
 
-          <TouchableOpacity style={styles.kickButton} onPress={onKick}>
-            <Text style={styles.kickButtonText}>Kick</Text>
-          </TouchableOpacity>
+          {showLeaderOption && (
+            <TouchableOpacity style={styles.kickButton} onPress={handleKick}>
+              <Text style={styles.kickButtonText}>Kick</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </View>
