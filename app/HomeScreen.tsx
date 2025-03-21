@@ -356,9 +356,14 @@ export default function HomeScreen() {
               </View>
             ))}
           </View>
-          <TouchableOpacity style={styles.joinButton} onPress={handleJoinTeam}>
-            <Text style={styles.joinButtonText}>JOIN</Text>
-          </TouchableOpacity>
+          <View style={styles.joinCreateButtons}>
+            <TouchableOpacity style={styles.joinButton} onPress={handleJoinTeam}>
+              <Text style={styles.joinButtonText}>JOIN</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.createButton}>
+              <Text style={styles.createButtonText}>Create</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Location Card */}
@@ -422,6 +427,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F8F9FA",
     marginTop: 10,
+    
   },
   header: {
     flexDirection: "row",
@@ -495,14 +501,29 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
+  joinCreateButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+
   joinButton: {
     backgroundColor: "#4CAF50",
     borderRadius: 20,
     paddingVertical: 8,
     paddingHorizontal: 16,
-    alignSelf: "flex-start",
+    marginRight: 10,
+  },
+  createButton: {
+    backgroundColor: "#007BFF",
+    borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
   },
   joinButtonText: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
+  },
+  createButtonText: {
     color: "#FFFFFF",
     fontWeight: "bold",
   },
