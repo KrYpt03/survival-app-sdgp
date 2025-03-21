@@ -5,14 +5,12 @@ import { StatusBar } from 'expo-status-bar';
 import React from "react";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-const CLERK_PUBLISHABLE_KEY = "pk_test_cmVuZXdlZC1ncm91c2UtNTAuY2xlcmsuYWNjb3VudHMuZGV2JA";
-
 // React Query client instance
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
   return (
-    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY} tokenCache={tokenCache}>
+    <ClerkProvider tokenCache={tokenCache}>
       <QueryClientProvider client={queryClient}>
       <Stack
         screenOptions={{
