@@ -1,4 +1,4 @@
-import type React from "react"
+import React from "react"
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native"
 import { X } from "lucide-react-native"
 import { useNavigation } from "@react-navigation/native"
