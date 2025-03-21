@@ -18,7 +18,7 @@ const CreateTeam = () => {
   const handleDone = () => {
     console.log('Group Name:', groupName);
     router.push({
-      pathname: '/',
+      pathname: '/createTeamQRCode',
       params: { groupName }, // Ensure the key name matches what is expected in qrCode.tsx
     });
   };
