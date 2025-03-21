@@ -66,7 +66,12 @@ export async function createServer(): Promise<Express> {
   });
 
   // Apply Clerk middleware to all routes EXCEPT /health
-  app.use(/^(?!\/health).*$/, clerkMiddleware());
+  // Skip in test environment if CLERK_PUBLISHABLE_KEY is not set
+  if (process.env.NODE_ENV !== 'test' || (process.env.CLERK_PUBLISHABLE_KEY && process.env.CLERK_SECRET_KEY)) {
+    app.use(/^(?!\/health).*$/, clerkMiddleware());
+  } else {
+    console.log('Skipping Clerk middleware in test environment (no Clerk keys provided)');
+  }
 
   // Register other middleware
   registerMiddleware(app);

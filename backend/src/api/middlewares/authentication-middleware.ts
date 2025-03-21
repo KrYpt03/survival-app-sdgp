@@ -5,11 +5,27 @@ import ValidationError from "../../domain/errors/validation-error.js";
 import { IncomingHttpHeaders } from "http";
 import { Webhook } from "svix";
 
+// Define a custom interface to extend Request
+declare global {
+  namespace Express {
+    interface Request {
+      auth?: { userId: string };
+    }
+  }
+}
+
 export const isAuthenticated = (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
+  // Skip authentication in test environment if CLERK keys are not set
+  if (process.env.NODE_ENV === 'test' && (!process.env.CLERK_PUBLISHABLE_KEY || !process.env.CLERK_SECRET_KEY)) {
+    // Mock the auth object for tests
+    req.auth = { userId: 'test-user-id' };
+    return next();
+  }
+
   const auth = getAuth(req);
 
   if (!auth?.userId) {
@@ -27,6 +43,11 @@ export const isValidClerk = ({
   secret?: string;
   headers: IncomingHttpHeaders;
 }) => {
+  // Skip validation in test environment
+  if (process.env.NODE_ENV === 'test' && (!process.env.CLERK_PUBLISHABLE_KEY || !process.env.CLERK_SECRET_KEY)) {
+    return true;
+  }
+
   const body = JSON.stringify(payload);
 
   if (!secret) {

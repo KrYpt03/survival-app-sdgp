@@ -1,0 +1,6 @@
+backend/jest.config.js
+backend/package-lock.json
+backend/package.json
+backend/src/api/middlewares/authentication-middleware.ts
+backend/src/infrastructure/server.ts
+backend/src/tests/integration/api.test.ts
