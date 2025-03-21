@@ -66,7 +66,8 @@ const styles = StyleSheet.create({
   innerContainer: {
     width: 320,
     padding: 20,
-    backgroundColor: '#ece6f0',
+    backgroundColor: 'white',
+    // backgroundColor: '#ece6f0',
     borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',

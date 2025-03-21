@@ -41,10 +41,12 @@ const settings = () => {
               onValueChange={() => setNotificationsEnabled(previousState => !previousState)}
             />
           </View>
-          <View style={styles.settingRow}>
-            <Ionicons name="key-outline" size={24} color={darkModeEnabled ? "white" : "black"} />
-            <Text style={[styles.settingText, darkModeEnabled && styles.darkText]}>Change password</Text>
-          </View>
+          <Link href="/ForgotPassword" asChild>
+            <TouchableOpacity style={styles.settingRow}>
+              <Ionicons name="key-outline" size={24} color={darkModeEnabled ? "white" : "black"} />
+              <Text style={[styles.settingText, darkModeEnabled && styles.darkText]}>Change password</Text>
+            </TouchableOpacity>
+          </Link>
           <View style={styles.settingRow}>
             <Ionicons name="moon-outline" size={24} color={darkModeEnabled ? "white" : "black"} />
             <Text numberOfLines={1} style={[styles.settingText, darkModeEnabled && styles.darkText]}>Dark mode</Text>

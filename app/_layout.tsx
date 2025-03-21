@@ -105,6 +105,10 @@ export default function RootLayout() {
           name="kicked-screen"
           options={{ title: "Kicked Member" }}
         />
+        <Stack.Screen
+          name="reset-password"
+          options={{ title: "Reset Password" }}
+        />
       </Stack>
     </ClerkProvider>
     
