@@ -311,3 +311,52 @@ export const activateTeam = async (
     next(error);
   }
 };
+
+export const joinTeam = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const { teamCode } = req.body;
+  const { userId: clerkID } = getAuth(req);
+
+  try {
+    if (!clerkID) {
+      throw new ValidationError("User not authenticated");
+    }
+
+    const currentUser = await prisma.user.findUnique({
+      where: { clerkID },
+    });
+
+    if (!currentUser) {
+      throw new NotFoundError("Current user not found");
+    }
+
+    // Check if the user is already in a team
+    if (currentUser.teamID) {
+      throw new ValidationError("User is already in a team");
+    }
+
+    // Find team by code
+    const team = await prisma.team.findFirst({
+      where: { teamCode },
+    });
+
+    if (!team) {
+      throw new NotFoundError("Team with this code not found");
+    }
+
+    // Add user to the team
+    await prisma.user.update({
+      where: { userID: currentUser.userID },
+      data: { teamID: team.teamID },
+    });
+
+    res.status(200).json({ 
+      message: "Successfully joined team", 
+      team 
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+    
+    

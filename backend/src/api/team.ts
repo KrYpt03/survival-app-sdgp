@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllTeams, getTeamMembers, createTeam, removeTeamMember, changeTeamLeader, leaveTeam, deactivateTeam, activateTeam } from "../application/team.js";
+import { getAllTeams, getTeamMembers, createTeam, removeTeamMember, changeTeamLeader, leaveTeam, deactivateTeam, activateTeam, joinTeam } from "../application/team.js";
 import { isAuthenticated } from "./middlewares/authentication-middleware.js";
 
 const router = express.Router();
@@ -51,5 +51,11 @@ router.route("/deactivate").put( deactivateTeam);
  * PUT /api/team/activate
  */
 router.route("/activate").put( activateTeam);
+
+/**
+ * Join a team using team code
+ * POST /api/team/join
+ */
+router.route("/join").post( joinTeam);
 
 export default router;

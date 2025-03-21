@@ -1,5 +1,5 @@
 {
-  "name": "aidf-4-back-end",
+  "name": "trailguard-backend",
   "version": "1.0.0",
   "scripts": {
     "dev": "prisma generate && nodemon --exec node --loader ts-node/esm src/index.ts",
