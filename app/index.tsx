@@ -44,6 +44,9 @@ const Index = () => {
       <Link href="/ResetPassword">
         <Text style={{ color: 'blue', marginTop: 20 }}>Go to Reset Password Page</Text>
       </Link>
+      {/* <Link href="/settings">
+        <Text style={{ color: 'blue', marginTop: 20 }}>Go to Settings Page</Text>
+      </Link> */}
     </View>
   );
 }
