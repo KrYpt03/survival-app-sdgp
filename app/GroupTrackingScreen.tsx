@@ -1,34 +1,92 @@
-"use client"
+import React from "react"
+import { useState } from "react"
+import { View, StyleSheet, Button } from "react-native"
+import MapView, { Circle } from "react-native-maps"
 
-import type React from "react"
-import { useState, useEffect } from "react"
-import { View, Text, StyleSheet, TouchableOpacity, Image, Modal, StatusBar } from "react-native"
-import MapView, { Circle, Marker } from "react-native-maps"
-import { useNavigation } from "@react-navigation/native"
-import { ArrowLeft, Bell } from "lucide-react-native"
-import NavigationBar from "../components/NavigationBar"
+// Fix for Marker typing issue
+import { Marker as RawMarker } from "react-native-maps"
+const Marker = RawMarker as unknown as React.FC<any>
+
 import AlertPopup from "../components/AlertPopup"
-import UserProfileModal from "../components/UserProfileModal"
+import NavigationBar from "../components/NavigationBar"
 
 interface GroupMember {
-  id: number
-  name: string
-  latitude: number
-  longitude: number
-  isOutsideZone?: boolean
+    id: number
+    name: string
+    latitude: number
+    longitude: number
 }
 
 const GroupTrackingScreen: React.FC = () => {
-  const navigation = useNavigation()
-  const [showWarning, setShowWarning] = useState<boolean>(false)
-  const [showKickedAlert, setShowKickedAlert] = useState<boolean>(false)
-  const [showLeaderNotification, setShowLeaderNotification] = useState<boolean>(false)
-  const [selectedMember, setSelectedMember] = useState<GroupMember | null>(null)
-  const [showUserProfile, setShowUserProfile] = useState<boolean>(false)
-  const [isLeader, setIsLeader] = useState<boolean>(true)
+    const [showWarning, setShowWarning] = useState<boolean>(false)
 
-  const [groupMembers, setGroupMembers] = useState<GroupMember[]>([
-    { id: 1, name: "Thisara", latitude: 6.799, longitude: 80.798 },
-    { id: 2, name: "Kevin", latitude: 6.798, longitude: 80.808 },
-    { id: 3, name: "Akindu", latitude: 6.797, longitude: 80.815 },
-  ])
+    const groupMembers: GroupMember[] = [
+        { id: 1, name: "Member 1", latitude: 6.8, longitude: 80.8 },
+        { id: 2, name: "Member 2", latitude: 6.81, longitude: 80.81 },
+    ]
+
+    return (
+        <View style={styles.container}>
+            <MapView
+                style={styles.map}
+                initialRegion={{
+                    latitude: 6.8,
+                    longitude: 80.8,
+                    latitudeDelta: 0.02,
+                    longitudeDelta: 0.02,
+                }}
+            >
+                <Circle
+                    center={{ latitude: 6.8, longitude: 80.8 }}
+                    radius={500}
+                    strokeColor="red"
+                    fillColor="rgba(255,0,0,0.1)"
+                />
+                {groupMembers.map((member) => (
+                    <Marker
+                        key={member.id}
+                        coordinate={{ latitude: member.latitude, longitude: member.longitude }}
+                        pinColor="red"
+                        title={member.name}
+                    />
+                ))}
+            </MapView>
+
+            {showWarning && (
+                <AlertPopup
+                    title="Warning!"
+                    message="Member 1 has moved outside the designated operational zone."
+                    onClose={() => setShowWarning(false)}
+                />
+            )}
+
+            <View style={styles.endButtonContainer}>
+                <Button title="End" color="red" onPress={() => console.log("Tracking Ended")} />
+            </View>
+
+            {/* Add the NavigationBar component */}
+            <NavigationBar />
+        </View>
+    )
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        position: "relative",
+    },
+    map: {
+        flex: 1,
+    },
+    endButtonContainer: {
+        position: "absolute",
+        bottom: 90, // This position accounts for the NavigationBar height
+        right: 20,
+        backgroundColor: "red",
+        padding: 10,
+        borderRadius: 20,
+    },
+})
+
+export default GroupTrackingScreen
+
