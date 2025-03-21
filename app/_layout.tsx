@@ -28,67 +28,74 @@ const tokenCache: TokenCache = {
 export default function RootLayout() {
   return (
     <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY} tokenCache={tokenCache}>
-      <Stack>
+      <Stack
+        screenOptions={{ 
+          headerShown: false,
+          animation: 'slide_from_right',
+          animationDuration: 200,
+          contentStyle: { backgroundColor: 'white' }
+        }}
+      >
         <StatusBar style="inverted" />
         <Stack.Screen 
           name="index" 
-          options={{ headerShown: false }}
+          options={{ }}
         />
         <Stack.Screen 
           name="welcomeScreen" 
-          options={{ title: "Welcome", headerShown: false }}
+          options={{ title: "Welcome"}}
         />
         <Stack.Screen 
           name="Loging" 
-          options={{ title: "Loging", headerShown: false }}
+          options={{ title: "Loging"}}
         />
         <Stack.Screen
           name="SignUp"
-          options={{ title: "Sign Up", headerShown: false }}
+          options={{ title: "Sign Up"}}
         />
         <Stack.Screen
           name="ForgotPassword"
-          options={{ title: "Forgot Password", headerShown: false }}
+          options={{ title: "Forgot Password"}}
         />
         <Stack.Screen 
           name="activitiesBar" 
-          options={{ title: "Active", headerShown: false }}
+          options={{ title: "Active"}}
         />
         <Stack.Screen 
           name="imageScanner" 
-          options={{ title: "Active", headerShown: false }}
+          options={{ title: "Active"}}
         />
         <Stack.Screen 
           name="createTeam" 
-          options={{ title: "Active", headerShown: false }}
+          options={{ title: "Active" }}
         />
         <Stack.Screen 
           name="Profile" 
-          options={{ title: "Active", headerShown: false }}
+          options={{ title: "Active" }}
         />
         <Stack.Screen 
           name="HomeScreen" 
-          options={{ title: "Active", headerShown: false }}
+          options={{ title: "Active" }}
         />
         <Stack.Screen 
           name="QRScannerScreen" 
-          options={{ title: "Active", headerShown: false }}
+          options={{ title: "Active" }}
         />
         <Stack.Screen
           name="GroupTrackingScreen"
-          options={{ title: "Group Tracking", headerShown: false }}
+          options={{ title: "Group Tracking" }}
         />
         <Stack.Screen
           name="PreviousTrips"
-          options={{ title: "Previous Trips", headerShown: false }}
+          options={{ title: "Previous Trips" }}
         />
         <Stack.Screen
           name="ResetPassword"
-          options={{ title: "Reset Password", headerShown: false }}
+          options={{ title: "Reset Password" }}
         />
         <Stack.Screen
           name="settings"
-          options={{ title: "Settings", headerShown: false }}
+          options={{ title: "Settings" }}
         />
       </Stack>
     </ClerkProvider>
