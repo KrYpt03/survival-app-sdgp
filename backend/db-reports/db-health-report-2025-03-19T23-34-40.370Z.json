@@ -1,0 +1,126 @@
+{
+  "timestamp": "2025-03-19T23:34:36.891Z",
+  "databaseUrl": "postgresql://neondb_owner:****@ep-purple-frog-a1rvne9z-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require",
+  "tableSizes": [
+    {
+      "table_name": "_prisma_migrations",
+      "size": "32 kB",
+      "raw_size": "8192"
+    },
+    {
+      "table_name": "Team",
+      "size": "64 kB",
+      "raw_size": "8192"
+    },
+    {
+      "table_name": "User",
+      "size": "80 kB",
+      "raw_size": "8192"
+    },
+    {
+      "table_name": "UserLocation",
+      "size": "32 kB",
+      "raw_size": "8192"
+    },
+    {
+      "table_name": "Alert",
+      "size": "32 kB",
+      "raw_size": "8192"
+    },
+    {
+      "table_name": "EmergencyAlert",
+      "size": "32 kB",
+      "raw_size": "8192"
+    }
+  ],
+  "tableRowCounts": [
+    {
+      "table": "_prisma_migrations",
+      "count": 2
+    },
+    {
+      "table": "User",
+      "count": 2
+    },
+    {
+      "table": "Team",
+      "count": 1
+    },
+    {
+      "table": "UserLocation",
+      "count": 1
+    },
+    {
+      "table": "Alert",
+      "count": 1
+    },
+    {
+      "table": "EmergencyAlert",
+      "count": 1
+    }
+  ],
+  "tablesWithoutIndexes": [],
+  "slowestQueries": [
+    {
+      "query": "\n      SELECT\n        table_name,\n        pg_size_pretty(pg_total_relation_size('\"' || table_schema || '\".\"' || table_name || '\"')) as size,\n        pg_relation_size('\"' || table_schema || '\".\"' || table_name || '\"') as raw_size\n      FROM information_schema.tables\n      WHERE table_schema = 'public'\n      ORDER BY raw_size DESC;\n    ",
+      "params": "[]",
+      "duration": 215,
+      "timestamp": "2025-03-19T23:34:37.853Z"
+    },
+    {
+      "query": "SELECT COUNT(*) as count FROM \"_prisma_migrations\"",
+      "params": "[]",
+      "duration": 170,
+      "timestamp": "2025-03-19T23:34:38.175Z"
+    },
+    {
+      "query": "SELECT \"public\".\"User\".\"userID\", \"public\".\"User\".\"clerkID\", \"public\".\"User\".\"username\", \"public\".\"User\".\"email\", \"public\".\"User\".\"createdAt\", \"public\".\"User\".\"lastLatitude\", \"public\".\"User\".\"lastLongitude\", \"public\".\"User\".\"teamID\" FROM \"public\".\"User\" WHERE \"public\".\"User\".\"teamID\" IS NOT NULL ORDER BY \"public\".\"User\".\"userID\" ASC LIMIT $1 OFFSET $2",
+      "params": "[10,0]",
+      "duration": 170,
+      "timestamp": "2025-03-19T23:34:40.068Z"
+    },
+    {
+      "query": "SELECT COUNT(*) as count FROM \"EmergencyAlert\"",
+      "params": "[]",
+      "duration": 167,
+      "timestamp": "2025-03-19T23:34:38.948Z"
+    },
+    {
+      "query": "\n      SELECT t.table_name\n      FROM information_schema.tables t\n      LEFT JOIN pg_indexes i ON t.table_name = i.tablename\n      WHERE t.table_schema = 'public' AND t.table_type = 'BASE TABLE'\n      GROUP BY t.table_name\n      HAVING COUNT(i.indexname) = 0;\n    ",
+      "params": "[]",
+      "duration": 161,
+      "timestamp": "2025-03-19T23:34:39.115Z"
+    },
+    {
+      "query": "SELECT COUNT(*) as count FROM \"User\"",
+      "params": "[]",
+      "duration": 159,
+      "timestamp": "2025-03-19T23:34:38.490Z"
+    },
+    {
+      "query": "SELECT \"public\".\"UserLocation\".\"locationID\", \"public\".\"UserLocation\".\"userID\", \"public\".\"UserLocation\".\"latitude\", \"public\".\"UserLocation\".\"longitude\", \"public\".\"UserLocation\".\"altitude\", \"public\".\"UserLocation\".\"speed\", \"public\".\"UserLocation\".\"timestamp\", \"public\".\"UserLocation\".\"isSynced\" FROM \"public\".\"UserLocation\" WHERE 1=1 ORDER BY \"public\".\"UserLocation\".\"locationID\" ASC LIMIT $1 OFFSET $2",
+      "params": "[10,0]",
+      "duration": 154,
+      "timestamp": "2025-03-19T23:34:39.585Z"
+    },
+    {
+      "query": "SELECT \"public\".\"Alert\".\"alertID\", \"public\".\"Alert\".\"userID\", \"public\".\"Alert\".\"teamID\", \"public\".\"Alert\".\"type\"::text, \"public\".\"Alert\".\"message\", \"public\".\"Alert\".\"lastLatitude\", \"public\".\"Alert\".\"lastLongitude\", \"public\".\"Alert\".\"timestamp\", \"public\".\"Alert\".\"resolved\" FROM \"public\".\"Alert\" WHERE 1=1 ORDER BY \"public\".\"Alert\".\"alertID\" ASC LIMIT $1 OFFSET $2",
+      "params": "[10,0]",
+      "duration": 153,
+      "timestamp": "2025-03-19T23:34:39.740Z"
+    },
+    {
+      "query": "SELECT COUNT(*) as count FROM \"Team\"",
+      "params": "[]",
+      "duration": 152,
+      "timestamp": "2025-03-19T23:34:38.329Z"
+    },
+    {
+      "query": "SELECT \"public\".\"Team\".\"teamID\", \"public\".\"Team\".\"teamName\", \"public\".\"Team\".\"teamCode\", \"public\".\"Team\".\"range\", \"public\".\"Team\".\"active\", \"public\".\"Team\".\"leaderID\" FROM \"public\".\"Team\" WHERE \"public\".\"Team\".\"teamID\" IN ($1) OFFSET $2",
+      "params": "[\"cm8g8nxev0002t93g8p0hylxz\",0]",
+      "duration": 150,
+      "timestamp": "2025-03-19T23:34:40.219Z"
+    }
+  ],
+  "durationMs": 3479
+}

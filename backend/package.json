@@ -2,15 +2,17 @@
   "name": "aidf-4-back-end",
   "version": "1.0.0",
   "scripts": {
-    "dev": "prisma generate && nodemon src/index.ts",
-    "start": "ts-node src/index.ts",
+    "dev": "prisma generate && nodemon --exec node --loader ts-node/esm src/index.ts",
+    "start": "node dist/index.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "optimize-db": "node scripts/optimize-db.mjs",
     "db:health": "node scripts/db-health-check.mjs",
     "lint": "eslint . --ext .ts",
-    "lint:fix": "eslint . --ext .ts --fix"
+    "lint:fix": "eslint . --ext .ts --fix",
+    "build": "tsc",
+    "postinstall": "prisma generate"
   },
   "author": "",
   "license": "ISC",
