@@ -24,6 +24,9 @@ import * as Linking from "expo-linking"
 import { testLocationPermission } from "../services/locationTest"
 import React from "react"
 import { StatusBar } from "expo-status-bar"
+import { Link } from "expo-router"
+
+
 
 const { width, height } = Dimensions.get("window")
 
@@ -360,9 +363,11 @@ export default function HomeScreen() {
             <TouchableOpacity style={styles.joinButton} onPress={handleJoinTeam}>
               <Text style={styles.joinButtonText}>JOIN</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.createButton}>
-              <Text style={styles.createButtonText}>Create</Text>
-            </TouchableOpacity>
+            <Link href="/createTeam" asChild>
+              <TouchableOpacity style={styles.createButton} >
+                <Text style={styles.createButtonText}>Create</Text>
+              </TouchableOpacity>
+            </Link>
           </View>
         </View>
 
