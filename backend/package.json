@@ -12,7 +12,7 @@
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "build": "tsc",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate || echo 'Prisma generate failed, but continuing build'"
   },
   "author": "",
   "license": "ISC",

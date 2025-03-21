@@ -23,16 +23,16 @@ ENV NODE_ENV=production
 # Create app directory
 WORKDIR /app
 
-# Install production dependencies only
+# Copy Prisma schema first - this needs to be before npm ci
+COPY --from=builder /app/prisma /app/prisma
 COPY package*.json ./
+
+# Install production dependencies only
 RUN npm ci --only=production
 
 # Copy build artifacts from builder
 COPY --from=builder /app/node_modules/.prisma /app/node_modules/.prisma
 COPY --from=builder /app/dist /app/dist
-
-# Copy Prisma schema for migrations
-COPY --from=builder /app/prisma /app/prisma
 
 # Copy other necessary files
 COPY --from=builder /app/package.json /app/package.json

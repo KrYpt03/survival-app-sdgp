@@ -110,6 +110,43 @@ API documentation is available in the `/docs` folder:
 
 Please see the [CONTRIBUTING.md](../CONTRIBUTING.md) file for guidelines.
 
+## Deployment
+
+### Deploying to Render
+
+1. Sign up for a [Render account](https://render.com/)
+
+2. Create a new Web Service from your GitHub repository
+
+3. Configure the following settings:
+   - **Build Command**: `cd backend && npm install && npm run build`
+   - **Start Command**: `cd backend && npm start`
+   - **Environment Variables**: Make sure to add all required environment variables from `.env.example`, especially:
+     - `DATABASE_URL`
+     - `CLERK_PUBLISHABLE_KEY`
+     - `CLERK_SECRET_KEY`
+     - `NODE_ENV=production`
+
+4. Set up a PostgreSQL database on Render or elsewhere, and connect it using the `DATABASE_URL` environment variable
+
+5. Important Notes:
+   - Make sure your repository includes the `prisma/schema.prisma` file
+   - The Dockerfile in this repository is configured to correctly handle Prisma schema generation during the build process
+   - If you encounter the "Could not find Prisma Schema" error, check that the production stage in your Dockerfile copies the Prisma schema files before running npm install
+
+### Using the Dockerfile
+
+If deploying with the Dockerfile, make sure it's configured correctly:
+
+```dockerfile
+# Copy Prisma schema first - this needs to be before npm ci
+COPY --from=builder /app/prisma /app/prisma
+COPY package*.json ./
+
+# Install production dependencies only
+RUN npm ci --only=production
+```
+
 ## License
 
 This project is licensed under the ISC License.
