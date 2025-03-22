@@ -2,24 +2,26 @@ import { View, Text, ImageBackground, StyleSheet, TouchableOpacity, ActivityIndi
 import React, { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import QRCode from 'react-native-qrcode-svg';
-import { useLocalSearchParams } from 'expo-router';
+import { Link, useLocalSearchParams } from 'expo-router';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import Feather from '@expo/vector-icons/Feather';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useAuth } from '@clerk/clerk-expo';
 // import * as Clipboard from 'expo-clipboard'; // Uncomment this if you're using clipboard functionality
 
 const QRCodeScreen = () => {
   const { groupName } = useLocalSearchParams<{ groupName?: string }>();
-
-  const leaderID = 'user_123'; // Get this from auth context or Clerk
+  const { userId } = useAuth();
   const range = 150; // Assume range in meters, should be passed or selected earlier
 
   const createTeamMutation = useMutation({
     mutationFn: async () => {
-      const response = await axios.post('https://trail-guard.onrender.com/api/team', {
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+      const response = await axios.post('http://192.168.8.104:5000/api/team', {
         teamName: groupName,
-        leaderID,
         range,
       });
       return response.data;
@@ -81,10 +83,12 @@ const QRCodeScreen = () => {
             <Feather style={styles.copyIconStyle} name="copy" size={24} />
           </TouchableOpacity>
         </View>
-
-        <TouchableOpacity style={styles.startButton}>
-          <Text style={styles.buttonText}>Start</Text>
-        </TouchableOpacity>
+        <Link href="/GroupTrackingScreen" asChild>
+          <TouchableOpacity style={styles.startButton}>
+            <Text style={styles.buttonText}>Start</Text>
+          </TouchableOpacity>
+        </Link>
+        
       </View>
     </ImageBackground>
   );

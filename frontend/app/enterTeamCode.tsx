@@ -7,38 +7,86 @@ import {
   TextInput,
   TouchableOpacity,
   ImageBackground,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
+import { useAuth } from '@clerk/clerk-expo';
 
 const enterTeamCode = () => {
-  const [groupName, setGroupName] = useState('');
+  const [teamCode, setTeamCode] = useState('');
   const router = useRouter();
+  const { userId } = useAuth();
+
+  const joinTeamMutation = useMutation({
+    mutationFn: async () => {
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+      const response = await axios.post('http://192.168.8.104:5000/api/team/join', {
+        teamCode: teamCode.toUpperCase(),
+        userID: userId,
+      });
+      return response.data;
+    },
+    onSuccess: (data) => {
+      Alert.alert('Success', 'Successfully joined team!');
+      router.push('/GroupTrackingScreen');
+    },
+    onError: (error: any) => {
+      console.error(error);
+      Alert.alert('Error', error.response?.data?.message || 'Failed to join team');
+    },
+  });
+
+  const handleJoinTeam = () => {
+    if (!teamCode.trim()) {
+      Alert.alert('Error', 'Please enter a team code');
+      return;
+    }
+    joinTeamMutation.mutate();
+  };
 
   return (
     <ImageBackground
       source={require('../assets/images/882a1e39-7619-4d2d-8934-01ec2145083f.png')}
       style={styles.backgroundImage}
     >
-        <ScrollView contentContainerStyle={styles.container}>
-          <StatusBar style="inverted" />
-          <Text style={styles.heading}>Join Team</Text>
-          <View style={styles.innerContainer}>
-            <View style={styles.textContainer}>
-              <Text style={styles.title}>Enter Team Code</Text>
-              <TextInput
-                style={styles.textBox}
-                value={groupName}
-                onChangeText={setGroupName}
-                placeholder="Team Code"
-                placeholderTextColor="#aaa"
-              />
-              <TouchableOpacity style={styles.doneButton}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <StatusBar style="inverted" />
+        <Text style={styles.heading}>Join Team</Text>
+        <View style={styles.innerContainer}>
+          <View style={styles.textContainer}>
+            <Text style={styles.title}>Enter Team Code</Text>
+            <TextInput
+              style={styles.textBox}
+              value={teamCode}
+              onChangeText={setTeamCode}
+              placeholder="Team Code"
+              placeholderTextColor="#aaa"
+              autoCapitalize="characters"
+              maxLength={8}
+            />
+            <TouchableOpacity 
+              style={[
+                styles.doneButton,
+                joinTeamMutation.isPending && styles.disabledButton
+              ]}
+              onPress={handleJoinTeam}
+              disabled={joinTeamMutation.isPending}
+            >
+              {joinTeamMutation.isPending ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
                 <Text style={styles.doneButtonText}>Join</Text>
-              </TouchableOpacity>
-            </View>
+              )}
+            </TouchableOpacity>
           </View>
-        </ScrollView>
+        </View>
+      </ScrollView>
     </ImageBackground>
   );
 };
@@ -49,7 +97,6 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     width: '100%',
     height: '100%',
-    
   },
   container: {
     flexGrow: 0.7,
@@ -67,11 +114,15 @@ const styles = StyleSheet.create({
     width: 320,
     padding: 20,
     backgroundColor: 'white',
-    // backgroundColor: '#ece6f0',
     borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
   },
   textContainer: {
     width: '100%',
@@ -87,15 +138,20 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 20,
-    paddingHorizontal: 8,
+    paddingHorizontal: 12,
     fontSize: 14,
-    marginBottom: 10,
+    marginBottom: 15,
+    backgroundColor: '#fff',
+    textTransform: 'uppercase',
   },
   doneButton: {
     backgroundColor: '#007aff',
     borderRadius: 20,
-    paddingVertical: 10,
+    paddingVertical: 12,
     alignItems: 'center',
+  },
+  disabledButton: {
+    opacity: 0.7,
   },
   doneButtonText: {
     color: '#fff',

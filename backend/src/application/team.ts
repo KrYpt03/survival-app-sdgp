@@ -48,22 +48,41 @@ export const createTeam = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const { teamName, leaderID, range } = req.body;
+  const { teamName, range } = req.body;
+  // const { userId: clerkID } = getAuth(req);
 
   try {
-    if (!teamName || !leaderID || !range || range < 100) {
+    // if (!clerkID) {
+    //   throw new ValidationError("User not authenticated");
+    // }
+
+    if (!teamName || !range || range < 100) {
       throw new ValidationError(
-        "Invalid input: Team name, leader ID, and range (min 100m) required"
+        "Invalid input: Team name and range (min 100m) required"
       );
     }
+
+    // Get current user from Clerk ID
+    // const currentUser = await prisma.user.findUnique({
+    //   where: { clerkID },
+    // });
+
+    // if (!currentUser) {
+    //   throw new NotFoundError("Current user not found");
+    // }
 
     const newTeam = await prisma.team.create({
       data: {
         teamName,
-        teamCode: Math.random().toString(36).substring(2, 8),
+        teamCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
         range,
-        leaderID,
+        leaderID:"cm8g8nwuv0000t93g20hquwvw"
       },
+    });
+
+    await prisma.user.update({
+      where: { clerkID: "cm8g8nwuv0000t93g20hquwvw" },
+      data: { teamID: newTeam.teamID },
     });
 
     res.status(201).json(newTeam);
@@ -313,18 +332,20 @@ export const activateTeam = async (
 };
 
 export const joinTeam = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { teamCode } = req.body;
-  const { userId: clerkID } = getAuth(req);
+  const { teamCode ,userID } = req.body;
+  // const { userId: clerkID } = getAuth(req);
 
   try {
-    if (!clerkID) {
-      throw new ValidationError("User not authenticated");
-    }
+    // if (!clerkID) {
+    //   throw new ValidationError("User not authenticated");
+    // }
 
-    const currentUser = await prisma.user.findUnique({
-      where: { clerkID },
+    // const currentUser = await prisma.user.findUnique({
+    //   where: { clerkID },
+    // });
+const currentUser = await prisma.user.findUnique({
+      where: { userID },
     });
-
     if (!currentUser) {
       throw new NotFoundError("Current user not found");
     }
