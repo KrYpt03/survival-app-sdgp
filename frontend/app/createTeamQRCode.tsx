@@ -20,9 +20,10 @@ const QRCodeScreen = () => {
       if (!userId) {
         throw new Error('User not authenticated');
       }
-      const response = await axios.post('http://192.168.8.104:5000/api/team', {
+      const response = await axios.post('http://192.168.8.104:3000/api/team', {
         teamName: groupName,
         range,
+        userId: userId
       });
       return response.data;
     },

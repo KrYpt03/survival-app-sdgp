@@ -48,7 +48,7 @@ export const createTeam = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const { teamName, range } = req.body;
+  const { teamName, range , userId} = req.body;
   // const { userId: clerkID } = getAuth(req);
 
   try {
@@ -63,25 +63,25 @@ export const createTeam = async (
     }
 
     // Get current user from Clerk ID
-    // const currentUser = await prisma.user.findUnique({
-    //   where: { clerkID },
-    // });
+    const currentUser = await prisma.user.findUnique({
+      where: { clerkID: userId},
+    });
 
-    // if (!currentUser) {
-    //   throw new NotFoundError("Current user not found");
-    // }
+    if (!currentUser) {
+      throw new NotFoundError("Current user not found");
+    }
 
     const newTeam = await prisma.team.create({
       data: {
         teamName,
         teamCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
         range,
-        leaderID:"cm8g8nwuv0000t93g20hquwvw"
+        leaderID: currentUser.userID
       },
     });
 
     await prisma.user.update({
-      where: { clerkID: "cm8g8nwuv0000t93g20hquwvw" },
+      where: { userID: currentUser.userID },
       data: { teamID: newTeam.teamID },
     });
 
@@ -96,17 +96,17 @@ export const removeTeamMember = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const { teamID, userID } = req.body;
-  const { userId: clerkID } = getAuth(req);
+  const { teamID, userId } = req.body;
+  // const { userId: clerkID } = getAuth(req);
 
   try {
-    if (!clerkID) {
-      throw new ValidationError("User not authenticated");
-    }
+    // if (!clerkID) {
+    //   throw new ValidationError("User not authenticated");
+    // }
 
     // Get current user from Clerk ID
     const currentUser = await prisma.user.findUnique({
-      where: { clerkID },
+      where: { clerkID: userId },
     });
 
     if (!currentUser) {
@@ -123,12 +123,13 @@ export const removeTeamMember = async (
       throw new ValidationError("Only the team leader can remove members");
     }
 
-    const user = await prisma.user.findUnique({ where: { userID } });
+    // Verify that the user to be removed exists
+    const user = await prisma.user.findUnique({ where: { clerkID: userId } });
     if (!user) {
       throw new NotFoundError("User not found");
     }
 
-    await prisma.user.update({ where: { userID }, data: { teamID: null } });
+    await prisma.user.update({ where: { userID: user.userID }, data: { teamID: null } });
 
     res.status(200).json({ message: "User removed from team" });
   } catch (error) {
@@ -141,17 +142,17 @@ export const changeTeamLeader = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const { teamID, newLeaderID } = req.body;
-  const { userId: clerkID } = getAuth(req);
+  const { teamID, newLeaderID, userId } = req.body;
+  // const { userId: clerkID } = getAuth(req);
 
   try {
-    if (!clerkID) {
-      throw new ValidationError("User not authenticated");
-    }
+    // if (!clerkID) {
+    //   throw new ValidationError("User not authenticated");
+    // }
 
     // Get current user from Clerk ID
     const currentUser = await prisma.user.findUnique({
-      where: { clerkID },
+      where: { clerkID: userId },
       include: {
         leads: true,
       },
@@ -200,16 +201,17 @@ export const leaveTeam = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const { userId: clerkID } = getAuth(req);
+  const { teamID, userId} = req.body;
+  // const { userId: clerkID } = getAuth(req);
 
   try {
-    if (!clerkID) {
-      throw new ValidationError("User not authenticated");
-    }
+    // if (!clerkID) {
+    //   throw new ValidationError("User not authenticated");
+    // }
 
     // Get current user with team info
     const currentUser = await prisma.user.findUnique({
-      where: { clerkID },
+      where: { clerkID: userId },
       include: {
         team: {
           include: {
@@ -250,17 +252,17 @@ export const deactivateTeam = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const { teamID } = req.body;
-  const { userId: clerkID } = getAuth(req);
+  const { teamID, userId } = req.body;
+  // const { userId: clerkID } = getAuth(req);
 
   try {
-    if (!clerkID) {
+    if (!userId) {
       throw new ValidationError("User not authenticated");
     }
 
     // Get current user from Clerk ID
     const currentUser = await prisma.user.findUnique({
-      where: { clerkID },
+      where: { clerkID: userId },
       include: {
         leads: true,
       },
@@ -293,17 +295,17 @@ export const activateTeam = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const { teamID } = req.body;
-  const { userId: clerkID } = getAuth(req);
+  const { teamID, userId } = req.body;
+  // const { userId: userID } = getAuth(req);
 
   try {
-    if (!clerkID) {
-      throw new ValidationError("User not authenticated");
-    }
+    // if (!clerkID) {
+    //   throw new ValidationError("User not authenticated");
+    // }
 
     // Get current user from Clerk ID
     const currentUser = await prisma.user.findUnique({
-      where: { clerkID },
+      where: { clerkID: userId },
       include: {
         leads: true,
       },
@@ -332,7 +334,7 @@ export const activateTeam = async (
 };
 
 export const joinTeam = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { teamCode ,userID } = req.body;
+  const { teamCode, userId } = req.body;
   // const { userId: clerkID } = getAuth(req);
 
   try {
@@ -340,12 +342,10 @@ export const joinTeam = async (req: Request, res: Response, next: NextFunction):
     //   throw new ValidationError("User not authenticated");
     // }
 
-    // const currentUser = await prisma.user.findUnique({
-    //   where: { clerkID },
-    // });
-const currentUser = await prisma.user.findUnique({
-      where: { userID },
+    const currentUser = await prisma.user.findUnique({
+      where: { clerkID: userId },
     });
+    
     if (!currentUser) {
       throw new NotFoundError("Current user not found");
     }
@@ -370,14 +370,14 @@ const currentUser = await prisma.user.findUnique({
       data: { teamID: team.teamID },
     });
 
-    res.status(200).json({ 
-      message: "Successfully joined team", 
-      team 
+    res.status(200).json({
+      message: "Successfully joined team",
+      team
     });
   } catch (error) {
     next(error);
   }
 };
 
-    
-    
+
+

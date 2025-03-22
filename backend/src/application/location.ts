@@ -15,12 +15,12 @@ import NotFoundError from "../domain/errors/not-found-error.js";
  */
 export const updateLocation = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     // Extract location data from request body
-    const { userID, latitude, longitude, altitude, speed } = req.body;
+    const { userId, latitude, longitude, altitude, speed } = req.body;
   
     try {
       // Find user and check if they belong to a team
       const user = await prisma.user.findUnique({
-        where: { userID },
+        where: { clerkID: userId },
         select: { teamID: true },
       });
   
@@ -31,7 +31,7 @@ export const updateLocation = async (req: Request, res: Response, next: NextFunc
   
       // Record the user's current location in the database
       await prisma.userLocation.create({
-        data: { userID, latitude, longitude, altitude, speed },
+        data: { userID: userId, latitude, longitude, altitude, speed },
       });
   
       // Determine if user has moved outside their team's designated area
