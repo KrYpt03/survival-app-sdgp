@@ -13,14 +13,14 @@ import { useAuth } from '@clerk/clerk-expo';
 const QRCodeScreen = () => {
   const { groupName } = useLocalSearchParams<{ groupName?: string }>();
   const { userId } = useAuth();
-  const range = 150; // Assume range in meters, should be passed or selected earlier
+  const range = 100; // Assume range in meters, should be passed or selected earlier
 
   const createTeamMutation = useMutation({
     mutationFn: async () => {
       if (!userId) {
         throw new Error('User not authenticated');
       }
-      const response = await axios.post('http://192.168.8.104:3000/api/team', {
+      const response = await axios.post('https://trail-guard.onrender.com/api/team', {
         teamName: groupName,
         range,
         userId: userId
