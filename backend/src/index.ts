@@ -1,13 +1,14 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
-import userRoutes from "./api/user.js";
-import teamRoutes from "./api/team.js";
-import locationRoutes from "./api/location.js";
-import alertRoutes from "./api/alert.js";
-import adminRoutes from "./api/admin.js";
-import { clerkMiddleware } from "@clerk/express";
-import { registerMiddleware, registerErrorHandlers } from "./api/middlewares/index.js";
-import { ApiError } from "./api/middlewares/errorHandler.js";
+import userRoutes from "./api/user";
+import teamRoutes from "./api/team";
+import locationRoutes from "./api/location";
+import alertRoutes from "./api/alert";
+import adminRoutes from "./api/admin";
+import testRoutes from "./api/routes/test";
+import { ClerkExpressWithAuth } from "@clerk/clerk-sdk-node";
+import { registerMiddleware, registerErrorHandlers } from "./api/middlewares/index";
+import { ApiError } from "./api/middlewares/errorHandler";
 
 // Load environment variables
 dotenv.config();
@@ -16,7 +17,17 @@ dotenv.config();
 const app: Express = express();
 
 // Register middleware
-app.use(clerkMiddleware());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Initialize Clerk middleware
+const clerkAuth = ClerkExpressWithAuth({
+  publishableKey: process.env.CLERK_PUBLISHABLE_KEY,
+  secretKey: process.env.CLERK_SECRET_KEY,
+  jwtKey: process.env.CLERK_JWT_KEY
+});
+
+// Register other middleware
 registerMiddleware(app);
 
 // Health check endpoint
@@ -39,6 +50,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 // Register API routes
+app.use("/api/test", testRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/team", teamRoutes);
 app.use("/api/location", locationRoutes);

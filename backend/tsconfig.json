@@ -4,12 +4,18 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "strict": true,
-    "esModuleInterop": true,   
+    "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "outDir": "./dist",
-    "rootDir": "."
+    "rootDir": ".",
+    "allowJs": true,
+    "resolveJsonModule": true
+  },
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
   },
   "include": ["src/**/*", "prisma/**/*"],
   "exclude": ["node_modules", "**/*.test.ts"]

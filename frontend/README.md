@@ -48,3 +48,30 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+## Environment Variables Setup
+
+1. Copy the environment template:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Get your credentials:
+   - Clerk Publishable Key: Get from [Clerk Dashboard](https://dashboard.clerk.com)
+   - Google Maps API Key: Get from [Google Cloud Console](https://console.cloud.google.com)
+   - Set up your API endpoints
+
+3. Fill in your `.env` file with the real credentials
+
+⚠️ IMPORTANT:
+- Never commit your `.env` file to Git
+- Keep your API keys private
+- Each developer should maintain their own local `.env` file
+- Use different credentials for development and production
+
+## Development Setup
+
+```bash
+npm install
+npx expo start
+```
