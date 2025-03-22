@@ -53,7 +53,7 @@ router.route("/deactivate").put( deactivateTeam);
 router.route("/activate").put( activateTeam);
 
 /**
- * Join a team using team code
+ * to Join a team using team code
  * POST /api/team/join
  */
 router.route("/join").post( joinTeam);
