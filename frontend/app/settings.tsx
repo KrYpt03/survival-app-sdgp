@@ -102,7 +102,7 @@ const settings = () => {
               <Text style={[styles.settingText, darkModeEnabled && styles.darkText]}>Changelog</Text>
             </View>
           </TouchableOpacity>
-          <SignedIn>
+          <SignedIn >
             <SignOutButton />
           </SignedIn>
 
@@ -213,5 +213,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#666',
     textTransform: 'uppercase',
+  },
+  signOutButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: '#ff4d4f',
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 })

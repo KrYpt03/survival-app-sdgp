@@ -253,19 +253,21 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   markerContainer: {
+    flexGrow: 1,
     alignItems: "center",
   },
   marker: {
-    width: 24,
-    height: 24,
+    width: 20,
+    height: 20,
     borderRadius: 12,
     backgroundColor: "#ff4d4f",
   },
   markerText: {
-    fontSize: 12,
+    flex: 1,
+    fontSize: 10,
     fontWeight: "bold",
     backgroundColor: "rgba(255, 255, 255, 0.7)",
-    paddingHorizontal: 4,
+    // paddingHorizontal: 2,
     borderRadius: 4,
   },
   actionButtonContainer: {

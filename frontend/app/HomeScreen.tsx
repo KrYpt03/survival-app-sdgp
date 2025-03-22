@@ -431,7 +431,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 16,
+    padding: 15,
+    marginTop: 20,
   },
   menuIcon: {
     width: 24,
