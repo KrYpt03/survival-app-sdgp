@@ -41,6 +41,16 @@ export const createUser = async (
         return;
       }
       
+      // Extract the email address from the payload if available
+      const emailAddress = payload.data.email_addresses && 
+                           payload.data.email_addresses[0]?.email_address;
+      
+      // Use a proper email if available, otherwise create a placeholder one
+      // that's clearly identifiable as a placeholder
+      const email = emailAddress && emailAddress.includes('@')
+        ? emailAddress
+        : `user-${clerkID.substring(0, 8)}@trailguard.example.com`;
+      
       // Generate a username that doesn't exist yet
       let username = generateUsername(payload.data);
       
@@ -60,14 +70,16 @@ export const createUser = async (
         username = `user_${clerkID}`;
       }
       
-      // Create the user with a unique username
+      // Create the user with a unique username and proper email
       await prisma.user.create({
         data: {
-          email: payload.data.email_addresses[0]?.email_address || `${clerkID}@example.com`,
+          email: email,
           clerkID: clerkID,
           username: username,
         },
       });
+      
+      console.log(`User created with email: ${email}`);
     }
 
     res.status(200).json({ message: "User created" });
@@ -81,22 +93,23 @@ export const createUser = async (
 function generateUsername(userData: any): string {
   // Try to use first and last name
   if (userData.first_name && userData.last_name) {
-    return `${userData.first_name} ${userData.last_name}`;
+    return `${userData.first_name.toLowerCase()}_${userData.last_name.toLowerCase()}`;
   }
   
   // Try to use just first name if available
   if (userData.first_name) {
-    return userData.first_name;
+    return `${userData.first_name.toLowerCase()}_user`;
   }
   
   // Try to use just last name if available
   if (userData.last_name) {
-    return userData.last_name;
+    return `user_${userData.last_name.toLowerCase()}`;
   }
   
   // Use email prefix if available
   if (userData.email_addresses && userData.email_addresses[0]?.email_address) {
-    return userData.email_addresses[0].email_address.split('@')[0];
+    const emailPrefix = userData.email_addresses[0].email_address.split('@')[0];
+    return `user_${emailPrefix}`;
   }
   
   // Use ID as last resort
