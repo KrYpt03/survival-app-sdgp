@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllTeams, getTeamMembers, createTeam, removeTeamMember, changeTeamLeader, leaveTeam, deactivateTeam, activateTeam, joinTeam } from "../application/team.js";
+import { getAllTeams, getTeamById, getTeamMembers, createTeam, removeTeamMember, changeTeamLeader, leaveTeam, deactivateTeam, activateTeam, joinTeam, getTeamByUserId } from "../application/team.js";
 import { isAuthenticated } from "./middlewares/authentication-middleware.js";
 
 const router = express.Router();
@@ -9,6 +9,8 @@ const router = express.Router();
  * GET /api/team
  */
 router.route("/").get( getAllTeams);
+
+router.route("/:userId").get(getTeamById);
 
 /**
  * Get team members with latest location
@@ -57,5 +59,11 @@ router.route("/activate").put( activateTeam);
  * POST /api/team/join
  */
 router.route("/join").post( joinTeam);
+
+/**
+ * Get team by userID
+ */
+router.route("/user/:userId").get( getTeamByUserId);
+
 
 export default router;

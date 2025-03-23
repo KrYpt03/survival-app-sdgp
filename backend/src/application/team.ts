@@ -17,6 +17,28 @@ export const getAllTeams = async (
   }
 };
 
+export const getTeamById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    
+    const { userId: clerkId } = getAuth(req);
+
+    const team = await prisma.team.findUnique({
+      //@ts-ignore
+      where: { userId: clerkId },
+    });
+
+    res.json(team);
+
+  } catch (error) {
+    next(error);
+    console.log(error);
+  }
+};
+
 export const getTeamMembers = async (
   req: Request<{ teamID: string }>,
   res: Response,
@@ -407,3 +429,25 @@ export const joinTeam = async (
     next(error);
   }
 };
+
+export const getTeamByUserId = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const { userId } = req.params;
+
+  try {
+    const team = await prisma.team.findFirst({
+      where: { teamMembers: { some: { userID: userId } } },
+    });
+
+    if (!team) {
+      throw new NotFoundError("Team not found");
+    }
+
+    res.json(team);
+  } catch (error) {
+    next(error);
+  }
+} 
