@@ -416,19 +416,21 @@ export default function HomeScreen() {
             ))}
           </View>
 
-          {/* Todo: hide if the teamNameData.teamName is false */}
-          <View style={styles.joinCreateButtons}>
-            <Link href="/enterTeamCode" asChild>
-              <TouchableOpacity style={styles.joinButton}>
-                <Text style={styles.joinButtonText}>JOIN</Text>
-              </TouchableOpacity>
-            </Link>
-            <Link href="/createTeam" asChild>
-              <TouchableOpacity style={styles.createButton}>
-                <Text style={styles.createButtonText}>Create</Text>
-              </TouchableOpacity>
-            </Link>
-          </View>
+          {/* Conditionally render joinCreateButtons if teamNameData.teamName is true */}
+          {teamNameData?.teamName && (
+            <View style={styles.joinCreateButtons}>
+              <Link href="/enterTeamCode" asChild>
+                <TouchableOpacity style={styles.joinButton}>
+                  <Text style={styles.joinButtonText}>JOIN</Text>
+                </TouchableOpacity>
+              </Link>
+              <Link href="/createTeam" asChild>
+                <TouchableOpacity style={styles.createButton}>
+                  <Text style={styles.createButtonText}>Create</Text>
+                </TouchableOpacity>
+              </Link>
+            </View>
+          )}
           
         </View>
 
