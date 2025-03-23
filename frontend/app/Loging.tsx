@@ -16,7 +16,7 @@ import { useNavigation } from "@react-navigation/native"
 import React from "react"
 
 //import clerk authentication hooks
-import {useSignIn, useAuth} from "@clerk/clerk-expo";
+import {useSignIn, useAuth, useClerk} from "@clerk/clerk-expo";
 
 const { width, height } = Dimensions.get("window")
 
@@ -28,6 +28,7 @@ export default function LoginScreen() {
   // Clerk Authentication Hooks
   const { signIn, setActive } = useSignIn();
   const { isLoaded } = useAuth();
+  const { signOut } = useClerk();
 
   // Handle Login with Clerk Authentication
   const handleLogin = async () => {
@@ -38,20 +39,53 @@ export default function LoginScreen() {
         console.error("signIn is undefined");
         return;
       }
-      const result = await signIn.create({
-        identifier: email, // Email or username
-        password,
-      });
 
-      if (result.status === "complete") {
-        // Set the active session and navigate to HomeScreen
-        await setActive({ session: result.createdSessionId });
-        navigation.navigate("HomeScreen" as never);
-      } else {
-        console.log("Login incomplete", result);
+      try {
+        // First attempt to sign in directly
+        const result = await signIn.create({
+          identifier: email, // Email or username
+          password,
+        });
+
+        if (result.status === "complete") {
+          // Set the active session and navigate to HomeScreen
+          await setActive({ session: result.createdSessionId });
+          navigation.navigate("HomeScreen" as never);
+        } else {
+          console.log("Login incomplete", result);
+        }
+      } catch (error: any) {
+        // Check if the error is related to single session mode
+        if (error.message && error.message.includes('single session mode')) {
+          console.log("Detected session conflict, signing out first...");
+          
+          // Sign out first to clear any existing sessions
+          await signOut();
+          
+          // Brief delay to ensure sign-out is processed
+          await new Promise(resolve => setTimeout(resolve, 500));
+          
+          // Try sign-in again
+          const retryResult = await signIn.create({
+            identifier: email,
+            password,
+          });
+          
+          if (retryResult.status === "complete") {
+            await setActive({ session: retryResult.createdSessionId });
+            navigation.navigate("HomeScreen" as never);
+          } else {
+            console.log("Login retry incomplete", retryResult);
+          }
+        } else {
+          // Handle other types of errors
+          console.error("Error logging in:", error);
+          alert("Login failed. Please check your credentials and try again.");
+        }
       }
     } catch (error) {
-      console.error("Error logging in:", error);
+      console.error("Unhandled error during login:", error);
+      alert("An unexpected error occurred. Please try again later.");
     }
   };
 

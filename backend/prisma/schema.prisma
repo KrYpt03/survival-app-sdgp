@@ -10,7 +10,7 @@ datasource db {
 model User {
   userID          String           @id @default(cuid())
   clerkID         String           @unique
-  username        String           
+  username        String           @unique
   email           String           @unique
   createdAt       DateTime         @default(now())
   lastLatitude    Float?

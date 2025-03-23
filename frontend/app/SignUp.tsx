@@ -16,7 +16,7 @@ import { useNavigation } from "@react-navigation/native"
 import React from "react"
 
 //import clerk authentication hooks
-import { useSignUp, useAuth } from "@clerk/clerk-expo";
+import { useSignUp, useAuth, useClerk } from "@clerk/clerk-expo";
 
 const { width, height } = Dimensions.get("window")
 
@@ -28,6 +28,7 @@ export default function SignupScreen() {
   // Clerk Authentication Hooks
   const { signUp } = useSignUp(); // Get signUp object
   const { isLoaded } = useAuth(); // Get auth state
+  const { signOut } = useClerk(); // Add this to get signOut function
 
   // Handle Sign-Up with Clerk Authentication
   const handleSignUp = async () => {
@@ -39,24 +40,55 @@ export default function SignupScreen() {
         return;
       }
 
-      // Create a new user with email & password
-      await signUp.create({
-        emailAddress: email,
-        password,
-      });
+      try {
+        // Create a new user with email & password
+        await signUp.create({
+          emailAddress: email,
+          password,
+        });
 
-      // Send email verification
-      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+        // Send email verification
+        await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
 
-      alert("Check your email for a verification code!");
+        alert("Check your email for a verification code!");
 
-       // Navigate to VerifyEmail Screen
-    navigation.navigate("VerifyEmail" as never);
-  } catch (error) {
-    console.error("Error signing up:", error);
-    alert("Signup failed. Please try again.");
-  }
-};
+        // Navigate to VerifyEmail Screen
+        navigation.navigate("VerifyEmail" as never);
+      } catch (error: any) {
+        // Check if the error is related to single session mode
+        if (error.message && error.message.includes('single session mode')) {
+          console.log("Detected session conflict, signing out first...");
+          
+          // Sign out first to clear any existing sessions
+          await signOut();
+          
+          // Brief delay to ensure sign-out is processed
+          await new Promise(resolve => setTimeout(resolve, 500));
+          
+          // Try sign-up again
+          await signUp.create({
+            emailAddress: email,
+            password,
+          });
+
+          // Send email verification
+          await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+
+          alert("Check your email for a verification code!");
+
+          // Navigate to VerifyEmail Screen
+          navigation.navigate("VerifyEmail" as never);
+        } else {
+          // Handle other types of errors
+          console.error("Error signing up:", error);
+          alert("Signup failed. Please try again.");
+        }
+      }
+    } catch (error) {
+      console.error("Unhandled error during signup:", error);
+      alert("An unexpected error occurred. Please try again later.");
+    }
+  };
 
   const handleLogin = () => {
     navigation.navigate("Loging" as never)// Here you would typically navigate to the main screen

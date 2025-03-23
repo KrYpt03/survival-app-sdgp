@@ -25,21 +25,92 @@ export const createUser = async (
     console.log("payload", payload);
     console.log("type", payload.type);
     console.log("userId", payload.data.id);
+    
     if (payload.type === "user.created") {
+      const clerkID = payload.data.id;
+      
+      // Check if user already exists (to avoid duplicate creation)
+      const existingUser = await prisma.user.findUnique({
+        where: { clerkID }
+      });
+      
+      if (existingUser) {
+        // User already exists, we can return success
+        console.log("User already exists, skipping creation");
+        res.status(200).json({ message: "User already exists" });
+        return;
+      }
+      
+      // Generate a username that doesn't exist yet
+      let username = generateUsername(payload.data);
+      
+      // Check if username exists and generate a unique one if needed
+      let usernameExists = await checkUsernameExists(username);
+      let counter = 1;
+      
+      // If username exists, add a suffix to make it unique
+      while (usernameExists && counter < 100) {
+        username = `${username}${counter}`;
+        usernameExists = await checkUsernameExists(username);
+        counter++;
+      }
+      
+      // If we still can't generate a unique username, use the clerk ID
+      if (usernameExists) {
+        username = `user_${clerkID}`;
+      }
+      
+      // Create the user with a unique username
       await prisma.user.create({
         data: {
-          email: payload.data.email_addresses[0].email_address,
-          clerkID: payload.data.id,
-          username: `${payload.data.first_name} ${payload.data.last_name}`,          
+          email: payload.data.email_addresses[0]?.email_address || `${clerkID}@example.com`,
+          clerkID: clerkID,
+          username: username,
         },
       });
     }
 
     res.status(200).json({ message: "User created" });
   } catch (error) {
+    console.error("Error in webhook handler:", error);
     next(error);
   }
 };
+
+// Helper function to generate a username
+function generateUsername(userData: any): string {
+  // Try to use first and last name
+  if (userData.first_name && userData.last_name) {
+    return `${userData.first_name} ${userData.last_name}`;
+  }
+  
+  // Try to use just first name if available
+  if (userData.first_name) {
+    return userData.first_name;
+  }
+  
+  // Try to use just last name if available
+  if (userData.last_name) {
+    return userData.last_name;
+  }
+  
+  // Use email prefix if available
+  if (userData.email_addresses && userData.email_addresses[0]?.email_address) {
+    return userData.email_addresses[0].email_address.split('@')[0];
+  }
+  
+  // Use ID as last resort
+  return `user_${userData.id}`;
+}
+
+// Helper function to check if a username already exists
+async function checkUsernameExists(username: string): Promise<boolean> {
+  const user = await prisma.user.findFirst({
+    where: { username },
+  });
+  
+  return !!user;
+}
 
 // Helper function to get team ID from team code
 export async function getTeamIdFromCode(teamCode: string): Promise<string | null> {

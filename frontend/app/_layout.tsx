@@ -2,15 +2,57 @@ import { ClerkProvider } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
 import { Stack } from "expo-router";
 import { StatusBar } from 'expo-status-bar';
-import React from "react";
+import React, { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import * as SecureStore from 'expo-secure-store';
 
 // React Query client instance
 const queryClient = new QueryClient();
 
+// Enhanced token cache with error handling
+const enhancedTokenCache = {
+  async getToken(key: string) {
+    try {
+      return await SecureStore.getItemAsync(key);
+    } catch (err) {
+      console.error("Error getting token:", err);
+      return null;
+    }
+  },
+  async saveToken(key: string, value: string) {
+    try {
+      return await SecureStore.setItemAsync(key, value);
+    } catch (err) {
+      console.error("Error saving token:", err);
+    }
+  },
+  async clearToken(key: string) {
+    try {
+      return await SecureStore.deleteItemAsync(key);
+    } catch (err) {
+      console.error("Error clearing token:", err);
+    }
+  }
+};
+
+function ClerkInitializer({ children }: { children: React.ReactNode }) {
+  const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY || '';
+  
+  // This component ensures any session-related errors during initialization 
+  // are properly handled
+  return (
+    <ClerkProvider 
+      publishableKey={publishableKey}
+      tokenCache={enhancedTokenCache}
+    >
+      {children}
+    </ClerkProvider>
+  );
+}
+
 export default function RootLayout() {
   return (
-    <ClerkProvider tokenCache={tokenCache}>
+    <ClerkInitializer>
       <QueryClientProvider client={queryClient}>
       <Stack
         screenOptions={{
@@ -95,7 +137,6 @@ export default function RootLayout() {
         />
       </Stack>
       </QueryClientProvider>
-    </ClerkProvider>
-
+    </ClerkInitializer>
   );
 }

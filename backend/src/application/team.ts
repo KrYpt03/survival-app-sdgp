@@ -351,12 +351,32 @@ export const joinTeam = async (
     //   throw new ValidationError("User not authenticated");
     // }
 
-    const currentUser = await prisma.user.findUnique({
+    // Find the user by Clerk ID
+    let currentUser = await prisma.user.findUnique({
       where: { clerkID: userId },
     });
 
+    // If user is not found, create a new user record
     if (!currentUser) {
-      throw new NotFoundError("Current user not found");
+      console.log(`User ${userId} not found, creating a new user record`);
+      
+      // Create a new user with a unique username
+      const username = `user_${userId}`;
+      
+      try {
+        currentUser = await prisma.user.create({
+          data: {
+            clerkID: userId,
+            username: username,
+            email: `${userId}@example.com`, // Placeholder email
+          },
+        });
+        
+        console.log(`Created new user: ${currentUser.userID}`);
+      } catch (createError) {
+        console.error("Error creating user:", createError);
+        throw new NotFoundError("Failed to create user record");
+      }
     }
 
     // Check if the user is already in a team
