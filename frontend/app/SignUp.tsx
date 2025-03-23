@@ -11,12 +11,16 @@ import {
   StyleSheet,
   Dimensions,
   Platform,
+  ActivityIndicator,
+  Alert,
 } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import React from "react"
 
 //import clerk authentication hooks
 import { useSignUp, useAuth, useClerk } from "@clerk/clerk-expo";
+// Import auth service
+import { clearAuthTokens } from "../services/authService";
 
 const { width, height } = Dimensions.get("window")
 
@@ -24,6 +28,7 @@ export default function SignupScreen() {
   const navigation = useNavigation()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
 
   // Clerk Authentication Hooks
   const { signUp } = useSignUp(); // Get signUp object
@@ -32,61 +37,75 @@ export default function SignupScreen() {
 
   // Handle Sign-Up with Clerk Authentication
   const handleSignUp = async () => {
-    if (!isLoaded) return;
+    if (!isLoaded || !signUp) {
+      console.error("Auth not loaded or signUp is undefined");
+      return;
+    }
+
+    setIsLoading(true);
 
     try {
-      if (!signUp) {
-        console.error("signUp is undefined");
-        return;
-      }
-
+      // Clear any existing auth tokens first
+      await clearAuthTokens();
+      
+      // Try to sign out any existing session
       try {
-        // Create a new user with email & password
-        await signUp.create({
-          emailAddress: email,
-          password,
-        });
+        await signOut();
+      } catch (signOutError) {
+        console.error("Error during sign out:", signOutError);
+        // Continue with sign up anyway
+      }
+      
+      // Wait a moment for sign out to complete
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Create a new user with email & password
+      await signUp.create({
+        emailAddress: email,
+        password,
+      });
 
-        // Send email verification
-        await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+      // Send email verification
+      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
 
-        alert("Check your email for a verification code!");
+      Alert.alert("Success", "Check your email for a verification code!");
 
-        // Navigate to VerifyEmail Screen
-        navigation.navigate("VerifyEmail" as never);
-      } catch (error: any) {
-        // Check if the error is related to single session mode
-        if (error.message && error.message.includes('single session mode')) {
-          console.log("Detected session conflict, signing out first...");
+      // Navigate to VerifyEmail Screen
+      navigation.navigate("VerifyEmail" as never);
+    } catch (error: any) {
+      console.error("Error signing up:", error);
+      
+      // If we get a single session error, try one more time after clearing everything
+      if (error.message && error.message.includes('single session mode')) {
+        try {
+          console.log("Detected session conflict, trying again after clearing...");
           
-          // Sign out first to clear any existing sessions
+          // More aggressive clearing
+          await clearAuthTokens();
           await signOut();
           
-          // Brief delay to ensure sign-out is processed
-          await new Promise(resolve => setTimeout(resolve, 500));
+          // Longer wait
+          await new Promise(resolve => setTimeout(resolve, 1000));
           
-          // Try sign-up again
+          // Try again
           await signUp.create({
             emailAddress: email,
             password,
           });
-
-          // Send email verification
+          
           await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
-
-          alert("Check your email for a verification code!");
-
-          // Navigate to VerifyEmail Screen
+          
+          Alert.alert("Success", "Check your email for a verification code!");
           navigation.navigate("VerifyEmail" as never);
-        } else {
-          // Handle other types of errors
-          console.error("Error signing up:", error);
-          alert("Signup failed. Please try again.");
+        } catch (retryError: any) {
+          console.error("Signup retry failed:", retryError);
+          Alert.alert("Signup Failed", retryError.message || "Could not create account. Please try again later.");
         }
+      } else {
+        Alert.alert("Signup Failed", error.message || "Failed to create account. Please try again.");
       }
-    } catch (error) {
-      console.error("Unhandled error during signup:", error);
-      alert("An unexpected error occurred. Please try again later.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -132,6 +151,7 @@ export default function SignupScreen() {
             keyboardType="email-address"
             autoCapitalize="none"
             placeholderTextColor="#666"
+            editable={!isLoading}
           />
 
           <TextInput
@@ -141,13 +161,26 @@ export default function SignupScreen() {
             onChangeText={setPassword}
             secureTextEntry
             placeholderTextColor="#666"
+            editable={!isLoading}
           />
 
-          <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
-            <Text style={styles.signUpButtonText}>SIGN UP</Text>
+          <TouchableOpacity 
+            style={[styles.signUpButton, isLoading && styles.disabledButton]} 
+            onPress={handleSignUp}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.signUpButtonText}>SIGN UP</Text>
+            )}
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+          <TouchableOpacity 
+            style={[styles.loginButton, isLoading && styles.disabledButton]} 
+            onPress={handleLogin}
+            disabled={isLoading}
+          >
             <Text style={styles.loginButtonText}>Log In</Text>
           </TouchableOpacity>
         </View>
@@ -225,6 +258,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 8,
     marginBottom: 12,
+  },
+  disabledButton: {
+    opacity: 0.7,
   },
   signUpButtonText: {
     color: "#fff",

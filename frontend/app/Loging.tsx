@@ -11,12 +11,16 @@ import {
   StyleSheet,
   Dimensions,
   Platform,
+  ActivityIndicator,
+  Alert,
 } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import React from "react"
 
 //import clerk authentication hooks
 import {useSignIn, useAuth, useClerk} from "@clerk/clerk-expo";
+// Import auth service
+import { safeSignIn, clearAuthTokens } from "../services/authService";
 
 const { width, height } = Dimensions.get("window")
 
@@ -24,6 +28,7 @@ export default function LoginScreen() {
   const navigation = useNavigation()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
 
   // Clerk Authentication Hooks
   const { signIn, setActive } = useSignIn();
@@ -32,63 +37,38 @@ export default function LoginScreen() {
 
   // Handle Login with Clerk Authentication
   const handleLogin = async () => {
-    if (!isLoaded) return;
+    if (!isLoaded || !signIn) {
+      console.error("Auth not loaded or signIn is undefined");
+      return;
+    }
+
+    setIsLoading(true);
 
     try {
-      if (!signIn) {
-        console.error("signIn is undefined");
-        return;
-      }
+      // Clear tokens before trying to sign in (preemptive fix)
+      await clearAuthTokens();
+      
+      // Use our safe sign-in function from authService
+      const result = await safeSignIn(signIn, email, password, signOut);
 
-      try {
-        // First attempt to sign in directly
-        const result = await signIn.create({
-          identifier: email, // Email or username
-          password,
-        });
-
-        if (result.status === "complete") {
-          // Set the active session and navigate to HomeScreen
-          await setActive({ session: result.createdSessionId });
-          navigation.navigate("HomeScreen" as never);
-        } else {
-          console.log("Login incomplete", result);
-        }
-      } catch (error: any) {
-        // Check if the error is related to single session mode
-        if (error.message && error.message.includes('single session mode')) {
-          console.log("Detected session conflict, signing out first...");
-          
-          // Sign out first to clear any existing sessions
-          await signOut();
-          
-          // Brief delay to ensure sign-out is processed
-          await new Promise(resolve => setTimeout(resolve, 500));
-          
-          // Try sign-in again
-          const retryResult = await signIn.create({
-            identifier: email,
-            password,
-          });
-          
-          if (retryResult.status === "complete") {
-            await setActive({ session: retryResult.createdSessionId });
-            navigation.navigate("HomeScreen" as never);
-          } else {
-            console.log("Login retry incomplete", retryResult);
-          }
-        } else {
-          // Handle other types of errors
-          console.error("Error logging in:", error);
-          alert("Login failed. Please check your credentials and try again.");
-        }
+      if (result.status === "complete") {
+        // Set the active session and navigate to HomeScreen
+        await setActive({ session: result.createdSessionId });
+        navigation.navigate("HomeScreen" as never);
+      } else {
+        console.log("Login incomplete", result);
+        Alert.alert("Login Error", "Sign in process was not completed. Please try again.");
       }
-    } catch (error) {
-      console.error("Unhandled error during login:", error);
-      alert("An unexpected error occurred. Please try again later.");
+    } catch (error: any) {
+      console.error("Login error:", error);
+      Alert.alert(
+        "Login Failed", 
+        error.message || "Failed to sign in. Please check your credentials and try again."
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
-
 
   const handleSignUp = () => {
     navigation.navigate("SignUp" as never)
@@ -132,6 +112,7 @@ export default function LoginScreen() {
             keyboardType="email-address"
             autoCapitalize="none"
             placeholderTextColor="#666"
+            editable={!isLoading}
           />
 
           <TextInput
@@ -141,17 +122,34 @@ export default function LoginScreen() {
             onChangeText={setPassword}
             secureTextEntry
             placeholderTextColor="#666"
+            editable={!isLoading}
           />
 
-          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-            <Text style={styles.loginButtonText}>LOG IN</Text>
+          <TouchableOpacity 
+            style={[styles.loginButton, isLoading && styles.disabledButton]} 
+            onPress={handleLogin}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.loginButtonText}>LOG IN</Text>
+            )}
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
+          <TouchableOpacity 
+            style={[styles.signUpButton, isLoading && styles.disabledButton]} 
+            onPress={handleSignUp}
+            disabled={isLoading}
+          >
             <Text style={styles.signUpButtonText}>Sign Up</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.forgotPassword} onPress={handleForgotPassword}>
+          <TouchableOpacity 
+            style={styles.forgotPassword} 
+            onPress={handleForgotPassword}
+            disabled={isLoading}
+          >
             <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
           </TouchableOpacity>
         </View>
@@ -229,6 +227,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 8,
     marginBottom: 12,
+  },
+  disabledButton: {
+    opacity: 0.7,
   },
   loginButtonText: {
     color: "#fff",
