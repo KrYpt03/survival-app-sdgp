@@ -99,7 +99,7 @@ export default function HomeScreen() {
         throw new Error("User not authenticated");
       }
       const res = await axios.get(
-        "http://localhost:3000/api/user?clerkId=user_2uiXb45zTpZVf539ckPTzqFSVd0",
+        "https://trail-guard.onrender.com/api/user?clerkId=user_2uiXb45zTpZVf539ckPTzqFSVd0",
         {
           params: {
             clerkId: userId,
