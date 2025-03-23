@@ -48,7 +48,7 @@ export const createTeam = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const { teamName, range , userId} = req.body;
+  const { teamName, range, userId } = req.body;
   // const { userId: clerkID } = getAuth(req);
 
   try {
@@ -64,7 +64,7 @@ export const createTeam = async (
 
     // Get current user from Clerk ID
     const currentUser = await prisma.user.findUnique({
-      where: { clerkID: userId},
+      where: { clerkID: userId },
     });
 
     if (!currentUser) {
@@ -76,7 +76,7 @@ export const createTeam = async (
         teamName,
         teamCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
         range,
-        leaderID: currentUser.userID
+        leaderID: currentUser.userID,
       },
     });
 
@@ -129,7 +129,10 @@ export const removeTeamMember = async (
       throw new NotFoundError("User not found");
     }
 
-    await prisma.user.update({ where: { userID: user.userID }, data: { teamID: null } });
+    await prisma.user.update({
+      where: { userID: user.userID },
+      data: { teamID: null },
+    });
 
     res.status(200).json({ message: "User removed from team" });
   } catch (error) {
@@ -201,7 +204,7 @@ export const leaveTeam = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const { teamID, userId} = req.body;
+  const { teamID, userId } = req.body;
   // const { userId: clerkID } = getAuth(req);
 
   try {
@@ -216,10 +219,10 @@ export const leaveTeam = async (
         team: {
           include: {
             teamMembers: true,
-            leader: true
-          }
-        }
-      }
+            leader: true,
+          },
+        },
+      },
     });
 
     if (!currentUser) {
@@ -232,13 +235,15 @@ export const leaveTeam = async (
 
     // Check if user is team leader
     if (currentUser.team.leaderID === currentUser.userID) {
-      throw new ValidationError("Team leader cannot leave without assigning a new leader first");
+      throw new ValidationError(
+        "Team leader cannot leave without assigning a new leader first"
+      );
     }
 
     // Remove user from team
     await prisma.user.update({
       where: { userID: currentUser.userID },
-      data: { teamID: null }
+      data: { teamID: null },
     });
 
     res.status(200).json({ message: "Successfully left team" });
@@ -333,7 +338,11 @@ export const activateTeam = async (
   }
 };
 
-export const joinTeam = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const joinTeam = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   const { teamCode, userId } = req.body;
   // const { userId: clerkID } = getAuth(req);
 
@@ -345,7 +354,7 @@ export const joinTeam = async (req: Request, res: Response, next: NextFunction):
     const currentUser = await prisma.user.findUnique({
       where: { clerkID: userId },
     });
-    
+
     if (!currentUser) {
       throw new NotFoundError("Current user not found");
     }
@@ -372,12 +381,9 @@ export const joinTeam = async (req: Request, res: Response, next: NextFunction):
 
     res.status(200).json({
       message: "Successfully joined team",
-      team
+      team,
     });
   } catch (error) {
     next(error);
   }
 };
-
-
-
