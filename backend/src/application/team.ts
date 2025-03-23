@@ -51,7 +51,7 @@ export const getTeamById = async (
     }
 
     res.json({
-      teameName:user.team.teamName
+      teamName:user.team.teamName
     });
 
   } catch (error) {

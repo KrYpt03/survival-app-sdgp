@@ -92,20 +92,21 @@ export default function HomeScreen() {
   const { userId } = useAuth();
 
   //currentTeam
-  const { data: teamName, isPending:isTeamNamePending, isError:isTeamNameError } = useQuery({
+  const {
+    data: teamNameData,
+    isPending: isTeamNamePending,
+    isError: isTeamNameError,
+  } = useQuery({
     queryKey: [""],
     queryFn: async () => {
       if (!userId) {
         throw new Error("User not authenticated");
       }
-      const res = await axios.get(
-        "https://trail-guard.onrender.com/api/user?clerkId=user_2uiXb45zTpZVf539ckPTzqFSVd0",
-        {
-          params: {
-            clerkId: userId,
-          },
-        }
-      );
+      const res = await axios.get(`https://trail-guard.onrender.com/api/user`, {
+        params: {
+          clerkId: userId,
+        },
+      });
       return res.data;
     },
   });
@@ -329,7 +330,7 @@ export default function HomeScreen() {
     }
   };
 
-  if (loading || isTeamNamePending ) {
+  if (loading || isTeamNamePending) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#0000ff" />
@@ -348,6 +349,8 @@ export default function HomeScreen() {
       </View>
     );
   }
+
+  console.log("teamNameData: ",teamNameData )
 
   return (
     <SafeAreaView style={styles.container}>
@@ -387,7 +390,7 @@ export default function HomeScreen() {
       <ScrollView style={styles.content}>
         {/* Current Team Card */}
         <View style={styles.teamCard}>
-          <Text style={styles.cardTitle}>{teamName}</Text>
+          <Text style={styles.cardTitle}>{teamNameData?.teamName}</Text>
           <Text style={styles.dateTime}>
             {format(new Date(), "EEE, MMM dd h:mm a").toUpperCase()}
           </Text>
@@ -413,6 +416,7 @@ export default function HomeScreen() {
             ))}
           </View>
 
+          {/* Todo: hide if the teamNameData.teamName is false */}
           <View style={styles.joinCreateButtons}>
             <Link href="/enterTeamCode" asChild>
               <TouchableOpacity style={styles.joinButton}>
@@ -425,6 +429,7 @@ export default function HomeScreen() {
               </TouchableOpacity>
             </Link>
           </View>
+          
         </View>
 
         {/* Location Card */}
