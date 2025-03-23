@@ -10,8 +10,6 @@ const router = express.Router();
  */
 router.route("/").get( getAllTeams);
 
-router.route("/:userId").get(getTeamById);
-
 /**
  * Get team members with latest location
  * GET /api/team/:teamID/members

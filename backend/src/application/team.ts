@@ -24,14 +24,35 @@ export const getTeamById = async (
 ): Promise<void> => {
   try {
     
-    const { userId: clerkId } = getAuth(req);
+    // const { userId: clerkId } = getAuth(req);
+    const clerkId = req.query.clerkId as string
+    console.log(clerkId);
 
-    const team = await prisma.team.findUnique({
-      //@ts-ignore
-      where: { userId: clerkId },
+
+
+    if (!clerkId) {
+      throw new NotFoundError("user Id query param is missing");
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { clerkID : clerkId},
+      include: {
+        team:true
+      }
     });
 
-    res.json(team);
+
+    if (!user) {
+      throw new NotFoundError("User not found");
+    }
+
+    if (!user.team) {
+      throw new NotFoundError("User doesn't have a team");
+    }
+
+    res.json({
+      teameName:user.team.teamName
+    });
 
   } catch (error) {
     next(error);
