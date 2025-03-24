@@ -5,6 +5,7 @@ import teamRoutes from "./api/team.js";
 import locationRoutes from "./api/location.js";
 import alertRoutes from "./api/alert.js";
 import adminRoutes from "./api/admin.js";
+import plantRoutes from "./api/routes/plant.js";
 import { clerkMiddleware } from "@clerk/express";
 import { registerMiddleware, registerErrorHandlers } from "./api/middlewares/index.js";
 import { ApiError } from "./api/middlewares/errorHandler.js";
@@ -44,6 +45,7 @@ app.use("/api/team", teamRoutes);
 app.use("/api/location", locationRoutes);
 app.use("/api/alert", alertRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/plant", plantRoutes);
 
 // 404 handler for undefined routes
 app.use((req: Request, res: Response) => {

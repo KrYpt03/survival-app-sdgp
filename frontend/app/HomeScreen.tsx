@@ -20,20 +20,19 @@ import { format } from "date-fns";
 import * as Location from "expo-location";
 import NavigationBar from "../components/NavigationBar";
 import * as Linking from "expo-linking";
-// Add this import at the top of the file
 import { testLocationPermission } from "../services/locationTest";
 import { StatusBar } from "expo-status-bar";
 import { Link } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useAuth, useSession, useUser } from "@clerk/clerk-expo";
+import { useAuth } from "@clerk/clerk-expo";
 
 const { width, height } = Dimensions.get("window");
 
-// OpenWeatherMap API key - replace with your own
+// API keys and constants
 const WEATHER_API_KEY = "YOUR_OPENWEATHERMAP_API_KEY";
-// Google Maps API key - replace with your own
 const MAPS_API_KEY = "YOUR_GOOGLE_MAPS_API_KEY";
+const API_BASE_URL = "https://trail-guard.onrender.com/api";
 
 interface TeamMember {
   id: string;
@@ -78,69 +77,72 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [locationPermission, setLocationPermission] = useState(false);
-
-  useEffect(() => {
-    console.log("HomeScreen mounted, requesting location permission");
-    requestLocationPermission();
-
-    // Add a cleanup function
-    return () => {
-      console.log("HomeScreen unmounted");
-    };
-  }, []);
-
   const { userId } = useAuth();
 
-  //currentTeam
+  // Query for team name
   const {
     data: teamNameData,
     isPending: isTeamNamePending,
     isError: isTeamNameError,
   } = useQuery({
-    queryKey: [""],
+    queryKey: ["teamName", userId],
     queryFn: async () => {
       if (!userId) {
         throw new Error("User not authenticated");
       }
-      const res = await axios.get(`https://trail-guard.onrender.com/api/user`, {
-        params: {
-          clerkId: userId,
-        },
+      const response = await axios.get(`${API_BASE_URL}/user`, {
+        params: { clerkId: userId }
       });
-      return res.data;
+      return response.data;
     },
+    enabled: !!userId,
   });
+
+  useEffect(() => {
+    console.log("HomeScreen mounted");
+    const initializeLocation = async () => {
+      try {
+        await requestLocationPermission();
+      } catch (err) {
+        console.error("Error in initializeLocation:", err);
+      }
+    };
+
+    initializeLocation();
+    return () => {
+      console.log("HomeScreen unmounted");
+    };
+  }, []);
 
   const requestLocationPermission = async () => {
     try {
-      // First check if we already have permissions
+      console.log("Checking location permissions...");
       let { status } = await Location.getForegroundPermissionsAsync();
+      console.log("Current permission status:", status);
 
-      // If we don't have permission, request it
       if (status !== "granted") {
-        console.log("Requesting location permission...");
-        const permissionResponse =
-          await Location.requestForegroundPermissionsAsync();
+        console.log("Permission not granted, requesting...");
+        const permissionResponse = await Location.requestForegroundPermissionsAsync();
         status = permissionResponse.status;
-        console.log("Permission response:", status);
+        console.log("New permission status:", status);
       }
 
       setLocationPermission(status === "granted");
+      console.log("Location permission set to:", status === "granted");
 
       if (status === "granted") {
-        // Permission was granted, fetch location data
-        fetchLocationData();
+        console.log("Permission granted, fetching location data...");
+        await fetchLocationData();
       } else {
-        // Permission was denied, show alert
+        console.log("Permission denied, showing alert...");
         Alert.alert(
           "Location Permission Required",
-          "This app needs access to your location to show weather and nearby information. Please enable location services in your device settings.",
+          "This app needs access to your location. Please enable location services.",
           [
             { text: "Cancel", style: "cancel" },
             {
               text: "Open Settings",
               onPress: () => {
-                // Open app settings if available
                 if (Platform.OS === "ios") {
                   Linking.openURL("app-settings:");
                 } else {
@@ -150,22 +152,9 @@ export default function HomeScreen() {
             },
           ]
         );
-
-        // Use default data
-        // setLoading(true)
-        // setCurrentTeam(MOCK_TEAM_DATA)
-        // setLocationInfo({
-        //   name: "Unknown Location",
-        //   description: "Enable location services to see details about your area",
-        //   temperature: 0,
-        //   image:
-        //     "https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
-        //   mapImage: `https://maps.googleapis.com/maps/api/staticmap?center=0,0&zoom=10&size=400x200&key=${MAPS_API_KEY}`,
-        // })
-        // setLoading(false)
       }
     } catch (err) {
-      console.error("Error requesting location permission:", err);
+      console.error("Error in requestLocationPermission:", err);
       setError("Failed to request location permission");
       setLoading(false);
     }
@@ -175,97 +164,58 @@ export default function HomeScreen() {
     setLoading(true);
     setError("");
     try {
-      console.log("Fetching current location...");
-      // Get current location with a timeout
+      // Step 1: Get current location
+      console.log("Step 1: Starting to fetch location...");
       const location = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.Balanced,
-        timeInterval: 5000, // 5 seconds
-        mayShowUserSettingsDialog: true, // This will prompt the user to enable location services if they're off
       });
+      console.log("Current location obtained:", location);
 
-      console.log("Location received:", location);
       const { latitude, longitude } = location.coords;
+      console.log(`Coordinates: ${latitude}, ${longitude}`);
 
-      // Get location name from coordinates
-      console.log("Reverse geocoding...");
-      const geocode = await Location.reverseGeocodeAsync({
+      // Step 2: Get location details
+      console.log("Step 2: Getting location details...");
+      const geocodeResult = await Location.reverseGeocodeAsync({
         latitude,
         longitude,
       });
+      console.log("Geocode data:", JSON.stringify(geocodeResult, null, 2));
 
-      console.log("Geocode result:", geocode);
-
-      const locationName =
-        geocode[0]?.city ||
-        geocode[0]?.region ||
-        geocode[0]?.subregion ||
-        "Unknown Location";
-
-      const country = geocode[0]?.country || "";
-
-      // For testing, we'll use mock weather data instead of making an API call
-      // In a real app, you would uncomment the API call below
-      console.log("Setting mock weather data");
-      const weatherData = {
-        main: { temp: 22 },
-        weather: [{ description: "Clear sky" }],
+      // Step 3: Format location data
+      const locationDetails: LocationInfo = {
+        name: geocodeResult[0]?.region || geocodeResult[0]?.country || "Unknown Location",
+        description: geocodeResult[0]?.country || "",
+        temperature: 22, // Mock temperature for now
+        image: "https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+        mapImage: `https://maps.googleapis.com/maps/api/staticmap?center=${latitude},${longitude}&zoom=13&size=400x200&markers=color:red%7C${latitude},${longitude}&key=${MAPS_API_KEY}`,
+        latitude,
+        longitude,
       };
 
-      /*
-      // Fetch weather data
-      console.log("Fetching weather data...");
-      const weatherResponse = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${WEATHER_API_KEY}`
-      );
-      
-      if (!weatherResponse.ok) {
-        throw new Error("Weather data not available");
-      }
-      
-      const weatherData = await weatherResponse.json();
-      console.log("Weather data received:", weatherData);
-      */
+      console.log("Step 3: Formatted location details:", locationDetails);
 
-      // Use a static image for now
-      const locationImage =
-        "https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80";
-
-      // Create map image URL
-      const mapImageUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${latitude},${longitude}&zoom=13&size=400x200&markers=color:red%7C${latitude},${longitude}&key=${MAPS_API_KEY}`;
-
-      console.log("Setting location info");
-      // Set location info
-      setLocationInfo({
-        name: locationName,
-        description:
-          weatherData.weather[0]?.description ||
-          "No weather description available",
-        temperature: Math.round(weatherData.main?.temp) || 0,
-        image: locationImage,
-        mapImage: mapImageUrl,
-        latitude,
-        longitude,
-      });
-
-      // Set team data (mock for now)
+      // Step 4: Update state
+      console.log("Step 4: Updating state with location info...");
+      setLocationInfo(locationDetails);
       setCurrentTeam(MOCK_TEAM_DATA);
+      console.log("Location info set successfully");
+
     } catch (err) {
-      console.error("Error fetching location data:", err);
+      console.error("Detailed error in fetchLocationData:", err);
       setError(
         "Failed to fetch location data: " +
-          (err instanceof Error ? err.message : String(err))
+        (err instanceof Error ? err.message : String(err))
       );
-
-      // Set default data on error
+      
+      // Set default location info on error
       setLocationInfo({
-        name: "Unknown Location",
-        description: "Could not fetch location details",
+        name: "Location Unavailable",
+        description: "Please check your location permissions",
         temperature: 0,
-        image:
-          "https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+        image: "https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
         mapImage: `https://maps.googleapis.com/maps/api/staticmap?center=0,0&zoom=10&size=400x200&key=${MAPS_API_KEY}`,
       });
-      setCurrentTeam(MOCK_TEAM_DATA);
     } finally {
       setLoading(false);
     }
@@ -273,8 +223,6 @@ export default function HomeScreen() {
 
   const fetchLocationImage = async (locationName: string): Promise<string> => {
     try {
-      // Use Unsplash API to get a relevant image
-      // Note: In a real app, you should use your own Unsplash API key
       const response = await fetch(
         `https://api.unsplash.com/search/photos?query=${locationName}&client_id=YOUR_UNSPLASH_API_KEY`
       );
@@ -289,27 +237,21 @@ export default function HomeScreen() {
         return data.results[0].urls.regular;
       }
 
-      // Fallback image
       return "https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80";
     } catch (err) {
       console.error("Error fetching location image:", err);
-      // Fallback image
       return "https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80";
     }
   };
 
   const handleJoinTeam = async () => {
     try {
-      // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 500));
-
-      // Add a new team member
       const newMember = {
         id: "4",
         name: "You",
         avatar: "https://randomuser.me/api/portraits/men/4.jpg",
       };
-
       setCurrentTeam([...currentTeam, newMember]);
     } catch (err) {
       console.error("Error joining team:", err);
@@ -318,7 +260,6 @@ export default function HomeScreen() {
   };
 
   const handleSearch = () => {
-    // Implement search functionality
     console.log("Searching for:", searchQuery);
   };
 
@@ -330,7 +271,7 @@ export default function HomeScreen() {
     }
   };
 
-  if (loading || isTeamNamePending) {
+  if (loading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#0000ff" />
@@ -339,7 +280,7 @@ export default function HomeScreen() {
     );
   }
 
-  if (error || isTeamNameError) {
+  if (error) {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>{error}</Text>
@@ -390,14 +331,15 @@ export default function HomeScreen() {
       <ScrollView style={styles.content}>
         {/* Current Team Card */}
         <View style={styles.teamCard}>
-          <Text style={styles.cardTitle}>{teamNameData?.teamName}</Text>
+          <Text style={styles.cardTitle}>
+            {teamNameData?.teamName || "No Team"}
+          </Text>
           <Text style={styles.dateTime}>
             {format(new Date(), "EEE, MMM dd h:mm a").toUpperCase()}
           </Text>
           <Text style={styles.location}>
-            {locationInfo?.name}
-            {locationInfo?.name && ", "}
-            {locationPermission ? "Near You" : "Enable Location"}
+            {locationInfo?.name}, {locationInfo?.description}
+            {!locationPermission && " (Enable Location)"}
           </Text>
           <View style={styles.teamMembers}>
             {currentTeam.map((member, index) => (
@@ -416,8 +358,8 @@ export default function HomeScreen() {
             ))}
           </View>
 
-          {/* Conditionally render joinCreateButtons if teamNameData.teamName is true */}
-          {teamNameData?.teamName && (
+          {/* Show join/create buttons only if user is not in a team */}
+          {!teamNameData?.teamName && (
             <View style={styles.joinCreateButtons}>
               <Link href="/enterTeamCode" asChild>
                 <TouchableOpacity style={styles.joinButton}>
@@ -431,7 +373,6 @@ export default function HomeScreen() {
               </Link>
             </View>
           )}
-          
         </View>
 
         {/* Location Card */}
@@ -461,10 +402,7 @@ export default function HomeScreen() {
                     styles.enableLocationButton,
                     { marginTop: 15, paddingVertical: 12 },
                   ]}
-                  onPress={() => {
-                    console.log("Enable location button pressed");
-                    requestLocationPermission();
-                  }}
+                  onPress={requestLocationPermission}
                 >
                   <Text style={styles.enableLocationText}>
                     Enable Location Services
@@ -588,7 +526,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
-
   joinButton: {
     backgroundColor: "#4CAF50",
     borderRadius: 20,
