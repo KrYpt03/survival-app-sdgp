@@ -1,5 +1,6 @@
 import { Express } from 'express';
 import request from 'supertest';
+import { expect, describe, test } from '@jest/globals';
 
 /**
  * Helper function to make authenticated API requests for testing
