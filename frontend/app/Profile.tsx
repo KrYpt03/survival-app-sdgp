@@ -277,11 +277,13 @@ export default function ProfileScreen() {
       >
         <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
           <View style={styles.header}>
-            <ImageBackground
-              style={styles.menuIcon}
-              source={require("../assets/images/profile/94fb0b4c-e9f2-4649-9c1e-804e113d65c2.png")}
-              resizeMode="cover"
-            />
+            <TouchableOpacity onPress={() => router.back()}>
+              <ImageBackground
+                style={styles.menuIcon}
+                source={require("../assets/images/profile/94fb0b4c-e9f2-4649-9c1e-804e113d65c2.png")}
+                resizeMode="cover"
+              />
+            </TouchableOpacity>
             <Text style={styles.headerTitle}>Profile</Text>
             {!isEditing ? (
               <TouchableOpacity onPress={handleEditProfile} style={styles.editButton}>
