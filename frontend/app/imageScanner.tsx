@@ -7,6 +7,7 @@ import EvilIcons from '@expo/vector-icons/EvilIcons';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
 import * as FileSystem from 'expo-file-system';
+import { Platform } from 'react-native';
 
 const API_URL = 'https://trail-guard.onrender.com/api/plant/identify'; // Update this with your server IP
 
@@ -49,24 +50,34 @@ const ImageScanner = () => {
       if (!fileInfo.exists) {
         throw new Error('File does not exist');
       }
+      
+      console.log("File info:", fileInfo);
 
-      // Create file object
-      formData.append('image', {
-        uri: capturedImage,
+      // Create file object and ensure it's properly formatted for upload
+      const imageFile = {
+        uri: Platform.OS === 'ios' ? capturedImage.replace('file://', '') : capturedImage,
         type: 'image/jpeg',
         name: 'plant-image.jpg',
-      } as any);
+      };
+      
+      console.log("Image file being uploaded:", imageFile);
+      
+      formData.append('image', imageFile as any);
 
       // Make API request
+      console.log("Making API request to:", API_URL);
       const response = await axios.post(API_URL, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Accept': 'application/json',
         },
-        timeout: 10000, // 10 second timeout
+        timeout: 15000, // 15 second timeout, increased from 10 seconds
       });
 
+      console.log("API Response:", response.status, response.statusText);
+      
       if (response.data) {
+        console.log("Response data received:", JSON.stringify(response.data).substring(0, 200) + "...");
         setResult(response.data);
         setShowModal(false);
         router.push({ 
@@ -77,15 +88,27 @@ const ImageScanner = () => {
         });
       }
     } catch (error: any) {
+      console.error("Error in analyzeImage:", error);
+      
       let errorMessage = 'Failed to analyze image. Please try again.';
+      
       if (error.response) {
         // Server responded with error
+        console.error("Server error response:", error.response.status, error.response.data);
         errorMessage = error.response.data.error || errorMessage;
       } else if (error.request) {
         // No response received
+        console.error("No response received from server:", error.request);
         errorMessage = 'Could not connect to server. Please check your connection.';
+      } else {
+        // Error in setting up the request
+        console.error("Error setting up request:", error.message);
       }
+      
       Alert.alert('Error', errorMessage);
+      
+      // Reset the process so the user can try again
+      setShowModal(false);
     } finally {
       setLoading(false);
     }

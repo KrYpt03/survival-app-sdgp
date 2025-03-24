@@ -46,11 +46,29 @@ export const identifyPlant = async (
   next: NextFunction
 ): Promise<void> => {
   try {
+    console.log("Plant identification request received");
+    
     if (!req.file) {
+      console.error("Plant identification error: No file uploaded");
       throw new ApiError(400, "Image file is required");
     }
 
+    console.log(`File received: ${req.file.originalname}, size: ${req.file.size} bytes, path: ${req.file.path}`);
+    
+    // Validate the API key
+    if (!KINDWISE_API_KEY) {
+      console.error("Plant identification error: Missing API key");
+      throw new ApiError(500, "API configuration error");
+    }
+
+    // Check if file exists and is readable
+    if (!fs.existsSync(req.file.path)) {
+      console.error(`Plant identification error: File doesn't exist at path: ${req.file.path}`);
+      throw new ApiError(500, "File processing error");
+    }
+
     const imageBase64: string = fs.readFileSync(req.file.path, { encoding: "base64" });
+    console.log(`Image encoded to base64, length: ${imageBase64.length} characters`);
 
     const requestData = {
       images: [imageBase64],
@@ -59,33 +77,67 @@ export const identifyPlant = async (
       health: "auto",
     };
 
+    console.log("Sending request to Kindwise API...");
     // Send request to Kindwise API
     const response = await axios.post<KindwiseResponse>(KINDWISE_URL, requestData, {
       headers: {
         "Content-Type": "application/json",
         "Api-Key": KINDWISE_API_KEY,
       },
+      timeout: 30000, // 30 second timeout
+    }).catch(error => {
+      console.error("Kindwise API request failed:", error.message);
+      if (error.response) {
+        console.error("Response data:", error.response.data);
+        console.error("Response status:", error.response.status);
+      }
+      throw new ApiError(500, "Plant identification service unavailable");
     });
 
+    if (!response.data) {
+      console.error("Plant identification error: No data in response");
+      throw new ApiError(500, "Invalid response from identification service");
+    }
+
     if (!response.data.access_token) {
+      console.error("Plant identification error: No access token in response", response.data);
       throw new ApiError(500, "No access_token received from API");
     }
+    
     const accessToken: string = response.data.access_token;
+    console.log("Access token received from Kindwise API");
 
     // Fetch Complete Details Using `access_token`
     const detailsUrl: string = `https://plant.id/api/v3/identification/${accessToken}?details=common_names,url,description,taxonomy,rank,gbif_id,inaturalist_id,image,synonyms,edible_parts,watering,propagation_methods&language=en`;
 
+    console.log("Fetching detailed results...");
     const fullDetailsResponse = await axios.get<KindwiseResponse>(detailsUrl, {
       headers: { "Api-Key": KINDWISE_API_KEY },
+      timeout: 30000, // 30 second timeout
+    }).catch(error => {
+      console.error("Kindwise API details request failed:", error.message);
+      if (error.response) {
+        console.error("Response data:", error.response.data);
+        console.error("Response status:", error.response.status);
+      }
+      throw new ApiError(500, "Unable to fetch plant details");
     });
 
     // Extract details from the response
     let result: PlantIdentificationResult = { message: "No plant found" };
-    if (fullDetailsResponse.data.result && fullDetailsResponse.data.result.classification) {
+    
+    if (fullDetailsResponse.data.result && 
+        fullDetailsResponse.data.result.classification &&
+        fullDetailsResponse.data.result.classification.suggestions &&
+        fullDetailsResponse.data.result.classification.suggestions.length > 0) {
+          
       const bestMatch = fullDetailsResponse.data.result.classification.suggestions[0];
       const confidence: number = bestMatch.probability ? bestMatch.probability * 100 : 0;
+      
+      console.log(`Plant identified with confidence: ${confidence.toFixed(2)}%`);
 
       if (confidence < 40) {
+        console.log("Confidence too low, responding with Cannot Identify");
         result = { message: "Cannot Identify" };
       } else {
         result = {
@@ -95,15 +147,35 @@ export const identifyPlant = async (
           description: bestMatch.details?.description || "No description available",
           confidence: confidence.toFixed(2) + "%",
         };
+        console.log(`Plant identified as: ${bestMatch.name}`);
       }
+    } else {
+      console.log("No classification results found in the response");
     }
 
     // Clean up the uploaded file
-    fs.unlinkSync(req.file.path);
+    try {
+      if (fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+        console.log("Temporary file deleted");
+      }
+    } catch (cleanupError) {
+      console.error("Error cleaning up file:", cleanupError);
+      // Continue despite cleanup error
+    }
 
+    console.log("Sending plant identification result to client");
     res.json(result);
   } catch (error) {
     console.error("Plant Identification Error:", error instanceof Error ? error.message : error);
+    if (req.file && fs.existsSync(req.file.path)) {
+      try {
+        fs.unlinkSync(req.file.path);
+        console.log("Temporary file deleted after error");
+      } catch (cleanupError) {
+        console.error("Error cleaning up file after error:", cleanupError);
+      }
+    }
     next(error);
   }
 }; 
