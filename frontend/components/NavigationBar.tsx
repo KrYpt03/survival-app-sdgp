@@ -17,7 +17,7 @@ const navigationItems = [
     },
     {
         icon: require("../assets/images/profile/0415227a-9b94-4632-a21b-4c46d2f8432c.png"),
-        screen: "Inbox",
+        screen: "imageScanner",
     },
     {
         icon: require("../assets/images/profile/46f352d9-70f6-4c9e-886c-768bcf1746b8.png"),

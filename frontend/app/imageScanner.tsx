@@ -241,4 +241,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ImageScanner; 
+export default ImageScanner;
