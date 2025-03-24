@@ -77,17 +77,6 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [locationPermission, setLocationPermission] = useState(false);
-
-  useEffect(() => {
-    console.log("HomeScreen mounted, requesting location permission");
-    requestLocationPermission();
-
-    // Add a cleanup function
-    return () => {
-      console.log("HomeScreen unmounted");
-    };
-  }, []);
-
   const { userId } = useAuth();
 
   // Query for team name
@@ -185,63 +174,21 @@ export default function HomeScreen() {
       const { latitude, longitude } = location.coords;
       console.log(`Coordinates: ${latitude}, ${longitude}`);
 
-      // Get location name from coordinates
-      console.log("Reverse geocoding...");
-      const geocode = await Location.reverseGeocodeAsync({
+      // Step 2: Get location details
+      console.log("Step 2: Getting location details...");
+      const geocodeResult = await Location.reverseGeocodeAsync({
         latitude,
         longitude,
       });
+      console.log("Geocode data:", JSON.stringify(geocodeResult, null, 2));
 
-      console.log("Geocode result:", geocode);
-
-      const locationName =
-        geocode[0]?.city ||
-        geocode[0]?.region ||
-        geocode[0]?.subregion ||
-        "Unknown Location";
-
-      const country = geocode[0]?.country || "";
-
-      // For testing, we'll use mock weather data instead of making an API call
-      // In a real app, you would uncomment the API call below
-      console.log("Setting mock weather data");
-      const weatherData = {
-        main: { temp: 22 },
-        weather: [{ description: "Clear sky" }],
-      };
-
-      /*
-      // Fetch weather data
-      console.log("Fetching weather data...");
-      const weatherResponse = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${WEATHER_API_KEY}`
-      );
-      
-      if (!weatherResponse.ok) {
-        throw new Error("Weather data not available");
-      }
-      
-      const weatherData = await weatherResponse.json();
-      console.log("Weather data received:", weatherData);
-      */
-
-      // Use a static image for now
-      const locationImage =
-        "https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80";
-
-      // Create map image URL
-      const mapImageUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${latitude},${longitude}&zoom=13&size=400x200&markers=color:red%7C${latitude},${longitude}&key=${MAPS_API_KEY}`;
-
-      console.log("Setting location info");
-      // Set location info
-      setLocationInfo({
-        name: locationName,
-        description:
-          weatherData.weather[0]?.description ||
-          "No weather description available",
-        temperature: Math.round(weatherData.main?.temp) || 0,
-        image: locationImage,
-        mapImage: mapImageUrl,
+      // Step 3: Format location data
+      const locationDetails: LocationInfo = {
+        name: geocodeResult[0]?.region || geocodeResult[0]?.country || "Unknown Location",
+        description: geocodeResult[0]?.country || "",
+        temperature: 22, // Mock temperature for now
+        image: "https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+        mapImage: `https://maps.googleapis.com/maps/api/staticmap?center=${latitude},${longitude}&zoom=13&size=400x200&markers=color:red%7C${latitude},${longitude}&key=${MAPS_API_KEY}`,
         latitude,
         longitude,
       };
@@ -411,8 +358,8 @@ export default function HomeScreen() {
             ))}
           </View>
 
-          {/* Conditionally render joinCreateButtons if teamNameData.teamName is true */}
-          {teamNameData?.teamName && (
+          {/* Show join/create buttons only if user is not in a team */}
+          {!teamNameData?.teamName && (
             <View style={styles.joinCreateButtons}>
               <Link href="/enterTeamCode" asChild>
                 <TouchableOpacity style={styles.joinButton}>
@@ -426,7 +373,6 @@ export default function HomeScreen() {
               </Link>
             </View>
           )}
-          
         </View>
 
         {/* Location Card */}
