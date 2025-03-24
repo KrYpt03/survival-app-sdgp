@@ -28,8 +28,6 @@ export const getTeamById = async (
     const clerkId = req.query.clerkId as string
     console.log(clerkId);
 
-
-
     if (!clerkId) {
       throw new NotFoundError("user Id query param is missing");
     }
@@ -41,17 +39,38 @@ export const getTeamById = async (
       }
     });
 
-
     if (!user) {
-      throw new NotFoundError("User not found");
+      // Return a 404 response with a more informative message instead of throwing an error
+      res.status(404).json({ 
+        message: "User not found in database", 
+        needsRegistration: true,
+        clerkId
+      });
+      return;
     }
 
     if (!user.team) {
-      throw new NotFoundError("User doesn't have a team");
+      // Return a structured response indicating the user has no team
+      res.status(200).json({ 
+        message: "User doesn't have a team",
+        hasTeam: false,
+        user: {
+          userID: user.userID,
+          username: user.username,
+          email: user.email
+        }
+      });
+      return;
     }
 
     res.json({
-      teamName:user.team.teamName
+      teamName: user.team.teamName,
+      hasTeam: true,
+      user: {
+        userID: user.userID,
+        username: user.username,
+        email: user.email
+      }
     });
 
   } catch (error) {

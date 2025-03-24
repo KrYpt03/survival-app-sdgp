@@ -8,7 +8,7 @@ import axios from 'axios';
 import { useRouter } from 'expo-router';
 import * as FileSystem from 'expo-file-system';
 
-const API_URL = 'http://192.168.8.173:5000/api/plant/identify'; // Update this with your server IP
+const API_URL = 'https://trail-guard.onrender.com/api/plant/identify'; // Update this with your server IP
 
 const ImageScanner = () => {
   const [permission, requestPermission] = useCameraPermissions();
