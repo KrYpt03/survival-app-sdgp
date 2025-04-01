@@ -9,7 +9,7 @@ import { useRouter } from 'expo-router';
 import * as FileSystem from 'expo-file-system';
 import { Platform } from 'react-native';
 
-const API_URL = 'https://trail-guard.onrender.com/api/plant/identify'; // Update this with your server IP
+const API_URL = 'http://192.168.1.34:5000/api/plant/identify'; // Update this with your server IP
 
 const ImageScanner = () => {
   const [permission, requestPermission] = useCameraPermissions();
@@ -71,7 +71,7 @@ const ImageScanner = () => {
           'Content-Type': 'multipart/form-data',
           'Accept': 'application/json',
         },
-        timeout: 15000, // 15 second timeout, increased from 10 seconds
+        timeout: 6000, // 6 second timeout
       });
 
       console.log("API Response:", response.status, response.statusText);
