@@ -109,6 +109,12 @@ const ImageScanner = () => {
     <View style={styles.container}>
       <StatusBar style="inverted" />
       <CameraView style={styles.camera} ref={cameraRef}>
+        <TouchableOpacity 
+          style={styles.backButton}
+          onPress={() => router.back()}
+        >
+          <Ionicons name="chevron-back" size={24} color="white" />
+        </TouchableOpacity>
         <View style={styles.focusSquare} />
         <TouchableOpacity style={styles.scanButton} onPress={takePicture}>
           <Ionicons name="scan" size={35} color="white" />
@@ -238,6 +244,14 @@ const styles = StyleSheet.create({
   },
   disabledButton: {
     opacity: 0.7,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 40,
+    left: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    padding: 8,
+    borderRadius: 20,
   },
 });
 

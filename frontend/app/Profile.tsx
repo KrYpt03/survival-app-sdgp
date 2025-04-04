@@ -64,11 +64,14 @@ export default function ProfileScreen() {
     if (isAuthLoaded && isUserLoaded) {
       loadProfile()
     }
-  }, [isAuthLoaded, isUserLoaded])
+  }, [isAuthLoaded, isUserLoaded, isSignedIn])
 
   const loadProfile = async () => {
     try {
       setLoading(true)
+      console.log("Loading profile...")
+      console.log("isSignedIn:", isSignedIn)
+      console.log("user:", user)
 
       if (!isSignedIn || !user) {
         throw new Error("User not authenticated")
@@ -77,11 +80,11 @@ export default function ProfileScreen() {
       // Get user data from Clerk
       const userData: Profile = {
         id: user.id,
-        name: `${user.firstName || ""} ${user.lastName || ""}`.trim() || "User",
+        name: user.primaryEmailAddress?.emailAddress || "User",
         email: user.primaryEmailAddress?.emailAddress || "",
         bio: (user.unsafeMetadata?.bio as string) || "Adventure enthusiast and nature lover",
         phone: user.phoneNumbers[0]?.phoneNumber || "+94 XXX XXX XXX",
-        location: (user.unsafeMetadata?.location as string) || "Your Location",
+        location: (user.unsafeMetadata?.location as string) || "Home Page",
         profileImage: user.imageUrl || "https://images.unsplash.com/photo-1633332755192-727a05c4013d",
         // Default values for app-specific data
         rewardPoints: 1250,
@@ -89,6 +92,7 @@ export default function ProfileScreen() {
         bucketList: 8,
       }
 
+      console.log("User data loaded:", userData)
       setProfile(userData)
 
       // Initialize editable profile with current values
@@ -100,8 +104,8 @@ export default function ProfileScreen() {
         profileImage: userData.profileImage,
       })
     } catch (err) {
-      setError("Failed to load profile")
-      console.error(err)
+      console.error("Error loading profile:", err)
+      setError("Failed to load profile: " + (err as Error).message)
     } finally {
       setLoading(false)
     }
@@ -146,11 +150,9 @@ export default function ProfileScreen() {
       // Prepare the update data
       const updateData: any = {}
 
-      // Only update firstName and lastName if name was changed
+      // Update email if name (which is email) was changed
       if (editableProfile.name !== profile.name) {
-        const nameParts = (editableProfile.name || "").trim().split(" ")
-        updateData.firstName = nameParts[0] || ""
-        updateData.lastName = nameParts.slice(1).join(" ") || ""
+        updateData.emailAddress = editableProfile.name
       }
 
       // Prepare metadata updates
@@ -172,8 +174,6 @@ export default function ProfileScreen() {
       // Only make the API call if there are changes to update
       if (Object.keys(updateData).length > 0) {
         await user.update(updateData)
-
-        console.log("Profile updated successfully with data:", updateData)
       }
 
       // Update phone number if changed and provided
@@ -208,6 +208,22 @@ export default function ProfileScreen() {
       [field]: value,
     }))
   }
+
+  const handleImageUpdate = async () => {
+    if (!user) return;
+
+    try {
+      // In a real app, you would implement image upload here
+      // For now, we'll just show a message
+      Alert.alert(
+        "Feature Coming Soon",
+        "Profile picture update feature will be available soon!"
+      );
+    } catch (err) {
+      console.error("Failed to update profile picture:", err);
+      Alert.alert("Error", "Failed to update profile picture. Please try again.");
+    }
+  };
 
   // Define menu items inside the component to access router
   const menuItems = [
@@ -304,7 +320,7 @@ export default function ProfileScreen() {
           <View style={styles.profileInfo}>
             <TouchableOpacity
               style={styles.profileImageContainer}
-              onPress={() => isEditing && Alert.alert("Feature", "Change profile picture feature coming soon!")}
+              onPress={() => isEditing && handleImageUpdate()}
             >
               <ImageBackground style={styles.profileImage} source={{ uri: profile.profileImage }} resizeMode="cover" />
               {isEditing && (
