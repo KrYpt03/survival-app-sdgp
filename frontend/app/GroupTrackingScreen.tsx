@@ -14,6 +14,10 @@ const Marker = RawMarker as unknown as React.FC<any>
 import AlertPopup from "../components/AlertPopup"
 import NavigationBar from "../components/NavigationBar"
 import UserProfileModal from "../components/UserProfileModal"
+import { locationApi, UserLocation } from "../api/location"
+import { useUser } from "@clerk/clerk-expo"
+import { teamApi } from "../api/team"
+import { userApi } from "../api/user"
 
 interface GroupMember {
   id: number
@@ -24,6 +28,8 @@ interface GroupMember {
 }
 
 const GroupTrackingScreen: React.FC = () => {
+  const { user } = useUser();
+
   const navigation = useNavigation()
   const [showWarning, setShowWarning] = useState<boolean>(false)
   const [showKickedAlert, setShowKickedAlert] = useState<boolean>(false)
@@ -34,6 +40,8 @@ const GroupTrackingScreen: React.FC = () => {
 
   // Demo toggle for different states
   const [demoState, setDemoState] = useState<string>("normal") // normal, warning, kicked, leader
+
+  const [teamLocation, setTeamLocation] = useState<UserLocation[]>([]);
 
   const [groupMembers, setGroupMembers] = useState<GroupMember[]>([
     { id: 1, name: "Thisula", latitude: 6.799, longitude: 80.798 },
@@ -102,6 +110,43 @@ const GroupTrackingScreen: React.FC = () => {
     setShowUserProfile(false)
   }
 
+  // Get team location data
+  const getTeamLocationData = async () => {
+    try {
+      if (!user) {
+        return;
+      }
+      // Get user
+      const userData = await userApi.getUser(user.id);
+
+      if(!userData || !userData?.user){
+        return;
+      }
+
+      // Api end-point to get user team
+      const team = await teamApi.getUserTeam(userData.user.userID);
+
+      if (!team?.teamID) {
+        return;
+      }
+
+      // Api end-point to get team location
+      const data = await locationApi.getTeamLocation(team.teamID);
+
+      setTeamLocation(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getTeamLeaderLocation = async () => {
+    
+  }
+
+  useEffect(() => {
+    getTeamLocationData();
+  }, []);
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
@@ -128,16 +173,16 @@ const GroupTrackingScreen: React.FC = () => {
           fillColor="rgba(255,0,0,0.1)"
         />
 
-        {groupMembers.map((member) => (
+        {teamLocation.map((location, index) => (
           <Marker
-            key={member.id}
-            coordinate={{ latitude: member.latitude, longitude: member.longitude }}
-            title={member.name}
-            onPress={() => handleMemberPress(member)}
+            key={index}
+            coordinate={{ latitude: location.latitude, longitude: location.longitude }}
+            title={location.userId}
+          // onPress={() => handleMemberPress(member)}
           >
             <View style={styles.markerContainer}>
               <View style={styles.marker} />
-              <Text style={styles.markerText}>{member.name}</Text>
+              <Text style={styles.markerText}>{location.userId}</Text>
             </View>
           </Marker>
         ))}

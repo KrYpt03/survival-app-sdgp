@@ -26,6 +26,7 @@ import { Link } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useAuth } from "@clerk/clerk-expo";
+import { locationApi } from "../api/location";
 
 const { width, height } = Dimensions.get("window");
 
@@ -198,6 +199,12 @@ export default function HomeScreen() {
       // Step 4: Update state
       console.log("Step 4: Updating state with location info...");
       setLocationInfo(locationDetails);
+
+      // Update user location details to DB
+      if(userId){
+        await locationApi.updateUserLocation(userId, latitude, longitude);
+      }
+
       setCurrentTeam(MOCK_TEAM_DATA);
       console.log("Location info set successfully");
 

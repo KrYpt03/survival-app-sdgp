@@ -21,7 +21,7 @@ export const updateLocation = async (req: Request, res: Response, next: NextFunc
       // Find user and check if they belong to a team
       const user = await prisma.user.findUnique({
         where: { clerkID: userId },
-        select: { teamID: true },
+        select: { teamID: true, userID: true },
       });
   
       // Validate user exists and belongs to a team
@@ -31,7 +31,7 @@ export const updateLocation = async (req: Request, res: Response, next: NextFunc
   
       // Record the user's current location in the database
       await prisma.userLocation.create({
-        data: { userID: userId, latitude, longitude, altitude, speed },
+        data: { userID: user.userID, latitude, longitude, altitude, speed },
       });
   
       // Determine if user has moved outside their team's designated area

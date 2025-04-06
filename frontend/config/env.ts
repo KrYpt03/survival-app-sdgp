@@ -16,7 +16,7 @@ const extraConfig = Constants.expoConfig?.extra || {};
 
 // Export the environment config with fallbacks
 export const env: AppConfig = {
-  apiBaseUrl: extraConfig.apiBaseUrl || process.env.API_BASE_URL || 'https://trail-guard.onrender.com/api',
+  apiBaseUrl: extraConfig.apiBaseUrl || process.env.API_BASE_URL || 'http://localhost:3000/api',
   qrApiBaseUrl: extraConfig.qrApiBaseUrl || process.env.QR_API_BASE_URL || 'https://your-api-base-url.com/api',
   tripApiBaseUrl: extraConfig.tripApiBaseUrl || process.env.TRIP_API_BASE_URL || 'https://your-backend-api.com/api',
   clerkPublishableKey: extraConfig.clerkPublishableKey || process.env.CLERK_PUBLISHABLE_KEY || '',
