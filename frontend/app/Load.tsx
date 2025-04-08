@@ -2,21 +2,21 @@
 
 import { useEffect } from "react"
 import { View, Text, ImageBackground, SafeAreaView, StyleSheet, Dimensions } from "react-native"
-import { useNavigation } from "@react-navigation/native"
+import { useRouter } from "expo-router"
 import React from "react"
 
 const { width, height } = Dimensions.get("window")
 
 export default function LoadingScreen() {
-  const navigation = useNavigation()
+  const router = useRouter()
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigation.navigate("Loging" as never)
+      router.replace("/welcomeScreen")
     }, 6000)
 
     return () => clearTimeout(timer)
-  }, [navigation])
+  }, [])
 
   return (
     <SafeAreaView style={styles.container}>
