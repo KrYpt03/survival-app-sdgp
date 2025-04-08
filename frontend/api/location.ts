@@ -1,7 +1,7 @@
 import { API_CONFIG } from './config';
 
 export interface UserLocation {
-    userId: string;
+    userID: string;
     latitude: number;
     longitude: number;
     timestamp: Date;
