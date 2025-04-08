@@ -45,7 +45,7 @@ export const LocationProvider: React.FC<Props> = ({ children }) => {
       locationSubscription = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.High,
-          timeInterval: 3000,
+          timeInterval: 10000,
           distanceInterval: 2,
         },
         async (loc) => {
