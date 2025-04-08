@@ -21,7 +21,9 @@ export const updateLocation = async (req: Request, res: Response, next: NextFunc
       // Find user and check if they belong to a team
       const user = await prisma.user.findUnique({
         where: { clerkID: userId },
-        select: { teamID: true, userID: true },
+        include: {
+          team: true,
+        },
       });
   
       // Validate user exists and belongs to a team
@@ -33,9 +35,9 @@ export const updateLocation = async (req: Request, res: Response, next: NextFunc
       await prisma.userLocation.create({
         data: { userID: user.userID, latitude, longitude, altitude, speed },
       });
-  
+
       // Determine if user has moved outside their team's designated area
-      const isOutOfRange = await checkGeofencing(user.teamID, latitude, longitude);
+      const isOutOfRange = await checkGeofencing(user, latitude, longitude);
   
       // Return success status and whether user is out of range
       res.status(200).json({ success: true, isOutOfRange });

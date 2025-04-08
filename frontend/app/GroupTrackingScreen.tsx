@@ -143,9 +143,15 @@ const GroupTrackingScreen: React.FC = () => {
     
   }
 
-  useEffect(() => {
-    getTeamLocationData();
-  }, []);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     getTeamLocationData();
+  //   }, 5000);
+  
+  //   return () => clearInterval(interval); // Cleanup on unmount
+  // }, []);
+  
+  
 
   return (
     <View style={styles.container}>
@@ -173,16 +179,16 @@ const GroupTrackingScreen: React.FC = () => {
           fillColor="rgba(255,0,0,0.1)"
         />
 
-        {teamLocation.map((location, index) => (
+        {teamLocation?.map((location, index) => (
           <Marker
             key={index}
             coordinate={{ latitude: location.latitude, longitude: location.longitude }}
-            title={location.userId}
+            title={location.userID}
           // onPress={() => handleMemberPress(member)}
           >
             <View style={styles.markerContainer}>
               <View style={styles.marker} />
-              <Text style={styles.markerText}>{location.userId}</Text>
+              <Text style={styles.markerText}>{location.userID}</Text>
             </View>
           </Marker>
         ))}

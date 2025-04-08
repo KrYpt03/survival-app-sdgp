@@ -26,6 +26,7 @@ import { Link } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useAuth } from "@clerk/clerk-expo";
+import { locationApi } from "../api/location";
 
 const { width, height } = Dimensions.get("window");
 
@@ -55,17 +56,20 @@ const MOCK_TEAM_DATA: TeamMember[] = [
   {
     id: "1",
     name: "John Doe",
-    avatar: "https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_1280.png",
+    avatar:
+      "https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_1280.png",
   },
   {
     id: "2",
     name: "Jane Smith",
-    avatar: "https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_1280.png",
+    avatar:
+      "https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_1280.png",
   },
   {
     id: "3",
     name: "Mike Johnson",
-    avatar: "https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_1280.png",
+    avatar:
+      "https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_1280.png",
   },
 ];
 
@@ -91,7 +95,7 @@ export default function HomeScreen() {
         throw new Error("User not authenticated");
       }
       const response = await axios.get(`${API_BASE_URL}/user`, {
-        params: { clerkId: userId }
+        params: { clerkId: userId },
       });
       return response.data;
     },
@@ -122,7 +126,8 @@ export default function HomeScreen() {
 
       if (status !== "granted") {
         console.log("Permission not granted, requesting...");
-        const permissionResponse = await Location.requestForegroundPermissionsAsync();
+        const permissionResponse =
+          await Location.requestForegroundPermissionsAsync();
         status = permissionResponse.status;
         console.log("New permission status:", status);
       }
@@ -184,10 +189,14 @@ export default function HomeScreen() {
 
       // Step 3: Format location data
       const locationDetails: LocationInfo = {
-        name: geocodeResult[0]?.region || geocodeResult[0]?.country || "Unknown Location",
+        name:
+          geocodeResult[0]?.region ||
+          geocodeResult[0]?.country ||
+          "Unknown Location",
         description: geocodeResult[0]?.country || "",
         temperature: 22, // Mock temperature for now
-        image: "https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+        image:
+          "https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
         mapImage: `https://maps.googleapis.com/maps/api/staticmap?center=${latitude},${longitude}&zoom=13&size=400x200&markers=color:red%7C${latitude},${longitude}&key=${MAPS_API_KEY}`,
         latitude,
         longitude,
@@ -198,22 +207,27 @@ export default function HomeScreen() {
       // Step 4: Update state
       console.log("Step 4: Updating state with location info...");
       setLocationInfo(locationDetails);
+
+      if (userId) {
+        await locationApi.updateUserLocation(userId, latitude, longitude);
+      }
+
       setCurrentTeam(MOCK_TEAM_DATA);
       console.log("Location info set successfully");
-
     } catch (err) {
       console.error("Detailed error in fetchLocationData:", err);
       setError(
         "Failed to fetch location data: " +
-        (err instanceof Error ? err.message : String(err))
+          (err instanceof Error ? err.message : String(err))
       );
-      
+
       // Set default location info on error
       setLocationInfo({
         name: "Location Unavailable",
         description: "Please check your location permissions",
         temperature: 0,
-        image: "https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+        image:
+          "https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
         mapImage: `https://maps.googleapis.com/maps/api/staticmap?center=0,0&zoom=10&size=400x200&key=${MAPS_API_KEY}`,
       });
     } finally {
@@ -291,7 +305,7 @@ export default function HomeScreen() {
     );
   }
 
-  console.log("teamNameData: ",teamNameData )
+  console.log("teamNameData: ", teamNameData);
 
   return (
     <SafeAreaView style={styles.container}>

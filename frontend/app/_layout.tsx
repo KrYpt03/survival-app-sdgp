@@ -6,6 +6,7 @@ import React, { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as SecureStore from 'expo-secure-store';
 import { AppState, Platform } from 'react-native';
+import { LocationProvider } from "../provider/LocationProvider";
 
 // React Query client instance
 const queryClient = new QueryClient();
@@ -113,6 +114,8 @@ function SessionManager({ children }: { children: React.ReactNode }) {
 export default function RootLayout() {
   return (
     <ClerkInitializer>
+    <LocationProvider>
+
       <QueryClientProvider client={queryClient}>
         <Stack
           screenOptions={{
@@ -197,6 +200,8 @@ export default function RootLayout() {
           />
         </Stack>
       </QueryClientProvider>
+    </LocationProvider>
+
     </ClerkInitializer>
   );
 }
