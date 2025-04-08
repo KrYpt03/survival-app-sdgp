@@ -26,7 +26,6 @@ import { Link } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useAuth } from "@clerk/clerk-expo";
-import { locationApi } from "../api/location";
 
 const { width, height } = Dimensions.get("window");
 
@@ -56,17 +55,17 @@ const MOCK_TEAM_DATA: TeamMember[] = [
   {
     id: "1",
     name: "John Doe",
-    avatar: "https://randomuser.me/api/portraits/men/1.jpg",
+    avatar: "https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_1280.png",
   },
   {
     id: "2",
     name: "Jane Smith",
-    avatar: "https://randomuser.me/api/portraits/women/2.jpg",
+    avatar: "https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_1280.png",
   },
   {
     id: "3",
     name: "Mike Johnson",
-    avatar: "https://randomuser.me/api/portraits/men/3.jpg",
+    avatar: "https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_1280.png",
   },
 ];
 
@@ -199,12 +198,6 @@ export default function HomeScreen() {
       // Step 4: Update state
       console.log("Step 4: Updating state with location info...");
       setLocationInfo(locationDetails);
-
-      // Update user location details to DB
-      if(userId){
-        await locationApi.updateUserLocation(userId, latitude, longitude);
-      }
-
       setCurrentTeam(MOCK_TEAM_DATA);
       console.log("Location info set successfully");
 
